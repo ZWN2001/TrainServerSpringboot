@@ -2,8 +2,8 @@ package com.zwn.trainserverspringboot.query.service;
 
 import com.zwn.trainserverspringboot.query.bean.TicketsRemain;
 import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
-import com.zwn.dbtext.util.Result;
-import com.zwn.dbtext.util.ResultCodeEnum;
+import com.zwn.trainserverspringboot.util.Result;
+import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

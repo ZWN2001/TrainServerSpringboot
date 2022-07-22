@@ -13,6 +13,6 @@ public class TrainRoute {
     boolean form_is_start;
     boolean to_is_end;
 
-    @Tolerate
+    @Builder
     public TrainRoute() {}
 }

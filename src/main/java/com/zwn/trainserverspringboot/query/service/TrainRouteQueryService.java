@@ -5,8 +5,8 @@ import com.zwn.trainserverspringboot.query.bean.TrainRouteAtom;
 import com.zwn.trainserverspringboot.query.mapper.StationQueryMapper;
 import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
 import com.zwn.trainserverspringboot.query.mapper.TrainRouteQueryMapper;
-import com.zwn.dbtext.util.Result;
-import com.zwn.dbtext.util.ResultCodeEnum;
+import com.zwn.trainserverspringboot.util.Result;
+import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

@@ -8,8 +8,6 @@ spring:
 
 
 mybatis:
-#  # 全局配置文件位置
-#  config-location: classpath:mybatis/mybatis-config.xml
   # 指定sql映射文件位置
   mapper-locations: classpath:mybatis/mapper/*.xml
   configuration:

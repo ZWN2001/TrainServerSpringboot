@@ -1,6 +1,6 @@
 package com.zwn.trainserverspringboot.command.service;
 
-import com.zwn.dbtext.command.mapper.UserMapper;
+import com.zwn.trainserverspringboot.command.mapper.UserMapper;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import org.springframework.stereotype.Service;

@@ -1,5 +1,6 @@
 package com.zwn.trainserverspringboot.query.bean;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
 
@@ -12,6 +13,6 @@ public class TrainRouteAtom {
     String start_time;
     int  stopover_time;
 
-    @Tolerate
+    @Builder
     public TrainRouteAtom() {}
 }
