@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zwn.trainserverspringboot.query.mapper.TrainRouteQueryMapper">
+
+    <select id="getTrainRoutesByFromAndTo" resultType="com.zwn.trainserverspringboot.query.bean.TrainRoute">
+        SELECT from_station_routes.train_route_id AS train_route_id, from_station_routes.arrive_time AS from_time,
+               to_station_routes.arrive_time AS to_time,from_station_routes.station_id AS from_station_id,
+               to_station_routes.station_id AS to_station_id,(from_station_routes.station_no = 0) AS form_is_start,
+--                是否是最后一站
+               not exists(select t.station_no FROM train_route_atom AS t
+                 WHERE t.station_no=to_station_routes.station_no+1 AND t.train_route_id = to_station_routes.train_route_id) as to_is_end
+        FROM
+--             分别选出从出发站出发的所有车次与到终点站的所有车次并作等值连接，且站编号之间有大小关系
+            (SELECT train_route_id,station_no,arrive_time,station_id FROM train_route_atom WHERE from_station_id = #{fromStationId}) AS from_station_routes,
+            (SELECT train_route_id,station_no,arrive_time,station_id FROM train_route_atom WHERE from_station_id = #{toStationId}) AS to_station_routes
+        WHERE from_station_routes.train_route_id = to_station_routes.train_route_id
+          AND from_station_routes.station_no &lt; to_station_routes.station_no
+
+    </select>
+
+    <select id="queryTrainRouteDetail" resultType="com.zwn.trainserverspringboot.query.bean.TrainRouteAtom">
+        SELECT  station_id, station_name, station_no, arrive_time, start_time, stopover_time
+        FROM train_route_atom
+        WHERE train_route_id = #{train_route_id}
+        ORDER BY station_no
+    </select>
+
+
+</mapper>

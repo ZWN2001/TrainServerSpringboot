@@ -1,7 +1,7 @@
-package com.zwn.dbtext.command.controller;
+package com.zwn.trainserverspringboot.command.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.zwn.dbtext.command.service.UserService;
+import com.zwn.trainserverspringboot.command.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

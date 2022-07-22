@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper">
+
+
+    <select id="getTicketsRemain" resultType="com.zwn.trainserverspringboot.query.bean.TicketsRemain">
+--         先找出所有经过的站
+        WITH info AS (SELECT station_id,station_no FROM train_route_atom WHERE train_route_id = #{param1})
+        SELECT train_route_id, seat_type_id, min(remaining_ticket_num) AS remaining_ticket_num
+        FROM ticket_management
+        WHERE train_route_id = #{param1} AND ticket_date = #{param2}
+--           留下夹在用户给定的起始区间之间的站
+            AND station_id IN (
+                SELECT station_id FROM info
+                                  WHERE station_no
+                                      BETWEEN (SELECT station_no FORM info WHERE station_id = #{param3})
+                                      AND (SELECT station_no FORM info WHERE station_id = #{param4})
+            )
+--         按座位类型分类返回
+        GROUP BY seat_type_id
+    </select>
+</mapper>

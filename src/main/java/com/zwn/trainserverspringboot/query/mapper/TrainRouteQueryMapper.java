@@ -1,7 +1,7 @@
-package com.zwn.dbtext.query.mapper;
+package com.zwn.trainserverspringboot.query.mapper;
 
-import com.zwn.dbtext.query.bean.TrainRoute;
-import com.zwn.dbtext.query.bean.TrainRouteAtom;
+import com.zwn.trainserverspringboot.query.bean.TrainRoute;
+import com.zwn.trainserverspringboot.query.bean.TrainRouteAtom;
 
 import java.util.List;
 

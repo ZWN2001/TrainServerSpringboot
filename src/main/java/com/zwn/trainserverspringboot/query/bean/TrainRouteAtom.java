@@ -1,4 +1,4 @@
-package com.zwn.dbtext.query.bean;
+package com.zwn.trainserverspringboot.query.bean;
 
 import lombok.Data;
 import lombok.experimental.Tolerate;

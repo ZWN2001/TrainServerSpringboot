@@ -1,4 +1,4 @@
-package com.zwn.dbtext.query.mapper;
+package com.zwn.trainserverspringboot.query.mapper;
 
 import java.util.List;
 

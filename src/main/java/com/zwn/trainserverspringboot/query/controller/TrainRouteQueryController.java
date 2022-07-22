@@ -1,7 +1,7 @@
-package com.zwn.dbtext.query.controller;
+package com.zwn.trainserverspringboot.query.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.zwn.dbtext.query.service.TrainRouteQueryService;
+import com.zwn.trainserverspringboot.query.service.TrainRouteQueryService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

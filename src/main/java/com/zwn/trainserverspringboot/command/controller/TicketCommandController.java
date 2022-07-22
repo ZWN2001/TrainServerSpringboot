@@ -1,4 +1,4 @@
-package com.zwn.dbtext.command.controller;
+package com.zwn.trainserverspringboot.command.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

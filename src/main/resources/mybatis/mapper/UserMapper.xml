@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zwn.dbtext.command.mapper.UserMapper">
+
+    <insert id="register" >
+        INSERT INTO `users` VALUES (#{user_id},#{user_name},#{gender},#{login_key},#{email})
+    </insert>
+
+    <select id="login" resultType="java.lang.Integer">
+        SELECT count(user_id) from users WHERE user_id = #{param1} and login_key = #{param2}
+    </select>
+
+</mapper>

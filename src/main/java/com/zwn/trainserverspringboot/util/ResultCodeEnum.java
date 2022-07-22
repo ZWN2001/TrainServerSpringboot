@@ -1,4 +1,4 @@
-package com.zwn.dbtext.util;
+package com.zwn.trainserverspringboot.util;
 
 import java.io.Serializable;
 

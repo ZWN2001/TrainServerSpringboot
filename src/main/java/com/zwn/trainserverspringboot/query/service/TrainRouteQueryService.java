@@ -1,10 +1,10 @@
-package com.zwn.dbtext.query.service;
+package com.zwn.trainserverspringboot.query.service;
 
-import com.zwn.dbtext.query.bean.TrainRoute;
-import com.zwn.dbtext.query.bean.TrainRouteAtom;
-import com.zwn.dbtext.query.mapper.StationQueryMapper;
-import com.zwn.dbtext.query.mapper.TicketQueryMapper;
-import com.zwn.dbtext.query.mapper.TrainRouteQueryMapper;
+import com.zwn.trainserverspringboot.query.bean.TrainRoute;
+import com.zwn.trainserverspringboot.query.bean.TrainRouteAtom;
+import com.zwn.trainserverspringboot.query.mapper.StationQueryMapper;
+import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
+import com.zwn.trainserverspringboot.query.mapper.TrainRouteQueryMapper;
 import com.zwn.dbtext.util.Result;
 import com.zwn.dbtext.util.ResultCodeEnum;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
-package com.zwn.dbtext.query.mapper;
+package com.zwn.trainserverspringboot.query.mapper;
 
-import com.zwn.dbtext.query.bean.TicketsRemain;
+import com.zwn.trainserverspringboot.query.bean.TicketsRemain;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.zwn.dbtext.command.mapper;
+package com.zwn.trainserverspringboot.command.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 

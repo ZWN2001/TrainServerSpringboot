@@ -1,4 +1,4 @@
-package com.zwn.dbtext.query.bean;
+package com.zwn.trainserverspringboot.query.bean;
 
 public class TicketsRemain {
     String train_route_id;
