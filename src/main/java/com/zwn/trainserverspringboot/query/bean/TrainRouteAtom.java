@@ -1,0 +1,17 @@
+package com.zwn.dbtext.query.bean;
+
+import lombok.Data;
+import lombok.experimental.Tolerate;
+
+@Data
+public class TrainRouteAtom {
+    String station_id;
+    String station_name;
+    int station_no;
+    String arrive_time;
+    String start_time;
+    int  stopover_time;
+
+    @Tolerate
+    public TrainRouteAtom() {}
+}
