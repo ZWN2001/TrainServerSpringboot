@@ -5,18 +5,22 @@ import java.io.Serializable;
 public enum ResultCodeEnum implements Serializable {
 
 //    common code
-    SUCCESS(0,"success"),
-    UNKNOWN_REASON(-1,"unknown error"),
-    FETCH_TOKEN_FAILED(401,"can not fetch token"),
+    SUCCESS(ResultCode.SUCCESS,"success"),
+    UNKNOWN_ERROR(ResultCode.UNKNOWN_ERROR,"unknown error"),
+    FETCH_TOKEN_FAILED(ResultCode.FETCH_TOKEN_FAILED,"can not fetch token"),
 
-//    login/register/resetPw/getSelfInfo/getTechnicalName code
-    LOGIN_ERROR(11,"incorrect account or password"),
-    LOGIN_LACK(12,"blank account or password"),
-    REGISTER_EXIST(13,"account already exists"),
-    REGISTER_LACK(15,"information is incomplete"),
 
-//    demand code
-    DEMAND_LACK(21,"information is incomplete");
+    LOGIN_ERROR(ResultCode.LOGIN_ERROR,"incorrect account or password"),
+    LOGIN_LACK(ResultCode.LOGIN_LACK,"blank account or password"),
+    REGISTER_EXIST(ResultCode.REGISTER_EXIST,"account already exists"),
+    REGISTER_LACK(ResultCode.REGISTER_LACK,"information is incomplete"),
+
+    //
+    PASSENGER_USER_NOT_EXIST(ResultCode.PASSENGER_USER_NOT_EXIST,"passenger user not exist"),
+    PASSENGER_ID_ILLEGAL(ResultCode.PASSENGER_ID_ILLEGAL,"passenger id illegal"),
+    PASSENGER_NAME_ILLEGAL(ResultCode.PASSENGER_NAME_ILLEGAL,"passenger name illegal"),
+    PASSENGER_PHONE_NUMBER_ILLEGAL(ResultCode.PASSENGER_PHONE_NUMBER_ILLEGAL,"passenger's phone number is illegal");
+
 
     final int code;
     final String message;
@@ -27,3 +31,4 @@ public enum ResultCodeEnum implements Serializable {
     }
 
 }
+
