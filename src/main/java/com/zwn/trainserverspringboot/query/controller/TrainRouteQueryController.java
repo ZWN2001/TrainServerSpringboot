@@ -16,12 +16,12 @@ public class TrainRouteQueryController {
     @Resource
     private TrainRouteQueryService trainRouteQueryService;
 
-    @PostMapping("/train_route")
+    @PostMapping("/trainRoute")
     String queryTrainRoute(String from, String to) {
         return JSON.toJSONString(trainRouteQueryService.queryTrainRoute(from, to));
     }
 
-    @GetMapping("/train_route_detail")
+    @GetMapping("/trainRouteDetail")
     String queryTrainRouteDetail(String train_route_id){
         return JSON.toJSONString(trainRouteQueryService.queryTrainRouteDetail(train_route_id));
     }

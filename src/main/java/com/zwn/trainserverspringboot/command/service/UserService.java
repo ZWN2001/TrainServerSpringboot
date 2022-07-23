@@ -19,7 +19,7 @@ public class UserService {
             if (exception.getClass().getName().equals("org.springframework.dao.DuplicateKeyException")){
                 return  Result.getResult(ResultCodeEnum.REGISTER_EXIST);
             }else {
-                return Result.getResult(ResultCodeEnum.UNKNOWN_REASON);
+                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
             }
         }
         return Result.getResult(ResultCodeEnum.SUCCESS);
@@ -31,7 +31,7 @@ public class UserService {
             result = userMapper.login(user_id, login_key);
             return result == 1 ? Result.getResult(ResultCodeEnum.SUCCESS) : Result.getResult(ResultCodeEnum.LOGIN_ERROR);
         }catch (Exception e){
-            return Result.getResult(ResultCodeEnum.UNKNOWN_REASON);
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
         }
     }
 }

@@ -9,7 +9,10 @@
     </insert>
 
     <select id="login" resultType="java.lang.Integer">
-        SELECT count(user_id) from users WHERE user_id = #{param1} and login_key = #{param2}
+        SELECT count(user_id) FROM users WHERE user_id = #{param1} and login_key = #{param2}
     </select>
 
+    <select id="queryUserId" resultType="java.lang.Integer">
+        SELECT count(user_id) FROM users WHERE user_id = #{user_id}
+    </select>
 </mapper>
