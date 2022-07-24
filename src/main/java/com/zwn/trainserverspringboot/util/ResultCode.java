@@ -14,7 +14,8 @@ public class ResultCode {
     public static final int PASSENGER_ID_ILLEGAL = 22;
     public static final int PASSENGER_NAME_ILLEGAL = 23;
     public static final int PASSENGER_PHONE_NUMBER_ILLEGAL = 24;
-
     public static final int PASSENGER_EXIST = 25;
+
+    public static final int ORDER_REQUEST_ILLEGAL = 31;
 
 }

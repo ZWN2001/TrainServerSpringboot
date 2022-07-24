@@ -16,11 +16,13 @@ public enum ResultCodeEnum implements Serializable {
     REGISTER_LACK(ResultCode.REGISTER_LACK,"information is incomplete"),
 
     //
-    PASSENGER_USER_NOT_EXIST(ResultCode.PASSENGER_USER_NOT_EXIST,"passenger user not exist"),
-    PASSENGER_ID_ILLEGAL(ResultCode.PASSENGER_ID_ILLEGAL,"passenger id illegal"),
-    PASSENGER_NAME_ILLEGAL(ResultCode.PASSENGER_NAME_ILLEGAL,"passenger name illegal"),
-    PASSENGER_PHONE_NUMBER_ILLEGAL(ResultCode.PASSENGER_PHONE_NUMBER_ILLEGAL,"passenger's phone number is illegal"),
-    PASSENGER_EXIST(ResultCode.PASSENGER_EXIST,"passenger exist");
+    PASSENGER_USER_NOT_EXIST(ResultCode.PASSENGER_USER_NOT_EXIST,"passenger: user not exist"),
+    PASSENGER_ID_ILLEGAL(ResultCode.PASSENGER_ID_ILLEGAL,"passenger: id illegal"),
+    PASSENGER_NAME_ILLEGAL(ResultCode.PASSENGER_NAME_ILLEGAL,"passenger: name illegal"),
+    PASSENGER_PHONE_NUMBER_ILLEGAL(ResultCode.PASSENGER_PHONE_NUMBER_ILLEGAL,"passenger: phone number is illegal"),
+    PASSENGER_EXIST(ResultCode.PASSENGER_EXIST,"passenger exist"),
+
+    ORDER_REQUEST_ILLEGAL(ResultCode.ORDER_REQUEST_ILLEGAL,"order: passenger or user or train route not exist");
 
     final int code;
     final String message;
