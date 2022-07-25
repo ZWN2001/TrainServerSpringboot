@@ -1,5 +1,6 @@
 package com.zwn.trainserverspringboot.command.bean;
 
+import com.zwn.trainserverspringboot.util.IdCardUtil;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import com.zwn.trainserverspringboot.util.StringUtil;
 import lombok.Builder;
@@ -16,10 +17,10 @@ public class Passenger {
     public Passenger(){}
 
     public ResultCodeEnum isLegal(){
-        if (passengerId == null ||passengerId.length() != 14){
+        if (passengerId == null || !IdCardUtil.isValidCard(passengerId)){
             return ResultCodeEnum.PASSENGER_ID_ILLEGAL;
         }else if (passengerName == null || passengerName.length()<2 ||
-                passengerName.length()>8 || !StringUtil.isChineseStr(passengerName)){
+                passengerName.length()> 8 || !StringUtil.isChineseStr(passengerName)){
             return ResultCodeEnum.PASSENGER_NAME_ILLEGAL;
         }else if (phoneNum == null || StringUtil.isMobileNum(phoneNum)){
             return ResultCodeEnum.PASSENGER_PHONE_NUMBER_ILLEGAL;

@@ -34,7 +34,7 @@ public class TicketCommandService {
             if (cause instanceof SQLIntegrityConstraintViolationException) {
                 return Result.getResult(ResultCodeEnum.ORDER_REQUEST_ILLEGAL);
             } else if (cause instanceof DuplicateKeyException) {
-                return Result.getResult(ResultCodeEnum.PASSENGER_EXIST);
+                return Result.getResult(ResultCodeEnum.ORDER_EXIST);
             } else {
                 return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
             }

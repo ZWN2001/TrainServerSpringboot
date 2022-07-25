@@ -17,5 +17,6 @@ public class ResultCode {
     public static final int PASSENGER_EXIST = 25;
 
     public static final int ORDER_REQUEST_ILLEGAL = 31;
+    public static final int ORDER_EXIST = 32;
 
 }
