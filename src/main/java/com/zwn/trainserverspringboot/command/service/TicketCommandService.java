@@ -1,8 +1,10 @@
 package com.zwn.trainserverspringboot.command.service;
 
+import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
 import com.zwn.trainserverspringboot.util.OrderStatus;
 import com.zwn.trainserverspringboot.util.Result;
+import com.zwn.trainserverspringboot.util.ResultCode;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -20,24 +22,37 @@ public class TicketCommandService {
 
     @Resource
     private TicketCommandMapper ticketCommandMapper;
-    public Result ticketBooking(String userId, String departureDate, String trainRouteId,
-                                double price, String passengerId){
-        //先验:订单是否存在
-        try{
-            String time = timeFrtmat.format(date.getTime());
-            ticketCommandMapper.ticketBooking(
-                    userId, departureDate, trainRouteId, passengerId, OrderStatus.UN_PAY, time, price);
-            //TODO:结算票数
-            return Result.getResult(ResultCodeEnum.SUCCESS,passengerId);
-        }catch (Exception e){
-            Throwable cause = e.getCause();
-            if (cause instanceof SQLIntegrityConstraintViolationException) {
-                return Result.getResult(ResultCodeEnum.ORDER_REQUEST_ILLEGAL);
-            } else if (cause instanceof DuplicateKeyException) {
-                return Result.getResult(ResultCodeEnum.ORDER_EXIST);
-            } else {
-                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
+
+    public Result ticketBooking(Order order, String passengerId){
+        order.setPassengerId(passengerId);
+        if (order.isRequestLegal().getCode() == ResultCode.SUCCESS){
+            //先验:订单是否存在
+            try{
+                String time = timeFrtmat.format(date.getTime());
+                order.setOrderTime(time);
+                //TODO:结算票数
+
+//            ticketCommandMapper.ticketBooking(
+//                    userId, departureDate, trainRouteId, passengerId, OrderStatus.UN_PAY, time, price);
+
+                return Result.getResult(ResultCodeEnum.SUCCESS,passengerId);
+            }catch (Exception e){
+                Throwable cause = e.getCause();
+                if (cause instanceof SQLIntegrityConstraintViolationException) {
+                    return Result.getResult(ResultCodeEnum.ORDER_REQUEST_ILLEGAL);
+                } else if (cause instanceof DuplicateKeyException) {
+                    return Result.getResult(ResultCodeEnum.ORDER_EXIST);
+                } else {
+                    return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
+                }
             }
+        }else {
+            return Result.getResult(order.isRequestLegal(),passengerId);
         }
+    }
+
+    private void lockTicket(String trainRouteId, String departureDate, int seatTypeId,
+                            String fromStationId, String toStationId){
+
     }
 }

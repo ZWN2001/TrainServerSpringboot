@@ -18,5 +18,6 @@ public class ResultCode {
 
     public static final int ORDER_REQUEST_ILLEGAL = 31;
     public static final int ORDER_EXIST = 32;
-
+    public static final int ORDER_TIME_FORMAT_ERROR = 33;
+    public static final int ORDER_PASSENGER_ID_ILLEGAL = 34;
 }

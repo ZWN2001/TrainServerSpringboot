@@ -22,8 +22,10 @@ public enum ResultCodeEnum implements Serializable {
     PASSENGER_PHONE_NUMBER_ILLEGAL(ResultCode.PASSENGER_PHONE_NUMBER_ILLEGAL,"passenger: phone number is illegal"),
     PASSENGER_EXIST(ResultCode.PASSENGER_EXIST,"passenger exist"),
 
-    ORDER_REQUEST_ILLEGAL(ResultCode.ORDER_REQUEST_ILLEGAL,"order: passenger or user or train route not exist"),
-    ORDER_EXIST(ResultCode.ORDER_EXIST,"order exist");
+    ORDER_REQUEST_ILLEGAL(ResultCode.ORDER_REQUEST_ILLEGAL,"order: request illegal"),
+    ORDER_EXIST(ResultCode.ORDER_EXIST,"order exist"),
+    ORDER_TIME_FORMAT_ERROR(ResultCode.ORDER_TIME_FORMAT_ERROR,"order: tome format error"),
+    ORDER_PASSENGER_ID_ILLEGAL(ResultCode.ORDER_PASSENGER_ID_ILLEGAL,"order: passenger id illegal");
 
     final int code;
     final String message;
