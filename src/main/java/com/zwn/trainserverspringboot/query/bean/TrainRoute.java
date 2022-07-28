@@ -1,9 +1,10 @@
 package com.zwn.trainserverspringboot.query.bean;
 import lombok.*;
-import lombok.experimental.Tolerate;
+
+import java.io.Serializable;
 
 @Data
-public class TrainRoute {
+public class TrainRoute implements Serializable {
 
     String train_route_id;
     String from_station_id;

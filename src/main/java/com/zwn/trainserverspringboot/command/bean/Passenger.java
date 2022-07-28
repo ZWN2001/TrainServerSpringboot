@@ -6,8 +6,10 @@ import com.zwn.trainserverspringboot.util.StringUtil;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class Passenger {
+public class Passenger implements Serializable {
     long userId;
     String passengerId;
     String passengerName;

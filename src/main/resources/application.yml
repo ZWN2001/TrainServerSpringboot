@@ -1,10 +1,52 @@
 server:
   port: 8081
+
 spring:
   datasource:
     username: root
     password: 123456
     url: jdbc:mysql://localhost:3306/train_12306?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      initial-size: 2
+      max-active: 5
+      min-idle: 1
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 'x'
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      max-open-prepared-statements: 20
+      remove-abandoned: true
+      log-abandoned: true
+
+  # redis数据库连接
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    timeout: 3000
+    jedis:
+      pool:
+        max-idle: 1
+        min-idle: 1
+        max-active: 1
+        max-wait: 0ms
+    database: 0
+
+  rabbitmq:
+    ####连接地址
+    host: localhost
+    ####端口号
+    port: 5672
+    ####账号
+    username: admin
+    ####密码
+    password: admin
+    ### 地址  主机独立的virtualhost
+    virtual-host: train_server
 
 
 mybatis:

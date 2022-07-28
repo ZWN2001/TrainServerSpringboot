@@ -5,12 +5,12 @@ import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Data
-public class Order {
+public class Order implements Serializable {
     long orderId;
     long userId;
     String passengerId;
