@@ -1,5 +1,6 @@
 package com.zwn.trainserverspringboot.query.bean;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -10,4 +11,6 @@ public class TicketsRemain implements Serializable {
     String seat_type_id;
     int remaining_ticket_num;
 
+    @Builder
+    public TicketsRemain(){}
 }
