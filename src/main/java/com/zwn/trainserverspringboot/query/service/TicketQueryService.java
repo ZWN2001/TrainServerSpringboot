@@ -44,4 +44,8 @@ public class TicketQueryService {
         }
         return Result.getResult(ResultCodeEnum.SUCCESS,ticketPrices);
     }
+
+    public Result getTicketHistory(String userId){
+
+    }
 }
