@@ -2,9 +2,7 @@ package com.zwn.trainserverspringboot.command.service;
 
 import com.zwn.trainserverspringboot.command.bean.Passenger;
 import com.zwn.trainserverspringboot.command.mapper.PassengerCommandMapper;
-import com.zwn.trainserverspringboot.command.mapper.UserMapper;
 import com.zwn.trainserverspringboot.util.Result;
-import com.zwn.trainserverspringboot.util.ResultCode;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,7 @@ public class PassengerCommandService {
     private PassengerCommandMapper passengerCommandMapper;
 
     public Result addPassenger(Passenger passenger) {
-        if (passenger.isLegal().getCode() == ResultCode.SUCCESS) {
+        if (passenger.isLegal().getCode() == ResultCodeEnum.SUCCESS.getCode()) {
             try {
                     passengerCommandMapper.addPassenger(passenger.getUserId(), passenger.getPassengerId(),
                             passenger.getPassengerName(), passenger.getPhoneNum());

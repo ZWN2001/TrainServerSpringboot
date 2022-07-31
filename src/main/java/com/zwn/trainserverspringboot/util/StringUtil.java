@@ -19,6 +19,14 @@ public class StringUtil {
     public static boolean isMobileNum(String telNum) {
         Pattern p = Pattern.compile("[1][34578][0-9]{9}");
         Matcher m = p.matcher(telNum);
-        return !m.matches();
+        return m.matches();
+    }
+
+    public static boolean isEmailFormat(String content){
+        String REGEX="^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$";
+        Pattern p = Pattern.compile(REGEX);
+        Matcher matcher=p.matcher(content);
+
+        return matcher.matches();
     }
 }

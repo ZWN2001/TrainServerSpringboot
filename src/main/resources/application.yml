@@ -35,7 +35,6 @@ spring:
         max-active: 1
         max-wait: 0ms
     database: 0
-
   rabbitmq:
     ####连接地址
     host: localhost
@@ -54,3 +53,4 @@ mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
+debug: true

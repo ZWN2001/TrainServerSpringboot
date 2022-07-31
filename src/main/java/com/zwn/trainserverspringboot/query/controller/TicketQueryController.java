@@ -28,10 +28,10 @@ public class TicketQueryController {
         return JSON.toJSONString(ticketQueryService.getTicketPrice(train_route_id, from_station_id, to_station_id));
     }
 
-    @GetMapping("/ticketHistory")
-    String getTicketHistory(){
-        String userId ="";
-        return JSON.toJSONString(ticketQueryService.getTicketHistory(userId));
-    }
+//    @GetMapping("/ticketHistory")
+//    String getTicketHistory(){
+//        String userId ="";
+//        return JSON.toJSONString(ticketQueryService.getTicketHistory(userId));
+//    }
 
 }

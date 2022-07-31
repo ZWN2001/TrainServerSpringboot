@@ -2,9 +2,7 @@ package com.zwn.trainserverspringboot.command.service;
 
 import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
-import com.zwn.trainserverspringboot.util.OrderStatus;
 import com.zwn.trainserverspringboot.util.Result;
-import com.zwn.trainserverspringboot.util.ResultCode;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -25,7 +23,7 @@ public class TicketCommandService {
 
     public Result ticketBooking(Order order, String passengerId){
         order.setPassengerId(passengerId);
-        if (order.isRequestLegal().getCode() == ResultCode.SUCCESS){
+        if (order.isRequestLegal().getCode() == ResultCodeEnum.SUCCESS.getCode()){
             //先验:订单是否存在
             try{
                 String time = timeFrtmat.format(date.getTime());

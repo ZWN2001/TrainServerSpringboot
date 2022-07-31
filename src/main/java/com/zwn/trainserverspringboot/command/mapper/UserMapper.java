@@ -1,5 +1,6 @@
 package com.zwn.trainserverspringboot.command.mapper;
 
+import com.zwn.trainserverspringboot.command.bean.UserDetail;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,6 +12,6 @@ public interface UserMapper {
 
     int login(long user_id, String login_key);
 
-    int queryUserId(long user_id);
+    List<UserDetail> queryUserById(long user_id);
 
 }

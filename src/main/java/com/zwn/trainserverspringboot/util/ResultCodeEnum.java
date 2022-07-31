@@ -5,27 +5,31 @@ import java.io.Serializable;
 public enum ResultCodeEnum implements Serializable {
 
 //    common code
-    SUCCESS(ResultCode.SUCCESS,"success"),
-    UNKNOWN_ERROR(ResultCode.UNKNOWN_ERROR,"unknown error"),
-    FETCH_TOKEN_FAILED(ResultCode.FETCH_TOKEN_FAILED,"can not fetch token"),
+    SUCCESS(200,"success"),
+    UNKNOWN_ERROR(-1,"unknown error"),
+    BAD_REQUEST(400, "参数或者语法不对"),
+    UNAUTHORIZED(401,"can not fetch token"),
+    FORBIDDEN(403, "禁止访问"),
 
 
-    LOGIN_ERROR(ResultCode.LOGIN_ERROR,"incorrect account or password"),
-    LOGIN_LACK(ResultCode.LOGIN_LACK,"blank account or password"),
-    REGISTER_EXIST(ResultCode.REGISTER_EXIST,"account already exists"),
-    REGISTER_LACK(ResultCode.REGISTER_LACK,"information is incomplete"),
+    LOGIN_ERROR(11,"incorrect account or password"),
+    LOGIN_LACK(12,"blank account or password"),
+    REGISTER_EXIST(13,"account already exists"),
+    REGISTER_ILLEGAL_PHONE(14,"手机号非法"),
+    REGISTER_ILLEGAL_EMAIL(14,"邮箱非法"),
+    REGISTER_ILLEGAL_PASSWORD(14,"密码长度非法"),
 
     //
-    PASSENGER_USER_NOT_EXIST(ResultCode.PASSENGER_USER_NOT_EXIST,"passenger: user not exist"),
-    PASSENGER_ID_ILLEGAL(ResultCode.PASSENGER_ID_ILLEGAL,"passenger: id illegal"),
-    PASSENGER_NAME_ILLEGAL(ResultCode.PASSENGER_NAME_ILLEGAL,"passenger: name illegal"),
-    PASSENGER_PHONE_NUMBER_ILLEGAL(ResultCode.PASSENGER_PHONE_NUMBER_ILLEGAL,"passenger: phone number is illegal"),
-    PASSENGER_EXIST(ResultCode.PASSENGER_EXIST,"passenger exist"),
+    PASSENGER_USER_NOT_EXIST(21,"passenger: user not exist"),
+    PASSENGER_ID_ILLEGAL(22,"passenger: id illegal"),
+    PASSENGER_NAME_ILLEGAL(23,"passenger: name illegal"),
+    PASSENGER_PHONE_NUMBER_ILLEGAL(24,"passenger: phone number is illegal"),
+    PASSENGER_EXIST(25,"passenger exist"),
 
-    ORDER_REQUEST_ILLEGAL(ResultCode.ORDER_REQUEST_ILLEGAL,"order: request illegal"),
-    ORDER_EXIST(ResultCode.ORDER_EXIST,"order exist"),
-    ORDER_TIME_FORMAT_ERROR(ResultCode.ORDER_TIME_FORMAT_ERROR,"order: tome format error"),
-    ORDER_PASSENGER_ID_ILLEGAL(ResultCode.ORDER_PASSENGER_ID_ILLEGAL,"order: passenger id illegal");
+    ORDER_REQUEST_ILLEGAL(31,"order: request illegal"),
+    ORDER_EXIST(32,"order exist"),
+    ORDER_TIME_FORMAT_ERROR(33,"order: tome format error"),
+    ORDER_PASSENGER_ID_ILLEGAL(34,"order: passenger id illegal");
 
     final int code;
     final String message;
@@ -39,4 +43,5 @@ public enum ResultCodeEnum implements Serializable {
         return code;
     }
 }
+
 

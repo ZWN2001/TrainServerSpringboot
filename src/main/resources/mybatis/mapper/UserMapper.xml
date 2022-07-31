@@ -12,7 +12,7 @@
         SELECT count(user_id) FROM users WHERE user_id = #{param1} and login_key = #{param2}
     </select>
 
-    <select id="queryUserId" resultType="java.lang.Integer">
-        SELECT count(user_id) FROM users WHERE user_id = #{user_id}
+    <select id="queryUserById" resultType="com.zwn.trainserverspringboot.command.bean.UserDetail">
+        SELECT user_id AS userId, user_name AS username, login_key AS password FROM users WHERE user_id = #{user_id}
     </select>
 </mapper>

@@ -27,6 +27,9 @@ public class Order implements Serializable {
     public Order() {}
 
     public ResultCodeEnum isRequestLegal(){
+        if(orderTime == null || passengerId == null){
+            return ResultCodeEnum.BAD_REQUEST;
+        }
         SimpleDateFormat timeFrtmat = new SimpleDateFormat("yyyy-MM-dd");
         try {
             timeFrtmat.parse(orderTime);
