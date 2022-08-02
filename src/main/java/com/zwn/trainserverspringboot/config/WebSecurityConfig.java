@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -57,14 +56,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.authenticationTokenFilter = authenticationTokenFilter;
     }
 	
-//	@Resource
-//    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-//        authenticationManagerBuilder
-//                // 设置UserDetailsService
-//                .userDetailsService(this.userService)
-//                // 使用BCrypt进行密码的hash
+	@Resource
+    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder
+                // 设置UserDetailsService
+                .userDetailsService(this.userService);
+                // 使用BCrypt进行密码的hash
 //                .passwordEncoder(passwordEncoder());
-//    }
+    }
 	
 	/**
      * 装载BCrypt密码编码器

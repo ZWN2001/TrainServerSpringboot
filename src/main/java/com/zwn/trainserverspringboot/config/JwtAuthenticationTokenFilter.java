@@ -49,17 +49,17 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 			// 不按规范,不允许通过验证
 			auth_token = null;
 		}
-		//TODO
-//		long userId = jwtUtils.getUserIdFromToken(auth_token);
+		//TODO:可能有问题
+		long userId = jwtUtils.getUserIdFromToken(auth_token);
 
-//		if (jwtUtils.containToken(userId, auth_token) && SecurityContextHolder.getContext().getAuthentication() == null) {
-//			UserDetail userDetail = jwtUtils.getUserFromToken(auth_token);
-//			if (jwtUtils.validateToken(auth_token, userDetail)) {
-//				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, null, userDetail.getAuthorities());
-//				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//				SecurityContextHolder.getContext().setAuthentication(authentication);
-//			}
-//		}
+		if (jwtUtils.containToken(userId, auth_token) && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UserDetail userDetail = jwtUtils.getUserFromToken(auth_token);
+			if (jwtUtils.validateToken(auth_token, userDetail)) {
+				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, null, userDetail.getAuthorities());
+				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			}
+		}
 		chain.doFilter(request, response);
 	}
 

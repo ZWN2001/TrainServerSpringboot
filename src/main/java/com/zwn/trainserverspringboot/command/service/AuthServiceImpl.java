@@ -59,8 +59,10 @@ public class AuthServiceImpl {
         final Authentication authentication = authenticate(Long.parseLong(userId), password);
         //存储认证信息
         SecurityContextHolder.getContext().setAuthentication(authentication);
-		System.out.println(authentication.getPrincipal());
-		System.out.println(authentication.getAuthorities());
+//		System.out.println(authentication.getPrincipal());
+//		System.out.println(authentication.getAuthorities());
+//		UserDetail(userId=15866554038, username=zwn, password=$2a$10$wpLZnoVxQQVtkHJGTiILzuQDs86SetQ1g49IGptrbgCYcjP35C4gG, role=user)
+//		[user]
         //生成token
         final UserDetail userDetail = (UserDetail) authentication.getPrincipal();
         final String token = jwtTokenUtil.generateAccessToken(userDetail);
