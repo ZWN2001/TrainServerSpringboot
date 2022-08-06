@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -22,7 +21,7 @@ public class UserDetail implements UserDetails {
 	private long userId;
     private String username;
     private String password;
-    private String role = "user";
+    private String role;
 
 
 
@@ -30,7 +29,8 @@ public class UserDetail implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(role));
+        authorities.add(new SimpleGrantedAuthority("common"));
+        authorities.add(new SimpleGrantedAuthority("VIP"));
         return authorities;
     }
 

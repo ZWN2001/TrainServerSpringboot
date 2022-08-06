@@ -1,5 +1,6 @@
 package com.zwn.trainserverspringboot.command.mapper;
 
+import com.zwn.trainserverspringboot.command.bean.User;
 import com.zwn.trainserverspringboot.command.bean.UserDetail;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -8,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
 
-    void register(long user_id, String user_name, boolean gender, String login_key, String email);
+    void register(User user);
 
     int login(long user_id, String login_key);
 

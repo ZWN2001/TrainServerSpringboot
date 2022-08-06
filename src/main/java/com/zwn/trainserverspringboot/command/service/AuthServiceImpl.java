@@ -34,11 +34,12 @@ public class AuthServiceImpl {
 
 	public Result register(User user){
 		if (user.isRegisterLegal().getCode() == ResultCodeEnum.SUCCESS.getCode()){
+			user.setRole("common");
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 			final String rawPassword = user.getLoginKey();
 			user.setLoginKey(encoder.encode(rawPassword));
 			try{
-				userMapper.register(user.getUserId(), user.getUserName(), user.isGender(), user.getLoginKey(), user.getEmail());
+				userMapper.register(user);
 			}catch (Exception exception){
 				exception.printStackTrace();
 				if (exception.getClass().getName().equals("org.springframework.dao.DuplicateKeyException")){

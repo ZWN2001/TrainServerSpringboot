@@ -5,7 +5,7 @@
 <mapper namespace="com.zwn.trainserverspringboot.command.mapper.UserMapper">
 
     <insert id="register" >
-        INSERT INTO `users` VALUES (#{user_id},#{user_name},#{gender},#{login_key},#{email})
+        INSERT INTO `users` VALUES (#{userId},#{userName},#{role},#{gender},#{loginKey},#{email})
     </insert>
 
     <select id="login" resultType="java.lang.Integer">

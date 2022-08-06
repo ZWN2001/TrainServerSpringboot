@@ -12,6 +12,8 @@ import lombok.Data;
 public class User {
     long userId;
     String userName;
+
+    String role;
     boolean gender;
     String loginKey;
     String email;
