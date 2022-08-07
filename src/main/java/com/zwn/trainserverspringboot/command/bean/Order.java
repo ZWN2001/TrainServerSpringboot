@@ -10,8 +10,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 @Data
+@Builder
 public class Order implements Serializable {
-    long orderId;
+    String orderId;
     long userId;
     String passengerId;
     String departureDate;
@@ -23,8 +24,6 @@ public class Order implements Serializable {
     String orderTime;
     double price;
 
-    @Builder
-    public Order() {}
 
     public ResultCodeEnum isRequestLegal(){
         if(orderTime == null || passengerId == null){

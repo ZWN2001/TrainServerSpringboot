@@ -1,9 +1,9 @@
 package com.zwn.trainserverspringboot.command.mapper;
 
+import com.zwn.trainserverspringboot.command.bean.Order;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface TicketCommandMapper {
-    void ticketBooking(String userId, String departureDate, String trainRouteId, String passengerId,
-                       String orderStatus, String orderTime, double price);
+    void ticketBooking(Order order);
 }

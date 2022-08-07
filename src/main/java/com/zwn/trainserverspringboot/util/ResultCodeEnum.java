@@ -12,24 +12,26 @@ public enum ResultCodeEnum implements Serializable {
     FORBIDDEN(403, "禁止访问"),
 
 
-    LOGIN_ERROR(11,"incorrect account or password"),
-    LOGIN_LACK(12,"blank account or password"),
-    REGISTER_EXIST(13,"account already exists"),
-    REGISTER_ILLEGAL_PHONE(14,"手机号非法"),
-    REGISTER_ILLEGAL_EMAIL(14,"邮箱非法"),
-    REGISTER_ILLEGAL_PASSWORD(14,"密码长度非法"),
+    LOGIN_ERROR(11,"login:账号或密码错误"),
+    LOGIN_LACK(12,"login:账号或密码不能为空"),
+    REGISTER_EXIST(13,"register:账号已存在"),
+    REGISTER_ILLEGAL_PHONE(14,"register:手机号非法"),
+    REGISTER_ILLEGAL_EMAIL(14,"register:邮箱非法"),
+    REGISTER_ILLEGAL_PASSWORD(14,"register:密码长度非法"),
 
     //
-    PASSENGER_USER_NOT_EXIST(21,"passenger: user not exist"),
-    PASSENGER_ID_ILLEGAL(22,"passenger: id illegal"),
-    PASSENGER_NAME_ILLEGAL(23,"passenger: name illegal"),
-    PASSENGER_PHONE_NUMBER_ILLEGAL(24,"passenger: phone number is illegal"),
-    PASSENGER_EXIST(25,"passenger exist"),
+    PASSENGER_USER_NOT_EXIST(21,"passenger:用户不存在"),
+    PASSENGER_ID_ILLEGAL(22,"passenger: 身份证号非法"),
+    PASSENGER_NAME_ILLEGAL(23,"passenger: 姓名非法"),
+    PASSENGER_PHONE_NUMBER_ILLEGAL(24,"passenger: 手机号非法"),
+    PASSENGER_EXIST(25,"passenger:乘员已存在"),
 
-    ORDER_REQUEST_ILLEGAL(31,"order: request illegal"),
-    ORDER_EXIST(32,"order exist"),
-    ORDER_TIME_FORMAT_ERROR(33,"order: tome format error"),
-    ORDER_PASSENGER_ID_ILLEGAL(34,"order: passenger id illegal");
+    ORDER_REQUEST_ILLEGAL(31,"order: 请求错误"),
+    ORDER_EXIST(32,"order:订单已存在"),
+    ORDER_TIME_FORMAT_ERROR(33,"order: 日期格式错误"),
+    ORDER_PASSENGER_ID_ILLEGAL(34,"order: 身份证号非法"),
+    TICKET_SURPLUS_NOT_ENOUGH(41,"ticket: 余票不足"),
+    TICKET_PRICE_ERROR(42,"ticket: 票价获取错误");
 
     final int code;
     final String message;

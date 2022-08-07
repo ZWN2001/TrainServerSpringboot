@@ -5,7 +5,8 @@
 <mapper namespace="com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper">
 
     <insert id="ticketBooking">
-        INSERT INTO ticket_order(user_id,passenger_id,departure_date,train_route_id,order_status,order_time,price)
-        VALUES (#{param1},#{param4},#{param2},#{param3},#{param5},#{param6},#{param7})
+        INSERT INTO ticket_order(order_id,user_id,passenger_id,departure_date,train_route_id,order_status,order_time,price)
+        VALUES (#{orderId},#{userId},#{passengerId},#{departureDate},#{trainRouteId},#{orderStatus},#{orderTime},#{price});
+        INSERT INTO ticket_booking(order_id) VALUES (#{orderId});
     </insert>
 </mapper>

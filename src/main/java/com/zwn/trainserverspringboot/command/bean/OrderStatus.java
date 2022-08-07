@@ -1,4 +1,4 @@
-package com.zwn.trainserverspringboot.util;
+package com.zwn.trainserverspringboot.command.bean;
 
 public class OrderStatus {
     public static final String UN_PAY = "未支付";
