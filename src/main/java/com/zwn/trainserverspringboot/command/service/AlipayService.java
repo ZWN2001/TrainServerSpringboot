@@ -8,24 +8,11 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradePrecreateModel;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
-//import com.lonely.alipay_demo.config.AlipayConfig;
-//import com.lonely.alipay_demo.dao.KssCoursesDao;
-//import com.lonely.alipay_demo.entity.KssCourses;
-//import com.lonely.alipay_demo.qrcode.QRCodeUtil;
-//import com.lonely.alipay_demo.qrcode.QrCodeResponse;
-//import com.lonely.alipay_demo.qrcode.QrResponse;
-//import com.lonely.alipay_demo.result.BusinessException;
-//import com.lonely.alipay_demo.result.ResultCodeEnum;
-//import com.lonely.alipay_demo.service.PayCommonService;
-//import com.lonely.alipay_demo.util.GenerateNum;
-//import com.lonely.alipay_demo.util.ParamsUtil;
-//import com.lonely.alipay_demo.vo.PayVo;
 import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.Pay;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
 import com.zwn.trainserverspringboot.config.AlipayConfig;
 import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
-import com.zwn.trainserverspringboot.util.GenerateNum;
 import com.zwn.trainserverspringboot.util.ParamsUtil;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
@@ -110,7 +97,7 @@ public class AlipayService  {
         return Result.getResult(ResultCodeEnum.SUCCESS,FileCopyUtils.copyToByteArray(byteArrayInputStream));
     }
 
-    public Result alipayCallback(HttpServletRequest request) {
+    public boolean alipayCallback(HttpServletRequest request) {
         try {
             Map<String, String> params = ParamsUtil.ParamstoMap(request);
             logger.info("回调参数=========>" + params);
@@ -126,9 +113,9 @@ public class AlipayService  {
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("异常====>"+ e);
-            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e);
+            return false;
         }
-        return Result.getResult(ResultCodeEnum.SUCCESS);
+        return true;
     }
 
     /**

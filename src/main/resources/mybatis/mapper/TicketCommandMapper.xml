@@ -14,4 +14,8 @@
         UPDATE ticket_order SET order_status = '已支付', trade_no = #{param2} WHERE order_id = #{param1};
         DELETE FROM ticket_booking WHERE order_id = #{param1};
     </update>
+
+    <update id="ticketRefund">
+        UPDATE ticket_order SET order_status = '已退票' WHERE order_id = #{orderId};
+    </update>
 </mapper>

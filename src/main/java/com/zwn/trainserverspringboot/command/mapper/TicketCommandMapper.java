@@ -8,4 +8,6 @@ public interface TicketCommandMapper {
     void ticketBooking(Order order);
 
     void ticketPay(String orderId, String tradeNo);
+
+    void ticketRefund(String orderId);
 }

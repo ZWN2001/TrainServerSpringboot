@@ -32,6 +32,11 @@ public class AlipayController {
      */
     @RequestMapping("/alipay/pay/callback")
     public String  notify_url(HttpServletRequest request) {
-        return JSON.toJSONString(alipayService.alipayCallback(request));
+        boolean result =  alipayService.alipayCallback(request);
+        if(result){
+            return "success";
+        }else{
+            return "false";
+        }
     }
 }

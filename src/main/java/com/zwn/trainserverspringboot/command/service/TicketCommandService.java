@@ -5,6 +5,7 @@ import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.OrderKey;
 import com.zwn.trainserverspringboot.command.bean.OrderStatus;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
+import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
 import com.zwn.trainserverspringboot.query.service.TicketQueryService;
 import com.zwn.trainserverspringboot.util.GenerateNum;
 import com.zwn.trainserverspringboot.util.RedisUtil;
@@ -19,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TicketCommandService {
@@ -34,6 +36,9 @@ public class TicketCommandService {
 
     @Resource
     private TicketQueryService ticketQueryService;
+
+    @Resource
+    private OrderQueryMapper orderQueryMapper;
 
     public Result ticketBooking(Order order, List<String> passengerIds){
         OrderKey orderKey = OrderKey.getFromOrder(order);
@@ -81,4 +86,19 @@ public class TicketCommandService {
         }
     }
 
+    public Result ticketRefund(String orderId, long userId){
+        Order order = orderQueryMapper.getOrderById(orderId);
+        if (order == null){
+            return Result.getResult(ResultCodeEnum.ORDER_NOT_EXIST);
+        }else if (order.getUserId() != userId || !Objects.equals(order.getOrderStatus(), "已支付")){
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }else {
+            try {
+                ticketCommandMapper.ticketRefund(orderId);
+                return Result.getResult(ResultCodeEnum.SUCCESS, order);
+            }catch (Exception e){
+                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR, e);
+            }
+        }
+    }
 }
