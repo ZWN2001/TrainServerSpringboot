@@ -20,8 +20,11 @@ import com.alipay.api.response.AlipayTradePrecreateResponse;
 //import com.lonely.alipay_demo.util.GenerateNum;
 //import com.lonely.alipay_demo.util.ParamsUtil;
 //import com.lonely.alipay_demo.vo.PayVo;
+import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.Pay;
+import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
 import com.zwn.trainserverspringboot.config.AlipayConfig;
+import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
 import com.zwn.trainserverspringboot.util.GenerateNum;
 import com.zwn.trainserverspringboot.util.ParamsUtil;
 import com.zwn.trainserverspringboot.util.Result;
@@ -52,48 +55,51 @@ public class AlipayService  {
     @Resource
     private AlipayConfig alipayConfig;
 
-//    @Resource
-//    private KssCoursesDao kssCoursesDao;
-//
-//    @Resource
-//    private PayCommonService payCommonService;
+    @Resource
+    private OrderQueryMapper orderQueryMapper;
+
+    @Resource
+    private TicketCommandMapper ticketCommandMapper;
 
 
     public Result alipay(Pay pay) throws Exception {
-        /**
+        /*
          * 1. 获取阿里客户端
          * 2. 获取阿里请求对象
          * 3. 设置请求参数
          * 4. 设置同步通知回调路径
          * 5. 设置异步通知回调路径
          */
-//        KssCourses kssCourses = kssCoursesDao.queryById(pay.getCourseId());
-//        if (kssCourses == null) {
-//            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
-//        }
-        String orderNumber = GenerateNum.generateOrder();
+
+        Order order = orderQueryMapper.getOrderById(pay.getOrderId());
+        if (order == null){
+            return Result.getResult(ResultCodeEnum.ORDER_NOT_EXIST);
+        }
 
         //设置支付回调时可以在request中获取的参数
         JSONObject jsonObject = new JSONObject();
-//        jsonObject.put("courseId", kssCourses.getCourseid());
-//        jsonObject.put("courseTitle", kssCourses.getTitle());
-//        jsonObject.put("courseImg", kssCourses.getImg());
-        jsonObject.put("orderNumber", orderNumber);
+        jsonObject.put("orderId", order.getOrderId());
+        jsonObject.put("userId", order.getUserId());
+        jsonObject.put("departureDate", order.getDepartureDate());
+        jsonObject.put("trainRouteId", order.getTrainRouteId());
+        jsonObject.put("fromStationId", order.getFromStationId());
+        jsonObject.put("toStationId", order.getToStationId());
+        jsonObject.put("seatTypeId", order.getSeatTypeId());
+        jsonObject.put("price", order.getPrice());
         jsonObject.put("payType", pay.getPayMethod());
-//        jsonObject.put("price", kssCourses.getPrice());
         String params = jsonObject.toString();
 
         //设置支付参数
         AlipayTradePrecreateModel model = new AlipayTradePrecreateModel();
         model.setBody(params);
-//        model.setTotalAmount(kssCourses.getPrice().toString());
-        model.setOutTradeNo(orderNumber);
-//        model.setSubject(kssCourses.getTitle());
+        model.setTotalAmount(String.valueOf(order.getPrice()));
+        model.setOutTradeNo(order.getOrderId());
+//        model.setSubject();
         //获取响应二维码信息
         QrCodeResponse qrCodeResponse = qrcodePay(model);
         //制作二维码并且返回给前端
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        String logopath = "";
+        String logopath;
         logopath = ResourceUtils.getFile("classpath:favicon.png").getAbsolutePath();
         logger.info("二维码的图片路径为===>" + logopath);
         BufferedImage encode = QRCodeUtil.encode(qrCodeResponse.getQr_code(), logopath, false);
@@ -104,26 +110,25 @@ public class AlipayService  {
         return Result.getResult(ResultCodeEnum.SUCCESS,FileCopyUtils.copyToByteArray(byteArrayInputStream));
     }
 
-    public Boolean alipayCallback(HttpServletRequest request) {
+    public Result alipayCallback(HttpServletRequest request) {
         try {
             Map<String, String> params = ParamsUtil.ParamstoMap(request);
             logger.info("回调参数=========>" + params);
-            String trade_no = params.get("trade_no");
+            String tradeNo = params.get("trade_no");
             String body1 = params.get("body");
-            logger.info("交易的流水号和交易信息===========>", trade_no, body1);
+            logger.info("交易的流水号和交易信息===========>"+tradeNo+"\n"+ body1);
             JSONObject body = JSONObject.parseObject(body1);
-            //String userId = body.getString("userId");
             String ptype = body.getString("payType");
-            String orderNumber = body.getString("orderNumber");
+            String orderId = body.getString("orderId");
             if (ptype != null && ptype.equals("1")) {
-//                payCommonService.payproductcourse(body, "1", orderNumber, trade_no, "1");
+                ticketCommandMapper.ticketPay(orderId, tradeNo);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.info("异常====>", e.toString());
-            return false;
+            logger.info("异常====>"+ e);
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e);
         }
-        return true;
+        return Result.getResult(ResultCodeEnum.SUCCESS);
     }
 
     /**
@@ -140,7 +145,7 @@ public class AlipayService  {
         alipayRequest.setBizModel(model);
         alipayRequest.setNotifyUrl(alipayConfig.getNotify_url());
         alipayRequest.setReturnUrl(alipayConfig.getReturn_url());
-        AlipayTradePrecreateResponse execute = null;
+        AlipayTradePrecreateResponse execute;
         execute = alipayClient.execute(alipayRequest);
         String body = execute.getBody();
         logger.info("请求的响应二维码信息====>" + body);

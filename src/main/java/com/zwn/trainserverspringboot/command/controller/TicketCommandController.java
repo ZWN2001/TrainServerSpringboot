@@ -33,10 +33,4 @@ public class TicketCommandController {
         }
         return JSON.toJSONString(results);
     }
-
-    @PostMapping("/pay")
-    String ticketPay(JSONObject body, String userId, String orderNumber, String trade_no, String paymethod){
-        //完成支付
-        return JSON.toJSONString(Result.getResult(ResultCodeEnum.SUCCESS));
-    }
 }

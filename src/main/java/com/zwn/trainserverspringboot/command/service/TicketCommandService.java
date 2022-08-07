@@ -53,6 +53,7 @@ public class TicketCommandService {
                         order.setOrderStatus(OrderStatus.UN_PAY);
                         String orderNumber = GenerateNum.generateOrder();
                         order.setOrderId(orderNumber);
+                        //获取价格
                         Result priceResult = ticketQueryService.getTicketPrice(order.getTrainRouteId(),
                                 order.getFromStationId(),order.getToStationId(),order.getSeatTypeId());
                         if (priceResult.getCode() != ResultCodeEnum.SUCCESS.getCode()){

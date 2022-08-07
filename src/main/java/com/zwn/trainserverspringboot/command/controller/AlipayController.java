@@ -4,6 +4,8 @@ package com.zwn.trainserverspringboot.command.controller;
 import com.alibaba.fastjson.JSON;
 import com.zwn.trainserverspringboot.command.bean.Pay;
 import com.zwn.trainserverspringboot.command.service.AlipayService;
+import com.zwn.trainserverspringboot.util.Result;
+import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,12 +31,7 @@ public class AlipayController {
      * 支付成功以后的异步回调API
      */
     @RequestMapping("/alipay/pay/callback")
-    public String  notify_url(HttpServletRequest request) throws Exception{
-         Boolean result =  alipayService.alipayCallback(request);
-        if(result){
-            return "success";
-        }else{
-            return "false";
-        }
+    public String  notify_url(HttpServletRequest request) {
+        return JSON.toJSONString(alipayService.alipayCallback(request));
     }
 }

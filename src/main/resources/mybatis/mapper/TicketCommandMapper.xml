@@ -9,4 +9,9 @@
         VALUES (#{orderId},#{userId},#{passengerId},#{departureDate},#{trainRouteId},#{orderStatus},#{orderTime},#{price});
         INSERT INTO ticket_booking(order_id) VALUES (#{orderId});
     </insert>
+
+    <update id="ticketPay">
+        UPDATE ticket_order SET order_status = '已支付', trade_no = #{param2} WHERE order_id = #{param1};
+        DELETE FROM ticket_booking WHERE order_id = #{param1};
+    </update>
 </mapper>

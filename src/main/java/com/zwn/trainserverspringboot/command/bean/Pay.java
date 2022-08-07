@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Pay {
-
     private String orderId;
-    private double price;
     private Integer payMethod;
-
 }
