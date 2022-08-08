@@ -18,4 +18,22 @@
     <update id="ticketRefund">
         UPDATE ticket_order SET order_status = '已退票' WHERE order_id = #{orderId};
     </update>
+
+    <update id="ticketRebook">
+        UPDATE ticket_order SET order_status = '已改签'
+          <choose>
+              <when test="param2 != null">
+                  AND departure_date = #{param2}
+              </when>
+              <when test="param3 != null">
+                  AND train_route_id = #{param3}
+              </when>
+          </choose>
+          WHERE order_id = #{param1};
+    </update>
+
+    <update id="updateTicketSold">
+        UPDATE ticket_sold SET carriage_id = #{param2} AND seat = #{param3} WHERE order_id = #{param1};
+    </update>
+
 </mapper>

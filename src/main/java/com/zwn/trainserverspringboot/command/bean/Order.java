@@ -23,15 +23,16 @@ public class Order implements Serializable {
     String orderStatus;
     String orderTime;
     double price;
+    String tradeNo;
 
 
     public ResultCodeEnum isRequestLegal(){
-        if(orderTime == null || passengerId == null){
+        if(departureDate == null || passengerId == null){
             return ResultCodeEnum.BAD_REQUEST;
         }
         SimpleDateFormat timeFrtmat = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            timeFrtmat.parse(orderTime);
+            timeFrtmat.parse(departureDate);
         } catch (ParseException e) {
             return ResultCodeEnum.ORDER_TIME_FORMAT_ERROR;
         }

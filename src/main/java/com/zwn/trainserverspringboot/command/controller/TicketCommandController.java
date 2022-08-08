@@ -1,9 +1,7 @@
 package com.zwn.trainserverspringboot.command.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.zwn.trainserverspringboot.command.bean.Order;
-import com.zwn.trainserverspringboot.command.bean.Passenger;
 import com.zwn.trainserverspringboot.command.service.TicketCommandService;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -44,5 +41,14 @@ public class TicketCommandController {
             return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
         }
         return JSON.toJSONString(ticketCommandService.ticketRefund(orderId,UserUtil.getCurrentUserId()));
+    }
+
+    @PostMapping("/rebook")
+    String ticketRebook(String orderId, String departureDate, String trainRouteId, String carriage, String seat){
+        if (UserUtil.getCurrentUserId() == 0){
+            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+        }
+        return JSON.toJSONString(ticketCommandService.ticketRebook(orderId, UserUtil.getCurrentUserId(), departureDate,
+                trainRouteId, carriage, seat));
     }
 }

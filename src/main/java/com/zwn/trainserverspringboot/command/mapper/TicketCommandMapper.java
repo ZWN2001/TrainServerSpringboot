@@ -10,4 +10,8 @@ public interface TicketCommandMapper {
     void ticketPay(String orderId, String tradeNo);
 
     void ticketRefund(String orderId);
+
+    void ticketRebook(String orderId, String departureDate, String trainRouteId);
+
+    void updateTicketSold(String orderId, String carriage, String seat);
 }

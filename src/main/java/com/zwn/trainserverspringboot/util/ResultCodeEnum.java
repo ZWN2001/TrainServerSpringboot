@@ -33,7 +33,8 @@ public enum ResultCodeEnum implements Serializable {
     ORDER_NOT_EXIST(35,"order:订单不存在"),
 
     TICKET_SURPLUS_NOT_ENOUGH(41,"ticket: 余票不足"),
-    TICKET_PRICE_ERROR(42,"ticket: 票价获取错误");
+    TICKET_PRICE_ERROR(42,"ticket: 票价获取错误"),
+    TICKET_UNABLE_REBOOK(51,"rebook: 不能改签");
 
     final int code;
     final String message;
