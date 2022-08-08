@@ -1,7 +1,5 @@
 package com.zwn.trainserverspringboot.query.service;
 
-import com.zwn.trainserverspringboot.command.bean.AtomStationKey;
-import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.query.bean.TrainRoute;
 import com.zwn.trainserverspringboot.query.bean.TrainRouteAtom;
 import com.zwn.trainserverspringboot.query.mapper.StationQueryMapper;

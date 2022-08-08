@@ -125,7 +125,7 @@ import java.util.regex.Pattern;
                 final int dayOfMonthBirth = cal.get(Calendar.DAY_OF_MONTH);
                 final boolean isLastDayOfMonthBirth = dayOfMonthBirth == cal.getActualMaximum(Calendar.DAY_OF_MONTH);
                 // 如果生日在当月，但是未达到生日当天的日期，年龄减一(判断是否是最后一天是为了去除润月的影响)
-                if ((false == isLastDayOfMonth || false == isLastDayOfMonthBirth) && dayOfMonth < dayOfMonthBirth) {
+                if ((!isLastDayOfMonth || !isLastDayOfMonthBirth) && dayOfMonth < dayOfMonthBirth) {
                     age--;
                 }
             } else if (month < monthBirth) {

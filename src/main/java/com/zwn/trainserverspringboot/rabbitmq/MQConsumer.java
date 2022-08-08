@@ -1,7 +1,6 @@
 package com.zwn.trainserverspringboot.rabbitmq;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
