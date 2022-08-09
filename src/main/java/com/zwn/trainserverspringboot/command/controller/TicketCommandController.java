@@ -23,13 +23,14 @@ public class TicketCommandController {
     //默认是一张票的预定，可以预定多个乘客
     @PostMapping("/booking")
     String ticketsBooking(Order order , List<String> passengerIds){
-        if (UserUtil.getCurrentUserId() == 0 || UserUtil.getCurrentUserId() != order.getUserId()){
-            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST,"user ID 非法"));
-        }
+//        if (UserUtil.getCurrentUserId() == 0 || UserUtil.getCurrentUserId() != order.getUserId()){
+//            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST,"user ID 非法"));
+//        }
         Result results;
         try{
             results = ticketCommandService.ticketBooking(order, passengerIds);
         }catch (Exception e){
+            e.printStackTrace();
             return JSON.toJSONString(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR));
         }
         return JSON.toJSONString(results);

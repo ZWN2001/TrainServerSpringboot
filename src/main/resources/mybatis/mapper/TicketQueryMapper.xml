@@ -32,10 +32,11 @@
     </select>
 
     <select id="getTicketPrice" resultType="java.lang.Double">
-        WITH from_no AS (SELECT station_no FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param2}),
-             to_no AS (SELECT station_no FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param3})
+        WITH from_no AS (SELECT station_no FROM ticket_price_atom WHERE train_route_id = #{param1} AND station_id = #{param2}),
+             to_no AS (SELECT station_no FROM ticket_price_atom WHERE train_route_id = #{param1} AND station_id = #{param3}),
+             s AS (SELECT station_no,price FROM ticket_price_atom WHERE train_route_id = #{param1} AND seat_type_id = #{param4})
         SELECT  SUM(price)
-        FROM ticket_price_atom
-        WHERE station_no BETWEEN from_no AND to_no AND train_route_id = #{param1} AND seat_type_id = #{param4}
+        FROM s, from_no, to_no
+        WHERE s.station_no BETWEEN from_no.station_no AND to_no.station_no
     </select>
 </mapper>

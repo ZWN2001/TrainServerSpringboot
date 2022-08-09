@@ -48,6 +48,7 @@ public class TicketQueryService {
         try {
             ticketPrices = ticketQueryMapper.getTicketPrice(train_route_id, from_station_id, to_station_id,seat_type_id);
         }catch (Exception e){
+            e.printStackTrace();
             Throwable cause = e.getCause();
             if (cause instanceof SQLIntegrityConstraintViolationException) {
                 return Result.getResult(ResultCodeEnum.ORDER_REQUEST_ILLEGAL);

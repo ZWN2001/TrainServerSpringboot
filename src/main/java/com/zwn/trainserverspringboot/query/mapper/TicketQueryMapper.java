@@ -1,7 +1,5 @@
 package com.zwn.trainserverspringboot.query.mapper;
 
-import com.zwn.trainserverspringboot.command.bean.AtomStationKey;
-import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.query.bean.TicketPrice;
 import com.zwn.trainserverspringboot.query.bean.TicketsRemain;
 import org.apache.ibatis.annotations.Mapper;

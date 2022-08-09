@@ -1,7 +1,7 @@
 package com.zwn.trainserverspringboot.command.service;
 
 import com.alibaba.fastjson2.JSON;
-import com.zwn.trainserverspringboot.command.bean.AtomStationKey;
+import com.zwn.trainserverspringboot.query.bean.AtomStationKey;
 import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.OrderStatus;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
@@ -63,6 +63,7 @@ public class TicketCommandService {
                             results.add(Result.getResult(ResultCodeEnum.SUCCESS,order));
                         }
                     }catch (Exception e){
+                        e.printStackTrace();
                         Throwable cause = e.getCause();
                         if (cause instanceof SQLIntegrityConstraintViolationException) {
                             results.add(Result.getResult(ResultCodeEnum.ORDER_REQUEST_ILLEGAL,passengerId));
@@ -140,10 +141,12 @@ public class TicketCommandService {
 
 
     private boolean isEnough(Order order, int ticketNum){
-        List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtonStationKeys(order);
+        List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
         boolean enough = true;
         int index = 0;//用于标识从哪个下标以前的余票需要加回
-        for (int i =0;i<atomStationKeys.size();i++){
+        for (int i = 0; i< atomStationKeys.size();i++){
+            atomStationKeys.get(i).setDepartureDate(order.getDepartureDate());
+            atomStationKeys.get(i).setSeatTypeId(order.getSeatTypeId());
             String key = JSON.toJSONString(atomStationKeys.get(i));
             long surplusNumber = redisUtil.decr(key,ticketNum);
             if(surplusNumber < 0) {
