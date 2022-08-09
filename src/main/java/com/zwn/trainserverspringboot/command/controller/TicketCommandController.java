@@ -39,10 +39,10 @@ public class TicketCommandController {
     @PostMapping("/refund")
     String ticketRefund(String orderId){
         try{
-            //        if (UserUtil.getCurrentUserId() == 0){
+            //        if (UserUtil.getCurrentUserId() == 0||UserUtil.getCurrentUserId() != order.getUserId()){
 //            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
 //        }
-            return JSON.toJSONString(ticketCommandService.ticketRefund(orderId,2022080910353701L));
+            return JSON.toJSONString(ticketCommandService.ticketRefund(orderId));
         }catch (Exception e){
             return JSON.toJSONString(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR));
         }
@@ -55,5 +55,17 @@ public class TicketCommandController {
         }
         return JSON.toJSONString(ticketCommandService.ticketRebook(orderId, UserUtil.getCurrentUserId(), departureDate,
                 trainRouteId, carriage, seat));
+    }
+
+    @PostMapping("/get")
+    String ticketGet(Order order, int carriage_id, int seat){
+//        try {
+//            if (UserUtil.getCurrentUserId() == 0 || order.getUserId() != UserUtil.getCurrentUserId()){
+//                return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+//            }
+//        }catch (Exception e){
+//            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+//        }
+      return JSON.toJSONString(ticketCommandService.ticketGet(order.getOrderId(),carriage_id,seat));
     }
 }

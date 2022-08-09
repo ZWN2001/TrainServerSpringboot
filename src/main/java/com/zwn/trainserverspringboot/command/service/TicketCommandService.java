@@ -81,11 +81,11 @@ public class TicketCommandService {
         }
     }
 
-    public Result ticketRefund(String orderId, long userId){
+    public Result ticketRefund(String orderId){
         Order order = orderQueryMapper.getOrderById(orderId);
         if (order == null){
             return Result.getResult(ResultCodeEnum.ORDER_NOT_EXIST);
-        }else if (order.getUserId() != userId || !Objects.equals(order.getOrderStatus(), "已支付")){
+        }else if ( !Objects.equals(order.getOrderStatus(), "已支付")){
             return Result.getResult(ResultCodeEnum.ORDER_STATUS_ERROR);
         }else {
             try {
@@ -97,7 +97,8 @@ public class TicketCommandService {
         }
     }
 
-    public Result ticketRebook(String orderId, long userId, String departureDate, String trainRouteId, String carriage, String seat){
+    public Result ticketRebook(String orderId, long userId, String departureDate, String trainRouteId, String carriage,
+                               String seat){
         Order order = orderQueryMapper.getOrderById(orderId);
         if (userId != order.getUserId()){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST,"user ID error");
@@ -128,9 +129,9 @@ public class TicketCommandService {
                 }catch (Exception e){
                     Throwable cause = e.getCause();
                     if (cause instanceof SQLIntegrityConstraintViolationException) {
-                        return Result.getResult(ResultCodeEnum.BAD_REQUEST,e);
+                        return Result.getResult(ResultCodeEnum.BAD_REQUEST);
                     }  else {
-                        return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e);
+                        return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
                     }
                 }
             } else {
@@ -139,6 +140,24 @@ public class TicketCommandService {
         }
     }
 
+    //取票
+    public Result ticketGet(String orderId, int carriage_id, int seat){
+        try{
+            //todo:判断是否有座
+            ticketCommandMapper.ticketGet(orderId, carriage_id, seat);
+            return Result.getResult(ResultCodeEnum.SUCCESS);
+        }catch (Exception e){
+            e.printStackTrace();
+            Throwable cause = e.getCause();
+            if (cause instanceof SQLIntegrityConstraintViolationException) {
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }  else if (cause instanceof DuplicateKeyException) {
+                return Result.getResult(ResultCodeEnum.PASSENGER_EXIST);
+            } else {
+                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
+            }
+        }
+    }
 
     private boolean isEnough(Order order, int ticketNum){
         List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);

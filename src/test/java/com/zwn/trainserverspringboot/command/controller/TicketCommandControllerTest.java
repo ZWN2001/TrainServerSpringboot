@@ -16,7 +16,7 @@ class TicketCommandControllerTest {
     @Autowired
     TicketCommandController ticketCommandController;
     Order order =   Order.builder()
-            .orderId(null)
+            .orderId("2022080910353701")
             .departureDate("2022-08-09")
             .fromStationId("BJP")
             .toStationId("YBP")
@@ -47,5 +47,10 @@ class TicketCommandControllerTest {
 
     @Test
     void ticketRebook() {
+    }
+
+    @Test
+    void ticketGet(){
+        System.out.println(ticketCommandController.ticketGet(order,2,1));
     }
 }

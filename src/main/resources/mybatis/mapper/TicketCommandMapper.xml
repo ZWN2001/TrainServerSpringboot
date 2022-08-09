@@ -38,4 +38,8 @@
         UPDATE ticket_sold SET carriage_id = #{param2} AND seat = #{param3} WHERE order_id = #{param1};
     </update>
 
+    <insert id="ticketGet">
+        INSERT INTO ticket_sold(ticket_id,order_id,carriage_id,seat) VALUES (0,#{param1},#{param2},#{param3})
+    </insert>
+
 </mapper>
