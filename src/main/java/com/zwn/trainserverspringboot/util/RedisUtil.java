@@ -46,7 +46,7 @@ public class RedisUtil {
         if (delta < 0) {
             throw new RuntimeException("递减因子必须大于0");
         }
-        System.out.println("Redis: "+key+"当前库存为"+redisTemplate.opsForValue().get(key));
+//        System.out.println("Redis: "+key+"当前库存为"+redisTemplate.opsForValue().get(key));
         return redisTemplate.opsForValue().increment(key,-delta);
     }
 }

@@ -42,6 +42,7 @@ class TicketCommandControllerTest {
 
     @Test
     void ticketRefund() {
+        System.out.println(ticketCommandController.ticketRefund("2022080910353701"));
     }
 
     @Test

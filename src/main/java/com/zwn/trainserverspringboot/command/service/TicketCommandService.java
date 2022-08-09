@@ -86,7 +86,7 @@ public class TicketCommandService {
         if (order == null){
             return Result.getResult(ResultCodeEnum.ORDER_NOT_EXIST);
         }else if (order.getUserId() != userId || !Objects.equals(order.getOrderStatus(), "已支付")){
-            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            return Result.getResult(ResultCodeEnum.ORDER_STATUS_ERROR);
         }else {
             try {
                 ticketCommandMapper.ticketRefund(orderId);

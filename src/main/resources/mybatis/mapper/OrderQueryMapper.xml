@@ -9,6 +9,7 @@
         SELECT order_id AS orderId, user_id AS userId, passenger_id AS passengerId, departure_date AS departureDate,
                train_route_id AS trainRouteId, from_station_id AS fromStationId, to_station_id AS toStationId,
                seat_type_id AS seatTypeId, order_status AS orderStatus, order_time AS orderTime, price, trade_no AS tradeNo
+        FROM ticket_order
         WHERE order_id = #{orderId}
     </select>
 </mapper>

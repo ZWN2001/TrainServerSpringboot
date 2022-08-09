@@ -31,6 +31,7 @@ public enum ResultCodeEnum implements Serializable {
     ORDER_TIME_FORMAT_ERROR(33,"order: 日期格式错误"),
     ORDER_PASSENGER_ID_ILLEGAL(34,"order: 身份证号非法"),
     ORDER_NOT_EXIST(35,"order:订单不存在"),
+    ORDER_STATUS_ERROR(35,"order:订单状态错误"),
 
     TICKET_SURPLUS_NOT_ENOUGH(41,"ticket: 余票不足"),
     TICKET_PRICE_ERROR(42,"ticket: 票价获取错误"),
