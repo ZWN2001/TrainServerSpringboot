@@ -16,4 +16,7 @@ public interface TicketCommandMapper {
     void updateTicketSold(String orderId, String carriage, String seat);
 
     void ticketGet(String orderId, int carriage_id, int seat);
+
+    void updateTicketRemain(String trainRouteId, int seatTypeId, String ticketDate, String fromStationId,
+                            String toStationId, int remain);
 }

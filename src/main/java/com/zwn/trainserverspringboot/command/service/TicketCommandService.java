@@ -1,6 +1,7 @@
 package com.zwn.trainserverspringboot.command.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.zwn.trainserverspringboot.command.bean.OrderMessage;
 import com.zwn.trainserverspringboot.query.bean.AtomStationKey;
 import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.OrderStatus;
@@ -8,6 +9,7 @@ import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
 import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
 import com.zwn.trainserverspringboot.query.mapper.TrainRouteQueryMapper;
 import com.zwn.trainserverspringboot.query.service.TicketQueryService;
+import com.zwn.trainserverspringboot.rabbitmq.MQProducer;
 import com.zwn.trainserverspringboot.util.GenerateNum;
 import com.zwn.trainserverspringboot.util.RedisUtil;
 import com.zwn.trainserverspringboot.util.Result;
@@ -17,16 +19,12 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 public class TicketCommandService {
-    Date date = new Date();
-    SimpleDateFormat timeFrtmat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     @Resource
     private RedisUtil redisUtil;
     @Resource
@@ -37,6 +35,7 @@ public class TicketCommandService {
     private OrderQueryMapper orderQueryMapper;
     @Resource
     private TrainRouteQueryMapper trainRouteQueryMapper;
+    MQProducer producer;
 
     public Result ticketBooking(Order order, List<String> passengerIds){
         if (!isEnough(order,passengerIds.size())){//不足
@@ -47,8 +46,6 @@ public class TicketCommandService {
                 order.setPassengerId(passengerId);
                 if (order.isRequestLegal().getCode() == ResultCodeEnum.SUCCESS.getCode()){
                     try{
-                        String time = timeFrtmat.format(date.getTime());
-                        order.setOrderTime(time);
                         order.setOrderStatus(OrderStatus.UN_PAY);
                         String orderNumber = GenerateNum.generateOrder();
                         order.setOrderId(orderNumber);
@@ -59,7 +56,8 @@ public class TicketCommandService {
                             results.add(Result.getResult(ResultCodeEnum.TICKET_PRICE_ERROR));
                         }else {
                             order.setPrice((double) priceResult.getData());
-                            ticketCommandMapper.ticketBooking(order);
+                            OrderMessage message = OrderMessage.builder().order(order).num(passengerIds.size()).build();
+                            producer.sendTicketBooking(message);
                             results.add(Result.getResult(ResultCodeEnum.SUCCESS,order));
                         }
                     }catch (Exception e){

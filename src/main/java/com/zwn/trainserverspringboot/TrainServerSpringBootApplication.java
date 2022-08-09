@@ -19,9 +19,15 @@ public class TrainServerSpringBootApplication {
     }
 
     @Bean
-    public Queue queueA() {
-        return new Queue("ORDER_QUEUE", true); //队列持久
+    public Queue ticketBookingQueue() {
+        return new Queue("TICKET_BOOKING_QUEUE", true);
     }
+
+//    @Bean
+//    public Queue orderQueue() {
+//        return new Queue("TICKET_GET_QUEUE", true);
+//    }
+
     @Bean
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         // 1.创建 redisTemplate 模版

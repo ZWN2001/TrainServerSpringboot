@@ -12,18 +12,18 @@ import java.text.SimpleDateFormat;
 @Data
 @Builder
 public class Order implements Serializable {
-    String orderId;
-    long userId;
-    String passengerId;
-    String departureDate;
-    String trainRouteId;
-    String fromStationId;
-    String toStationId;
-    int seatTypeId;
-    String orderStatus;
-    String orderTime;
-    double price;
-    String tradeNo;
+    private String orderId;
+    private long userId;
+    private String passengerId;
+    private String departureDate;
+    private String trainRouteId;
+    private String fromStationId;
+    private String toStationId;
+    private int seatTypeId;
+    private String orderStatus;
+    private  String orderTime;
+    private double price;
+    private String tradeNo;
 
 
     public ResultCodeEnum isRequestLegal(){

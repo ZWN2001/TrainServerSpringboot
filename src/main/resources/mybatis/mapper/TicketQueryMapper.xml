@@ -7,19 +7,20 @@
 
     <select id="getTicketsRemain" resultType="com.zwn.trainserverspringboot.query.bean.TicketsRemain">
 --         先找出所有经过的站
-        WITH info AS (SELECT station_id,station_no FROM train_route_atom WHERE train_route_id = #{param1})
+        WITH info AS (SELECT station_id,station_no FROM train_route_atom WHERE train_route_id = #{param1}),
+             from_s AS (SELECT station_id FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param3}),
+             to_s AS (SELECT station_id FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param4})
         SELECT train_route_id, seat_type_id, min(remaining_ticket_num) AS remaining_ticket_num
         FROM ticket_management
         WHERE train_route_id = #{param1} AND ticket_date = #{param2}
 --           留下夹在用户给定的起始区间之间的站
             AND station_id IN (
-                SELECT station_id FROM info
+                SELECT info.station_id FROM info,from_s,to_s
                                   WHERE station_no
-                                      BETWEEN (SELECT station_no FORM info WHERE station_id = #{param3})
-                                      AND (SELECT station_no FORM info WHERE station_id = #{param4})
+                                      BETWEEN from_s.station_id AND to_s.station_id
             )
 --         按座位类型分类返回
-        GROUP BY seat_type_id
+        GROUP BY seat_type_id;
     </select>
 
     <select id="getTicketPrices" resultType="com.zwn.trainserverspringboot.query.bean.TicketPrice">
@@ -28,7 +29,7 @@
         SELECT train_route_id, seat_type_id, SUM(price)
         FROM ticket_price_atom
         WHERE station_no BETWEEN from_no AND to_no AND train_route_id = #{param1}
-        GROUP BY seat_type_id
+        GROUP BY seat_type_id;
     </select>
 
     <select id="getTicketPrice" resultType="java.lang.Double">
@@ -37,6 +38,6 @@
              s AS (SELECT station_no,price FROM ticket_price_atom WHERE train_route_id = #{param1} AND seat_type_id = #{param4})
         SELECT  SUM(price)
         FROM s, from_no, to_no
-        WHERE s.station_no BETWEEN from_no.station_no AND to_no.station_no
+        WHERE s.station_no BETWEEN from_no.station_no AND to_no.station_no;
     </select>
 </mapper>
