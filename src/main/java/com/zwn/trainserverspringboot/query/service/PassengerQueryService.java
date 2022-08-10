@@ -15,9 +15,14 @@ public class PassengerQueryService {
     @Resource
     private PassengerQueryMapper passengerQueryMapper;
 
-    public Result queryPassengerDetails(String userId){
-        List<Passenger> passengerDEtails = passengerQueryMapper.queryPassengerDetails(userId);
-        return Result.getResult(ResultCodeEnum.SUCCESS,passengerDEtails);
+    public Result queryAllPassengers(long userId){
+        List<Passenger> passengerDetails = passengerQueryMapper.queryAllPassengers(userId);
+        return Result.getResult(ResultCodeEnum.SUCCESS,passengerDetails);
+    }
+
+    public Result querySinglePassenger(long userId, String passengerId){
+        Passenger passenger = passengerQueryMapper.querySinglePassenger(userId, passengerId);
+        return Result.getResult(ResultCodeEnum.SUCCESS,passenger);
     }
 
 }

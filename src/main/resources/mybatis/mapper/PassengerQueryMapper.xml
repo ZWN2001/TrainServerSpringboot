@@ -4,12 +4,17 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zwn.trainserverspringboot.query.mapper.PassengerQueryMapper">
 
-    <select id="queryPassengerDetails" resultType="com.zwn.trainserverspringboot.command.bean.Passenger">
+    <select id="queryAllPassengers" resultType="com.zwn.trainserverspringboot.command.bean.Passenger">
         SELECT passenger_id,passenger_name,phone_num
         FROM passenger_history
         WHERE user_id = #{param1}
     </select>
 
+    <select id="querySinglePassenger" resultType="com.zwn.trainserverspringboot.command.bean.Passenger">
+        SELECT passenger_id,passenger_name,phone_num
+        FROM passenger_history
+        WHERE user_id = #{param1} AND passenger_id = #{param2}
+    </select>
 
 
 </mapper>

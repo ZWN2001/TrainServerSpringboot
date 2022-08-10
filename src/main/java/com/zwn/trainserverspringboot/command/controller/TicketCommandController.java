@@ -23,9 +23,13 @@ public class TicketCommandController {
     //默认是一张票的预定，可以预定多个乘客
     @PostMapping("/booking")
     String ticketsBooking(Order order , List<String> passengerIds){
-//        if (UserUtil.getCurrentUserId() == 0 || UserUtil.getCurrentUserId() != order.getUserId()){
-//            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST,"user ID 非法"));
-//        }
+        try {
+            if (UserUtil.getCurrentUserId() == 0 || order.getUserId() != UserUtil.getCurrentUserId()){
+                return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+            }
+        }catch (Exception e){
+            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+        }
         Result results;
         try{
             results = ticketCommandService.ticketBooking(order, passengerIds);
@@ -39,9 +43,9 @@ public class TicketCommandController {
     @PostMapping("/refund")
     String ticketRefund(String orderId){
         try{
-            //        if (UserUtil.getCurrentUserId() == 0||UserUtil.getCurrentUserId() != order.getUserId()){
-//            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
-//        }
+           if (UserUtil.getCurrentUserId() == 0){
+            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+        }
             return JSON.toJSONString(ticketCommandService.ticketRefund(orderId));
         }catch (Exception e){
             return JSON.toJSONString(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR));
@@ -50,7 +54,11 @@ public class TicketCommandController {
 
     @PostMapping("/rebook")
     String ticketRebook(String orderId, String departureDate, String trainRouteId, String carriage, String seat){
-        if (UserUtil.getCurrentUserId() == 0){
+        try {
+            if (UserUtil.getCurrentUserId() == 0 ){
+                return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+            }
+        }catch (Exception e){
             return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
         }
         return JSON.toJSONString(ticketCommandService.ticketRebook(orderId, UserUtil.getCurrentUserId(), departureDate,
@@ -59,13 +67,13 @@ public class TicketCommandController {
 
     @PostMapping("/get")
     String ticketGet(Order order, int carriage_id, int seat){
-//        try {
-//            if (UserUtil.getCurrentUserId() == 0 || order.getUserId() != UserUtil.getCurrentUserId()){
-//                return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
-//            }
-//        }catch (Exception e){
-//            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
-//        }
+        try {
+            if (UserUtil.getCurrentUserId() == 0 || order.getUserId() != UserUtil.getCurrentUserId()){
+                return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+            }
+        }catch (Exception e){
+            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+        }
       return JSON.toJSONString(ticketCommandService.ticketGet(order.getOrderId(),carriage_id,seat));
     }
 }

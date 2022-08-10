@@ -25,6 +25,7 @@ public enum ResultCodeEnum implements Serializable {
     PASSENGER_NAME_ILLEGAL(23,"passenger: 姓名非法"),
     PASSENGER_PHONE_NUMBER_ILLEGAL(24,"passenger: 手机号非法"),
     PASSENGER_EXIST(25,"passenger:乘员已存在"),
+    PASSENGER_NO_NEED_MODIFY(26,"passenger：未作改动"),
 
     ORDER_REQUEST_ILLEGAL(31,"order: 请求错误"),
     ORDER_EXIST(32,"order:订单已存在"),

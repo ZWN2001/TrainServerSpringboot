@@ -7,6 +7,6 @@ import java.util.List;
 
 @Mapper
 public interface PassengerQueryMapper {
-    List<Passenger> queryPassengerDetails(String userId);
-
+    List<Passenger> queryAllPassengers(long userId);
+    Passenger querySinglePassenger(long userId, String passengerId);
 }

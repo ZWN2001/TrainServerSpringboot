@@ -5,9 +5,25 @@
 <mapper namespace="com.zwn.trainserverspringboot.command.mapper.PassengerCommandMapper">
 
     <insert id="addPassenger">
-      INSERT INTO passenger_history VALUES (#{param1}, #{param2}, #{param3}, #{param4})
+      INSERT INTO passenger VALUES (#{userId}, #{passengerId}, #{passengerName}, #{phoneNum})
     </insert>
 
+    <update id="modifyPassenger">
+        UPDATE passenger 
+            <set>
+                <if test="passengerName != null">
+                    passenger_name = #{passengerName},
+                </if> 
+                <if test="phoneNum != null">
+                    phone_num = #{phoneNum}
+                </if>
+            </set>
+        WHERE user_id = #{userId} AND passenger_id = #{passenger};
+    </update>
+
+    <delete id="deletePassenger">
+        DELETE FROM passenger WHERE user_id = #{userId} AND passenger_id = #{passenger};
+    </delete>
 
 
 </mapper>
