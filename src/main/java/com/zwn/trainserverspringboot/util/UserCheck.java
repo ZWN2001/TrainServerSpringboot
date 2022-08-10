@@ -1,7 +1,7 @@
 package com.zwn.trainserverspringboot.util;
 
 public class UserCheck {
-    Result check(){
+    public static Result check(){
         try {
             if (UserUtil.getCurrentUserId() == 0 ){
                 return Result.getResult(ResultCodeEnum.BAD_REQUEST);
@@ -12,7 +12,7 @@ public class UserCheck {
         return Result.getResult(ResultCodeEnum.SUCCESS);
     }
 
-    Result checkWithUserId(long userId){
+    public static Result checkWithUserId(long userId){
         try {
             if (UserUtil.getCurrentUserId() == 0 || UserUtil.getCurrentUserId() != userId){
                 return Result.getResult(ResultCodeEnum.BAD_REQUEST);

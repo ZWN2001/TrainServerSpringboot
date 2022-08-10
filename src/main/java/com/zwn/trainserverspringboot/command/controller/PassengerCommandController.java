@@ -5,6 +5,7 @@ import com.zwn.trainserverspringboot.command.bean.Passenger;
 import com.zwn.trainserverspringboot.command.service.PassengerCommandService;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
+import com.zwn.trainserverspringboot.util.UserCheck;
 import com.zwn.trainserverspringboot.util.UserUtil;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,24 +22,29 @@ public class PassengerCommandController {
 
     @PostMapping("/add")
     String addPassenger(Passenger passenger){
-        try {
-            if (UserUtil.getCurrentUserId() == 0){
-                return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
-            }
-        }catch (Exception e){
-            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+        if (UserCheck.checkWithUserId(passenger.getUserId()).getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            return JSON.toJSONString(passengerCommandService.addPassenger(passenger));
+        }else {
+            return JSON.toJSONString(UserCheck.check());
         }
-        return JSON.toJSONString(passengerCommandService.addPassenger(passenger));
     }
 
     @PostMapping("/modify")
     String modifyPassenger(Passenger passenger){
-        return JSON.toJSONString(passengerCommandService.modifyPassenger(passenger));
+        if (UserCheck.checkWithUserId(passenger.getUserId()).getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            return JSON.toJSONString(passengerCommandService.modifyPassenger(passenger));
+        }else {
+            return JSON.toJSONString(UserCheck.check());
+        }
     }
 
     @PostMapping("/delete")
     String deletePassenger(Passenger passenger){
-        return JSON.toJSONString(passengerCommandService.deletePassenger(passenger));
+        if (UserCheck.checkWithUserId(passenger.getUserId()).getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            return JSON.toJSONString(passengerCommandService.deletePassenger(passenger));
+        }else {
+            return JSON.toJSONString(UserCheck.check());
+        }
     }
 
 }
