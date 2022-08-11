@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/query")
+@RequestMapping("/trainRoute/query")
 public class TrainRouteQueryController {
 
     @Resource
     private TrainRouteQueryService trainRouteQueryService;
 
     //以出发站与终点站查可用车次
-    @PostMapping("/trainRoute")
-    String queryTrainRoute(String from, String to) {
-        return JSON.toJSONString(trainRouteQueryService.queryTrainRoute(from, to));
+    @PostMapping("/singleTrainRoute")
+    String querySingleTrainRoute(String from, String to) {
+        return JSON.toJSONString(trainRouteQueryService.querySingleTrainRoute(from, to));
     }
 
     //查询车次详情（从出发地到最终目的地）

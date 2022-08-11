@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/command/passenger")
+@RequestMapping("/passenger/command")
 public class PassengerCommandController {
 
     @Resource

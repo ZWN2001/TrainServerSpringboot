@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
-@RequestMapping("command/ticket")
+@RequestMapping("/ticket/command")
 public class TicketCommandController {
 
     @Resource

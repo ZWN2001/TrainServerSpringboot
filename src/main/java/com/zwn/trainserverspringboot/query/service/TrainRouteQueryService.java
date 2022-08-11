@@ -25,7 +25,7 @@ public class TrainRouteQueryService {
     @Resource
     TrainRouteQueryMapper trainRouteQueryMapper;
 
-    public Result queryTrainRoute(String from, String to){
+    public Result querySingleTrainRoute(String from, String to){
         List<TrainRoute> trainRoutes = new ArrayList<>();
         List<String> allFromStations = stationQueryMapper.getSameCityStationId(from);
         List<String> allToStations = stationQueryMapper.getSameCityStationId(to);
