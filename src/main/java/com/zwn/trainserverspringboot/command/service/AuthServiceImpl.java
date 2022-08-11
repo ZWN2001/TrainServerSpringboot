@@ -81,11 +81,11 @@ public class AuthServiceImpl {
         }
     }
 
-	public void logout(String token) {
+	public Result logout(String token) {
 		token = token.substring(tokenHead.length());
         long userId = jwtTokenUtil.getUserIdFromToken(token);
         jwtTokenUtil.deleteToken(userId);
-
+		return Result.getResult(ResultCodeEnum.SUCCESS);
 	}
 
 	public Result refresh(String oldToken) {
@@ -95,9 +95,9 @@ public class AuthServiceImpl {
 
 	}
 
-	public UserDetail getUserByToken(String token) {
-		token = token.substring(tokenHead.length());
-        return jwtTokenUtil.getUserFromToken(token);
-	}
+//	public UserDetail getUserByToken(String token) {
+//		token = token.substring(tokenHead.length());
+//        return jwtTokenUtil.getUserFromToken(token);
+//	}
 
 }

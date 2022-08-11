@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/query/passenger")
+@RequestMapping("/passenger/query")
 public class PassengerQueryController {
 
     @Resource

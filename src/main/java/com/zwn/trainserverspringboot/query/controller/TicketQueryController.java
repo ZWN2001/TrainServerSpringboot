@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/query/ticket")
+@RequestMapping("/ticket/query")
 public class TicketQueryController {
 
     @Resource
     private TicketQueryService ticketQueryService;
 
     //查从出发地到目的地的某车次余票
-    @GetMapping("/ticketsRemain")
+    @GetMapping("/ticketRemain")
     String getTicketsRemain(String train_route_id, String ticket_date,String from_station_id,String to_station_id){
         return JSON.toJSONString(ticketQueryService.getTicketsRemain(train_route_id, ticket_date,from_station_id,to_station_id));
     }
