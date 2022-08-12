@@ -42,7 +42,7 @@ class TicketCommandControllerTest {
 
     @Test
     void ticketRefund() {
-        System.out.println(ticketCommandController.ticketRefund("2022080910353701"));
+        System.out.println(ticketCommandController.ticketRefund("2022080910353701","37078220011221551X"));
     }
 
     @Test
@@ -51,6 +51,6 @@ class TicketCommandControllerTest {
 
     @Test
     void ticketGet(){
-        System.out.println(ticketCommandController.ticketGet(order,2,1));
+        System.out.println(ticketCommandController.ticketGet(order, passengers.get(1), 2,1));
     }
 }

@@ -22,28 +22,31 @@ public class PassengerCommandController {
 
     @PostMapping("/add")
     String addPassenger(Passenger passenger){
-        if (UserCheck.checkWithUserId(passenger.getUserId()).getCode() == ResultCodeEnum.SUCCESS.getCode()){
+        Result result = UserCheck.checkWithUserId(passenger.getUserId());
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             return JSON.toJSONString(passengerCommandService.addPassenger(passenger));
         }else {
-            return JSON.toJSONString(UserCheck.check());
+            return JSON.toJSONString(result);
         }
     }
 
     @PostMapping("/modify")
     String modifyPassenger(Passenger passenger){
-        if (UserCheck.checkWithUserId(passenger.getUserId()).getCode() == ResultCodeEnum.SUCCESS.getCode()){
+        Result result = UserCheck.checkWithUserId(passenger.getUserId());
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             return JSON.toJSONString(passengerCommandService.modifyPassenger(passenger));
         }else {
-            return JSON.toJSONString(UserCheck.check());
+            return JSON.toJSONString(result);
         }
     }
 
     @PostMapping("/delete")
     String deletePassenger(Passenger passenger){
-        if (UserCheck.checkWithUserId(passenger.getUserId()).getCode() == ResultCodeEnum.SUCCESS.getCode()){
+        Result result = UserCheck.checkWithUserId(passenger.getUserId());
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             return JSON.toJSONString(passengerCommandService.deletePassenger(passenger));
         }else {
-            return JSON.toJSONString(UserCheck.check());
+            return JSON.toJSONString(result);
         }
     }
 

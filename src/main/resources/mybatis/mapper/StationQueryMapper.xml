@@ -8,5 +8,8 @@
         SELECT `station_id` FROM station WHERE city in (SELECT city FROM station WHERE station_name = #{stationName})
     </select>
 
+    <select id="getAllStationInfo" resultType="com.zwn.trainserverspringboot.query.bean.Station">
+        SELECT station_id, station_name, city FROM station;
+    </select>
 
 </mapper>

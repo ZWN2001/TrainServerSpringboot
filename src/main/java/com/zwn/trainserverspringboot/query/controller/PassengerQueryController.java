@@ -5,7 +5,6 @@ import com.zwn.trainserverspringboot.query.service.PassengerQueryService;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import com.zwn.trainserverspringboot.util.UserCheck;
-import com.zwn.trainserverspringboot.util.UserUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,19 +20,21 @@ public class PassengerQueryController {
 
     @GetMapping("/all")
     String queryAllPassengers(long userId){
-        if (UserCheck.checkWithUserId(userId).getCode() == ResultCodeEnum.SUCCESS.getCode()){
+        Result result = UserCheck.checkWithUserId(userId);
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             return JSON.toJSONString(passengerQueryService.queryAllPassengers(userId));
         }else {
-            return com.alibaba.fastjson2.JSON.toJSONString(UserCheck.check());
+            return JSON.toJSONString(result);
         }
     }
 
     @GetMapping("/single")
     String querySinglePassenger(long userId, String passengerId){
-        if (UserCheck.checkWithUserId(userId).getCode() == ResultCodeEnum.SUCCESS.getCode()){
+        Result result = UserCheck.checkWithUserId(userId);
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             return JSON.toJSONString(passengerQueryService.querySinglePassenger(userId, passengerId));
         }else {
-            return com.alibaba.fastjson2.JSON.toJSONString(UserCheck.check());
+            return JSON.toJSONString(result);
         }
     }
 

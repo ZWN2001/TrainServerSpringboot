@@ -10,6 +10,7 @@ import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.Pay;
+import com.zwn.trainserverspringboot.command.bean.PayResult;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
 import com.zwn.trainserverspringboot.config.AlipayConfig;
 import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
@@ -32,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -57,11 +60,18 @@ public class AlipayService  {
          * 4. 设置同步通知回调路径
          * 5. 设置异步通知回调路径
          */
-
-        Order order = orderQueryMapper.getOrderById(pay.getOrderId());
-        if (order == null){
-            return Result.getResult(ResultCodeEnum.ORDER_NOT_EXIST);
+        Order order = new Order();
+        double price = 0;
+        List<String> errorList = new ArrayList<>();
+        for (String pid : pay.getPassengerId()){
+             order = orderQueryMapper.getOrderById(pay.getOrderId(),pid);
+            if (order == null){
+                errorList.add(pid);
+            }
+            assert order != null;
+            price += order.getPrice();
         }
+
 
         //设置支付回调时可以在request中获取的参数
         JSONObject jsonObject = new JSONObject();
@@ -72,7 +82,7 @@ public class AlipayService  {
         jsonObject.put("fromStationId", order.getFromStationId());
         jsonObject.put("toStationId", order.getToStationId());
         jsonObject.put("seatTypeId", order.getSeatTypeId());
-        jsonObject.put("price", order.getPrice());
+        jsonObject.put("price", price);
         jsonObject.put("payType", pay.getPayMethod());
         String params = jsonObject.toString();
 
@@ -94,7 +104,11 @@ public class AlipayService  {
         ImageIO.write(encode, "JPEG", imageOutputStream);
         imageOutputStream.close();
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-        return Result.getResult(ResultCodeEnum.SUCCESS,FileCopyUtils.copyToByteArray(byteArrayInputStream));
+        PayResult result =  PayResult.builder()
+                .results(errorList)
+                .qrcode(FileCopyUtils.copyToByteArray(byteArrayInputStream))
+                .build();
+        return Result.getResult(ResultCodeEnum.SUCCESS,result);
     }
 
     public boolean alipayCallback(HttpServletRequest request) {

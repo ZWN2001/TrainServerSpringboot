@@ -18,28 +18,30 @@
     </update>
 
     <update id="ticketRefund">
-        UPDATE ticket_order SET order_status = '已退票' WHERE order_id = #{orderId};
+        UPDATE ticket_order SET order_status = '已退票' WHERE order_id = #{param1} AND passenger_id = #{param2};
     </update>
 
     <update id="ticketRebook">
         UPDATE ticket_order SET order_status = '已改签'
           <choose>
               <when test="param2 != null">
-                  AND departure_date = #{param2}
+                  AND departure_date = #{param3}
               </when>
               <when test="param3 != null">
-                  AND train_route_id = #{param3}
+                  AND train_route_id = #{param4}
               </when>
           </choose>
-          WHERE order_id = #{param1};
+          WHERE order_id = #{param1} AND passenger_id = #{param2};
     </update>
 
     <update id="updateTicketSold">
-        UPDATE ticket_sold SET carriage_id = #{param2} AND seat = #{param3} WHERE order_id = #{param1};
+        UPDATE ticket_sold SET carriage_id = #{param3} AND seat = #{param4}
+                           WHERE order_id = #{param1} AND passenger_id = #{param2};
     </update>
 
     <insert id="ticketGet">
-        INSERT INTO ticket_sold(ticket_id,order_id,carriage_id,seat) VALUES (0,#{param1},#{param2},#{param3})
+        INSERT INTO ticket_sold(ticket_id,order_id,passenger_id,carriage_id,seat)
+        VALUES (0,#{param1},#{param2},#{param3},#{param4})
     </insert>
 
     <update id="updateTicketRemain">

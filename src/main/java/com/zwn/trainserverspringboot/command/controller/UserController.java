@@ -48,7 +48,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/refresh")
     String refresh(String token){
         try{
             return JSON.toJSONString(authService.refresh(token));

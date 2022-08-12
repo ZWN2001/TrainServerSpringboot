@@ -2,14 +2,18 @@ package com.zwn.trainserverspringboot.command.bean;
 
 import com.zwn.trainserverspringboot.util.IdCardUtil;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Order implements Serializable {
     private String orderId;

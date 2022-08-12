@@ -7,5 +7,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface OrderQueryMapper {
 //    int queryOrderWithInfo(long userId, long passengerId, String departureDate, String trainRouteId,int seatTypeId);
 
-    Order getOrderById(String orderId);
+    Order getOrderById(String orderId, String passengerId);
 }

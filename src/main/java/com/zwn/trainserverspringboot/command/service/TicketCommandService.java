@@ -42,13 +42,13 @@ public class TicketCommandService {
             return Result.getResult(ResultCodeEnum.TICKET_SURPLUS_NOT_ENOUGH);
         }else {
             List<Result> results = new ArrayList<>();
+            String orderNumber = GenerateNum.generateOrder();
+            order.setOrderId(orderNumber);
             for(String passengerId : passengerIds){
                 order.setPassengerId(passengerId);
                 if (order.isRequestLegal().getCode() == ResultCodeEnum.SUCCESS.getCode()){
                     try{
                         order.setOrderStatus(OrderStatus.UN_PAY);
-                        String orderNumber = GenerateNum.generateOrder();
-                        order.setOrderId(orderNumber);
                         //获取价格
                         Result priceResult = ticketQueryService.getTicketPrice(order.getTrainRouteId(),
                                 order.getFromStationId(),order.getToStationId(),order.getSeatTypeId());
@@ -79,15 +79,15 @@ public class TicketCommandService {
         }
     }
 
-    public Result ticketRefund(String orderId){
-        Order order = orderQueryMapper.getOrderById(orderId);
+    public Result ticketRefund(String orderId, String passengerId){
+        Order order = orderQueryMapper.getOrderById(orderId, passengerId);
         if (order == null){
             return Result.getResult(ResultCodeEnum.ORDER_NOT_EXIST);
-        }else if ( !Objects.equals(order.getOrderStatus(), "已支付")){
+        }else if ( !Objects.equals(order.getOrderStatus(), OrderStatus.PAIED)){
             return Result.getResult(ResultCodeEnum.ORDER_STATUS_ERROR);
         }else {
             try {
-                ticketCommandMapper.ticketRefund(orderId);
+                ticketCommandMapper.ticketRefund(orderId, passengerId);
                 return Result.getResult(ResultCodeEnum.SUCCESS, order);
             }catch (Exception e){
                 return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR, e);
@@ -95,13 +95,13 @@ public class TicketCommandService {
         }
     }
 
-    public Result ticketRebook(String orderId, long userId, String departureDate, String trainRouteId, String carriage,
+    public Result ticketRebook(String orderId, String passengerId, long userId, String departureDate, String trainRouteId, String carriage,
                                String seat){
-        Order order = orderQueryMapper.getOrderById(orderId);
+        Order order = orderQueryMapper.getOrderById(orderId, passengerId);
         if (userId != order.getUserId()){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST,"user ID error");
         }
-        if (!order.getOrderStatus().equals("已支付")  || !order.getOrderStatus().equals("已出票")){
+        if (!order.getOrderStatus().equals(OrderStatus.PAIED)  || !order.getOrderStatus().equals(OrderStatus.DRAFTED)){
             return Result.getResult(ResultCodeEnum.TICKET_UNABLE_REBOOK);
         }
 
@@ -119,9 +119,9 @@ public class TicketCommandService {
                     //TODO:检查座位是否可分配
                 }
                 try {
-                    ticketCommandMapper.ticketRebook(orderId, departureDate, trainRouteId);
-                    if (order.getOrderStatus().equals("已出票") && carriage != null && seat != null){
-                        ticketCommandMapper.updateTicketSold(orderId, carriage, seat);
+                    ticketCommandMapper.ticketRebook(orderId, passengerId, departureDate, trainRouteId);
+                    if (order.getOrderStatus().equals(OrderStatus.DRAFTED) && carriage != null && seat != null){
+                        ticketCommandMapper.updateTicketSold(orderId, passengerId, carriage, seat);
                     }
                     return Result.getResult(ResultCodeEnum.SUCCESS);
                 }catch (Exception e){
@@ -139,10 +139,10 @@ public class TicketCommandService {
     }
 
     //取票
-    public Result ticketGet(String orderId, int carriage_id, int seat){
+    public Result ticketGet(String orderId, String passengerId, int carriage_id, int seat){
         try{
             //todo:判断是否有座
-            ticketCommandMapper.ticketGet(orderId, carriage_id, seat);
+            ticketCommandMapper.ticketGet(orderId, passengerId, carriage_id, seat);
             return Result.getResult(ResultCodeEnum.SUCCESS);
         }catch (Exception e){
             e.printStackTrace();

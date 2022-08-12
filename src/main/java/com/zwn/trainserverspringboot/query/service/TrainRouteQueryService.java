@@ -17,9 +17,6 @@ import java.util.List;
 public class TrainRouteQueryService {
 
     @Resource
-    private TicketQueryMapper ticketQueryMapper;
-
-    @Resource
     private StationQueryMapper stationQueryMapper;
 
     @Resource
@@ -27,6 +24,7 @@ public class TrainRouteQueryService {
 
     public Result querytrainRoute(String from, String to){
         List<TrainRoute> trainRoutes = new ArrayList<>();
+        //两个城市的所有车站
         List<String> allFromStations = stationQueryMapper.getSameCityStationId(from);
         List<String> allToStations = stationQueryMapper.getSameCityStationId(to);
         for (String fromStation:allFromStations) {

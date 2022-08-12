@@ -34,35 +34,36 @@ public class TicketCommandController {
             }
             return JSON.toJSONString(results);
         }else {
-            return com.alibaba.fastjson2.JSON.toJSONString(UserCheck.check());
+            return JSON.toJSONString(UserCheck.check());
         }
     }
 
     @PostMapping("/refund")
-    String ticketRefund(String orderId){
-        if (UserCheck.check().getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return JSON.toJSONString(ticketCommandService.ticketRefund(orderId));
+    String ticketRefund(String orderId, String passengerId){
+        Result result = UserCheck.check();
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            return JSON.toJSONString(ticketCommandService.ticketRefund(orderId,passengerId));
         }else {
-            return com.alibaba.fastjson2.JSON.toJSONString(UserCheck.check());
+            return JSON.toJSONString(result);
         }
     }
 
     @PostMapping("/rebook")
-    String ticketRebook(String orderId, String departureDate, String trainRouteId, String carriage, String seat){
+    String ticketRebook(String orderId, String passengerId, String departureDate, String trainRouteId, String carriage, String seat){
         if (UserCheck.check().getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return JSON.toJSONString(ticketCommandService.ticketRebook(orderId, UserUtil.getCurrentUserId(), departureDate,
+            return JSON.toJSONString(ticketCommandService.ticketRebook(orderId, passengerId, UserUtil.getCurrentUserId(), departureDate,
                     trainRouteId, carriage, seat));
         }else {
-            return com.alibaba.fastjson2.JSON.toJSONString(UserCheck.check());
+            return JSON.toJSONString(UserCheck.check());
         }
     }
 
     @PostMapping("/get")
-    String ticketGet(Order order, int carriage_id, int seat){
+    String ticketGet(Order order, String passengerId, int carriage_id, int seat){
         if (UserCheck.checkWithUserId(order.getUserId()).getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return JSON.toJSONString(ticketCommandService.ticketGet(order.getOrderId(),carriage_id,seat));
+            return JSON.toJSONString(ticketCommandService.ticketGet(order.getOrderId(), passengerId, carriage_id, seat));
         }else {
-            return com.alibaba.fastjson2.JSON.toJSONString(UserCheck.check());
+            return JSON.toJSONString(UserCheck.check());
         }
     }
 }

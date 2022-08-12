@@ -1,5 +1,7 @@
 package com.zwn.trainserverspringboot.query.service;
 
+import com.zwn.trainserverspringboot.command.bean.Order;
+import com.zwn.trainserverspringboot.command.bean.OrderGeneral;
 import com.zwn.trainserverspringboot.query.bean.TicketPrice;
 import com.zwn.trainserverspringboot.query.bean.TicketsRemain;
 import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
@@ -59,7 +61,42 @@ public class TicketQueryService {
         return Result.getResult(ResultCodeEnum.SUCCESS,ticketPrices);
     }
 
-//    public Result getTicketHistory(String userId){
+    ///获取自己的票（已出票的订单）
+    public Result getSelfTicket(long userId){
+        List<OrderGeneral> result;
+        try {
+            result = ticketQueryMapper.getSelfTicket(userId);
+            return Result.getResult(ResultCodeEnum.SUCCESS, result);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
+        }
+    }
+
+    ///获取自己的所有订单
+    public Result getSelfOrder(long userId){
+        List<OrderGeneral> result;
+        try {
+            result = ticketQueryMapper.getSelfOrder(userId);
+            return Result.getResult(ResultCodeEnum.SUCCESS, result);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
+        }
+    }
+
+    public Result getTicketInfo(String ticketId){
+        Order result;
+        try {
+            result = ticketQueryMapper.getTicketInfo(ticketId);
+            return Result.getResult(ResultCodeEnum.SUCCESS, result);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
+        }
+    }
+
+//    public Result getTicketSeatInfo(String ticketId){
 //
 //    }
 }
