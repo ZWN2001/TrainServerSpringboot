@@ -2,6 +2,7 @@ package com.zwn.trainserverspringboot.query.service;
 
 import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.OrderGeneral;
+import com.zwn.trainserverspringboot.query.bean.SeatInfo;
 import com.zwn.trainserverspringboot.query.bean.TicketPrice;
 import com.zwn.trainserverspringboot.query.bean.TicketsRemain;
 import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
@@ -96,7 +97,13 @@ public class TicketQueryService {
         }
     }
 
-//    public Result getTicketSeatInfo(String ticketId){
-//
-//    }
+    public Result getTicketSeatInfo(String ticketId){
+        try {
+            SeatInfo result = ticketQueryMapper.getTicketSeatInfo(ticketId);
+            return Result.getResult(ResultCodeEnum.SUCCESS, result);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
+        }
+    }
 }

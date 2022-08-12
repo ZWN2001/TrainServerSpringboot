@@ -63,4 +63,10 @@
         FROM ticket_order
         WHERE (order_id,passenger_id) IN (SELECT order_id,passenger_id FROM ticket_sold WHERE ticket_id = #{ticketId});
     </select>
+
+    <select id="getTicketSeatInfo" resultType="com.zwn.trainserverspringboot.query.bean.SeatInfo">
+        SELECT ticket_id AS ticketId, passenger_id AS passengerId, carriage_id AS carriageId, seat
+        FROM ticket_sold
+        WHERE ticket_id = #{ticketId};
+    </select>
 </mapper>

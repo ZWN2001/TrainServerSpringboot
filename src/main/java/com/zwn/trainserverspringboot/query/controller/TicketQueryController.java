@@ -65,4 +65,14 @@ public class TicketQueryController {
         }
     }
 
+    @GetMapping("/ticketSeatInfo")
+    String getTicketSeatInfo(String ticketId){
+        Result result = UserCheck.check();
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            return JSON.toJSONString(ticketQueryService.getTicketSeatInfo(ticketId));
+        }else {
+            return JSON.toJSONString(result);
+        }
+    }
+
 }
