@@ -18,15 +18,20 @@ public class MQConsumer {
 
     Date date = new Date();
     SimpleDateFormat timeFrtmat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat timeFrtmat2 = new SimpleDateFormat("HH:mm:ss");
     @RabbitListener(queues= "TICKET_BOOKING_QUEUE")//指明监听的是哪一个queue
     public void receive(OrderMessage orderMessage ){
         String time = timeFrtmat.format(date.getTime());
         orderMessage.getOrder().setOrderTime(time);
-        ticketCommandMapper.ticketBooking(orderMessage.getOrder());
-        ticketCommandMapper.updateTicketRemain(orderMessage.getOrder().getTrainRouteId(),
-                orderMessage.getOrder().getSeatTypeId(),orderMessage.getOrder().getDepartureDate(),
-                orderMessage.getOrder().getFromStationId(),orderMessage.getOrder().getToStationId(),
-                orderMessage.getNum());
+        try{
+            ticketCommandMapper.ticketBooking(orderMessage.getOrder(),timeFrtmat2.format(date.getTime()));
+            ticketCommandMapper.updateTicketRemain(orderMessage.getOrder().getTrainRouteId(),
+                    orderMessage.getOrder().getSeatTypeId(),orderMessage.getOrder().getDepartureDate(),
+                    orderMessage.getOrder().getFromStationId(),orderMessage.getOrder().getToStationId(),
+                    orderMessage.getNum());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }

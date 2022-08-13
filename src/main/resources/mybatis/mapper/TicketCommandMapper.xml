@@ -7,9 +7,10 @@
     <insert id="ticketBooking">
         INSERT INTO ticket_order(order_id,user_id,passenger_id,departure_date,train_route_id,from_station_id,
                                  to_station_id,seat_type_id,order_status,order_time,price)
-        VALUES (#{orderId},#{userId},#{passengerId},#{departureDate},#{trainRouteId},#{fromStationId},#{toStationId},
-                #{seatTypeId},#{orderStatus},#{orderTime},#{price});
-        INSERT INTO ticket_booking(order_id) VALUES (#{orderId});
+        VALUES (#{order.orderId},#{order.userId},#{order.passengerId},#{order.departureDate},#{order.trainRouteId},
+                #{order.fromStationId},#{order.toStationId},#{order.seatTypeId},#{order.orderStatus},#{order.orderTime},
+                #{order.price});
+        INSERT INTO ticket_booking(order_id,user_id,create_time) VALUES (#{order.orderId},#{order.userId},#{param2});
     </insert>
 
     <update id="ticketPay">
@@ -53,5 +54,16 @@
           AND station_id IN (  SELECT info.station_id FROM info,from_s,to_s
                                WHERE station_no BETWEEN from_s.station_id AND to_s.station_id);
     </update>
+
+    <delete id="ticketBookingCancel">
+        DELETE FROM ticket_order WHERE departure_date = #{departureDate} AND train_route_id = #{trainRouteId} AND
+            passenger_id IN #{passengerIdList};
+
+        DELETE FROM ticket_booking
+               WHERE order_id IN
+                     (SELECT order_id FROM ticket_order WHERE departure_date = #{departureDate}
+                                                          AND train_route_id = #{trainRouteId}
+                                                          AND passenger_id IN #{passengerIdList});
+    </delete>
 
 </mapper>

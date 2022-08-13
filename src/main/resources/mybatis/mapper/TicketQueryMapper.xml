@@ -55,6 +55,13 @@
         WHERE user_id = #{userId};
     </select>
 
+    <select id="getSelfPaiedOrder" resultType="com.zwn.trainserverspringboot.command.bean.OrderGeneral">
+        SELECT order_id AS orderId, train_route_id AS trainRouteId, from_station_id AS fromStationId,
+               to_station_id AS toStationId, departure_date AS departureDate
+        FROM ticket_order
+        WHERE user_id = #{userId} AND order_status = '已支付';
+    </select>
+
     <select id="getTicketInfo" resultType="com.zwn.trainserverspringboot.command.bean.Order">
         SELECT order_id AS orderId, passenger_id AS passengerId, departure_date AS departureDate,
                train_route_id AS trainRouteId, from_station_id AS fromStationId, to_station_id AS toStationId,
@@ -68,5 +75,20 @@
         SELECT ticket_id AS ticketId, passenger_id AS passengerId, carriage_id AS carriageId, seat
         FROM ticket_sold
         WHERE ticket_id = #{ticketId};
+    </select>
+
+    <select id="getTicketToPayDetail" resultType="com.zwn.trainserverspringboot.command.bean.Order">
+        SELECT order_id AS orderId, passenger_id AS passengerId, departure_date AS departureDate,
+               train_route_id AS trainRouteId, from_station_id AS fromStationId, to_station_id AS toStationId,
+               seat_type_id AS seatTypeId, order_status AS orderStatus, order_time AS orderTime, price AS price,
+               trade_no AS tradeNo
+        FROM ticket_order
+        WHERE user_id = #{userId} AND order_status = '待支付';
+    </select>
+
+    <select id="getTicketToPayNum" resultType="java.lang.Integer">
+        SELECT COUNT(order_id)
+        FROM ticket_booking
+        WHERE user_id = #{userId};
     </select>
 </mapper>

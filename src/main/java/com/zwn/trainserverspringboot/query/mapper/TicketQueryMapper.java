@@ -16,7 +16,9 @@ public interface TicketQueryMapper {
     double getTicketPrice(String train_route_id, String from_station_id, String to_station_id, int seat_type_id);
     List<OrderGeneral> getSelfTicket(long userId);
     List<OrderGeneral> getSelfOrder(long userId);
+    List<OrderGeneral> getSelfPaiedOrder(long userId);
     Order getTicketInfo(String ticketId);
     SeatInfo getTicketSeatInfo(String ticketId);
-
+    List<Order> getTicketToPayDetail(long userId);
+    int getTicketToPayNum(long userId);
 }

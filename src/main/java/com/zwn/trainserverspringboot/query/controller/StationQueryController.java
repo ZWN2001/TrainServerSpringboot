@@ -14,7 +14,7 @@ public class StationQueryController {
     @Resource
     private StationQueryService stationQueryService;
 
-    @GetMapping("/allDetail")
+    @GetMapping("/allStationDetail")
     String allStationDetail(){
         return JSON.toJSONString(stationQueryService.getAllStationInfo());
     }

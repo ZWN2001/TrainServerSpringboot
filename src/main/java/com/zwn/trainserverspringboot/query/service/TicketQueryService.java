@@ -86,6 +86,17 @@ public class TicketQueryService {
         }
     }
 
+    public Result getSelfPaiedOrder(long userId){
+        List<OrderGeneral> result;
+        try {
+            result = ticketQueryMapper.getSelfPaiedOrder(userId);
+            return Result.getResult(ResultCodeEnum.SUCCESS, result);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
+        }
+    }
+
     public Result getTicketInfo(String ticketId){
         Order result;
         try {
@@ -100,6 +111,16 @@ public class TicketQueryService {
     public Result getTicketSeatInfo(String ticketId){
         try {
             SeatInfo result = ticketQueryMapper.getTicketSeatInfo(ticketId);
+            return Result.getResult(ResultCodeEnum.SUCCESS, result);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
+        }
+    }
+
+    public Result getTicketToPayDetail(long userId){
+        try {
+            List<Order> result = ticketQueryMapper.getTicketToPayDetail(userId);
             return Result.getResult(ResultCodeEnum.SUCCESS, result);
         }catch (Exception e){
             e.printStackTrace();

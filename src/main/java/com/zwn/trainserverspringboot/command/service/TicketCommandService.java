@@ -2,11 +2,13 @@ package com.zwn.trainserverspringboot.command.service;
 
 import com.alibaba.fastjson2.JSON;
 import com.zwn.trainserverspringboot.command.bean.OrderMessage;
+import com.zwn.trainserverspringboot.command.bean.OrderPrimaryKey;
 import com.zwn.trainserverspringboot.query.bean.AtomStationKey;
 import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.OrderStatus;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
 import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
+import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
 import com.zwn.trainserverspringboot.query.mapper.TrainRouteQueryMapper;
 import com.zwn.trainserverspringboot.query.service.TicketQueryService;
 import com.zwn.trainserverspringboot.rabbitmq.MQProducer;
@@ -32,12 +34,19 @@ public class TicketCommandService {
     @Resource
     private TicketQueryService ticketQueryService;
     @Resource
+    private TicketQueryMapper ticketQueryMapper;
+    @Resource
     private OrderQueryMapper orderQueryMapper;
     @Resource
     private TrainRouteQueryMapper trainRouteQueryMapper;
-    MQProducer producer;
+    @Resource
+    private MQProducer producer;
 
     public Result ticketBooking(Order order, List<String> passengerIds){
+        if (ticketQueryMapper.getTicketToPayNum(order.getUserId()) != 0){
+            ///存在未支付订单，不允许订票
+            return Result.getResult(ResultCodeEnum.ORDER_HAVE_UN_PAIED);
+        }
         if (!isEnough(order,passengerIds.size())){//不足
             return Result.getResult(ResultCodeEnum.TICKET_SURPLUS_NOT_ENOUGH);
         }else {
@@ -76,6 +85,16 @@ public class TicketCommandService {
                 }
             }
             return Result.getResult(ResultCodeEnum.SUCCESS,results);
+        }
+    }
+
+    public Result ticketBookingCancel(OrderPrimaryKey key){
+        try {
+            ticketCommandMapper.ticketBookingCancel(key);
+            return Result.getResult(ResultCodeEnum.SUCCESS);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
         }
     }
 

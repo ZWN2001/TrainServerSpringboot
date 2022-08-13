@@ -30,11 +30,6 @@ public class TicketQueryController {
         return JSON.toJSONString(ticketQueryService.getTicketPrices(train_route_id, from_station_id, to_station_id));
     }
 
-//    @GetMapping("/ticketHistory")
-//    String getTicketHistory(){
-//        String userId ="";
-//        return JSON.toJSONString(ticketQueryService.getTicketHistory(userId));
-//    }
     @GetMapping("/selfTicket")
     String getSelfTicket(long userId){
         Result result = UserCheck.checkWithUserId(userId);
@@ -55,6 +50,16 @@ public class TicketQueryController {
         }
     }
 
+    @GetMapping("/selfPaiedOrder")
+    String getSelfPaiedOrder(long userId){
+        Result result = UserCheck.checkWithUserId(userId);
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            return JSON.toJSONString(ticketQueryService.getSelfPaiedOrder(userId));
+        }else {
+            return JSON.toJSONString(result);
+        }
+    }
+
     @GetMapping("/ticketInfo")
     String getTicketInfo(long userId, String ticketId){
         Result result = UserCheck.checkWithUserId(userId);
@@ -70,6 +75,16 @@ public class TicketQueryController {
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             return JSON.toJSONString(ticketQueryService.getTicketSeatInfo(ticketId));
+        }else {
+            return JSON.toJSONString(result);
+        }
+    }
+
+    @GetMapping("/ticketToPayDetail")
+    String getTicketToPayDetail(long userId){
+        Result result = UserCheck.checkWithUserId(userId);
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            return JSON.toJSONString(ticketQueryService.getTicketToPayDetail(userId));
         }else {
             return JSON.toJSONString(result);
         }
