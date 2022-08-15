@@ -57,8 +57,13 @@ public class AuthServiceImpl {
 
 	public Result login(String userId, String password) {
 		//用户验证
-        final Authentication authentication = authenticate(Long.parseLong(userId), password);
+        final Authentication authentication ;
         //存储认证信息
+		try{
+			authentication = authenticate(Long.parseLong(userId), password);
+		}catch (CustomException e){
+			return Result.getResult(ResultCodeEnum.LOGIN_ERROR);
+		}
         SecurityContextHolder.getContext().setAuthentication(authentication);
 //		System.out.println(authentication.getPrincipal());
 //		System.out.println(authentication.getAuthorities());
@@ -95,9 +100,14 @@ public class AuthServiceImpl {
 
 	}
 
-//	public UserDetail getUserByToken(String token) {
-//		token = token.substring(tokenHead.length());
-//        return jwtTokenUtil.getUserFromToken(token);
-//	}
+	public Result getUserInfo(long userId){
+		try{
+			User user = userMapper.getUserInfo(userId);
+			return Result.getResult(ResultCodeEnum.SUCCESS,user);
+		}catch (Exception e){
+			e.printStackTrace();
+			return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
+		}
+	}
 
 }

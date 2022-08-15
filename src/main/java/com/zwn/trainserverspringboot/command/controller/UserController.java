@@ -5,6 +5,8 @@ import com.zwn.trainserverspringboot.command.bean.User;
 import com.zwn.trainserverspringboot.command.service.AuthServiceImpl;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
+import com.zwn.trainserverspringboot.util.UserUtil;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +21,10 @@ public class UserController {
     private AuthServiceImpl authService;
 
     @PostMapping("/register")
-    String register(User user){
+    String register(long userId,String password){
+        User user = new User();
+        user.setUserId(userId);
+        user.setLoginKey(password);
         try{
             return JSON.toJSONString(authService.register(user));
         }catch (Exception e){
@@ -55,6 +60,19 @@ public class UserController {
         }catch (Exception e){
             e.printStackTrace();
             return JSON.toJSONString(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString()));
+        }
+    }
+
+    @GetMapping("/getUserInfo")
+    String getUserInfo(){
+        try {
+            if (UserUtil.getCurrentUserId() == 0 ){
+                return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+            }else {
+                return JSON.toJSONString(authService.getUserInfo(UserUtil.getCurrentUserId()));
+            }
+        }catch (Exception e){
+            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
         }
     }
 }

@@ -15,4 +15,8 @@
     <select id="queryUserById" resultType="com.zwn.trainserverspringboot.command.bean.UserDetail">
         SELECT user_id AS userId, user_name AS username, login_key AS password FROM users WHERE user_id = #{user_id}
     </select>
+
+    <select id="getUserInfo" resultType="com.zwn.trainserverspringboot.command.bean.User">
+        SELECT user_id, user_name, role, gender, email FROM users WHERE user_id = #{userId} ;
+    </select>
 </mapper>

@@ -15,4 +15,6 @@ public interface UserMapper {
 
     List<UserDetail> queryUserById(long user_id);
 
+    User getUserInfo(long userId);
+
 }

@@ -14,6 +14,7 @@ public class Passenger implements Serializable {
     String passengerId;
     String passengerName;
     String phoneNum;
+    String role;
 
     @Builder
     public Passenger(){}
