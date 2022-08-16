@@ -26,7 +26,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	// 令牌自定义标识
-	private final String tokenHeader = "Authorization";
+	private final String tokenHeader = "token";
 //    jwt.header=Authorization
 //    jwt.secret=mySecret
 //    jwt.expiration=
@@ -41,7 +41,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 		
 		logger.debug("auth_token {}", auth_token);
 		
-		final String auth_token_start = "Bearer ";
+		final String auth_token_start = "Bearer:";
 		if (auth_token != null && auth_token.startsWith(auth_token_start)) {
 			auth_token = auth_token.substring(auth_token_start.length());
 		} else {
@@ -50,7 +50,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 		}
 		//TODO:可能有问题
 		long userId = jwtUtils.getUserIdFromToken(auth_token);
-
 		if (jwtUtils.containToken(userId, auth_token) && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetail userDetail = jwtUtils.getUserFromToken(auth_token);
 			if (jwtUtils.validateToken(auth_token, userDetail)) {

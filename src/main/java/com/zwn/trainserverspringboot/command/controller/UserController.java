@@ -6,6 +6,7 @@ import com.zwn.trainserverspringboot.command.service.AuthServiceImpl;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import com.zwn.trainserverspringboot.util.UserUtil;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,10 @@ public class UserController {
             return JSON.toJSONString(authService.login(String.valueOf(userId), loginKey));
         }catch (Exception e){
             e.printStackTrace();
+            Throwable cause = e.getCause();
+            if(cause instanceof InternalAuthenticationServiceException){
+                return JSON.toJSONString(Result.getResult(ResultCodeEnum.LOGIN_ERROR));
+            }
             return JSON.toJSONString(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString()));
         }
     }

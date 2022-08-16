@@ -113,10 +113,10 @@ public class JwtUtils {
     public Boolean validateToken(String token, UserDetails userDetails) {
         UserDetail userDetail = (UserDetail) userDetails;
         final long userId = getUserIdFromToken(token);
-        final String username = getUsernameFromToken(token);
+//        final String username = getUsernameFromToken(token);
 //        final Date created = getCreatedDateFromToken(token);
         return (userId == userDetail.getUserId()
-                && username.equals(userDetail.getUsername())
+//                && username.equals(userDetail.getUsername())
                 && !isTokenExpired(token)
 //                && !isCreatedBeforeLastPasswordReset(created, userDetail.getLastPasswordResetDate())
         );
