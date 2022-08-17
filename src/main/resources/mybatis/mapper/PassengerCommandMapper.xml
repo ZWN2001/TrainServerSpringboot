@@ -18,7 +18,7 @@
                     phone_num = #{phoneNum}
                 </if>
             </set>
-        WHERE user_id = #{userId} AND passenger_id = #{passenger};
+        WHERE user_id = #{userId} AND passenger_id = #{passengerId};
     </update>
 
     <delete id="deletePassenger">

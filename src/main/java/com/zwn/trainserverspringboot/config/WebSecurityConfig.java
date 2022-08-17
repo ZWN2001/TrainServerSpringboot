@@ -102,14 +102,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
 //        完全绕过了spring security的所有filter，相当于不走spring security
-        web.ignoring().antMatchers(
-                        "/**/*.css",
-                        "/**/*.js",
-                        "/**/*.png",
-                        "/**/*.gif",
-                        "/v2/**",
-                        "/**/*.ttf"
-                );
+//        web.ignoring().antMatchers(
+//                        "/**/*.css",
+//                        "/**/*.js",
+//                        "/**/*.png",
+//                        "/**/*.gif",
+//                        "/v2/**",
+//                        "/**/*.ttf"
+//                );
     }
     
     @Bean

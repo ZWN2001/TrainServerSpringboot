@@ -18,6 +18,7 @@ public class UserCheck {
                 return Result.getResult(ResultCodeEnum.BAD_REQUEST);
             }
         }catch (Exception e){
+            e.printStackTrace();
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
         return Result.getResult(ResultCodeEnum.SUCCESS);

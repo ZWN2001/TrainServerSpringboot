@@ -5,7 +5,7 @@
 <mapper namespace="com.zwn.trainserverspringboot.query.mapper.PassengerQueryMapper">
 
     <select id="queryAllPassengers" resultType="com.zwn.trainserverspringboot.command.bean.Passenger">
-        SELECT passenger_id,passenger_name,phone_num,role
+        SELECT user_id,passenger_id,passenger_name,phone_num,role
         FROM passenger
         WHERE user_id = #{param1}
     </select>

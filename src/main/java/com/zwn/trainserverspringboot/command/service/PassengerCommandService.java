@@ -43,7 +43,7 @@ public class PassengerCommandService {
         Passenger oldPassenger = passengerQueryMapper.querySinglePassenger(newPassenger.getUserId(),
                 newPassenger.getPassengerId());
         if (oldPassenger == null) {
-            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            return Result.getResult(ResultCodeEnum.PASSENGER_NOT_EXIST);
         }else if (Objects.equals(oldPassenger.getPassengerName(), newPassenger.getPassengerName())
                 && Objects.equals(oldPassenger.getPhoneNum(), newPassenger.getPhoneNum())) {
             return Result.getResult(ResultCodeEnum.PASSENGER_NO_NEED_MODIFY);
@@ -53,7 +53,7 @@ public class PassengerCommandService {
             passengerCommandMapper.modifyPassenger(newPassenger);
             return Result.getResult(ResultCodeEnum.SUCCESS);
         }catch (Exception e){
-            Throwable cause = e.getCause();
+//            Throwable cause = e.getCause();
             e.printStackTrace();
 //            if (cause instanceof SQLIntegrityConstraintViolationException) {
 //                return Result.getResult(ResultCodeEnum.PASSENGER_USER_NOT_EXIST);
