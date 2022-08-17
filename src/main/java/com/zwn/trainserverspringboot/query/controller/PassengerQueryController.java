@@ -5,6 +5,7 @@ import com.zwn.trainserverspringboot.query.service.PassengerQueryService;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import com.zwn.trainserverspringboot.util.UserCheck;
+import com.zwn.trainserverspringboot.util.UserUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,12 +20,12 @@ public class PassengerQueryController {
     private PassengerQueryService passengerQueryService;
 
     @GetMapping("/all")
-    String queryAllPassengers(long userId){
-        Result result = UserCheck.checkWithUserId(userId);
-        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return JSON.toJSONString(passengerQueryService.queryAllPassengers(userId));
-        }else {
-            return JSON.toJSONString(result);
+    String queryAllPassengers(){
+        try{
+            return JSON.toJSONString(passengerQueryService.queryAllPassengers(UserUtil.getCurrentUserId()));
+        }catch (Exception e){
+            e.printStackTrace();
+            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
         }
     }
 
