@@ -2,6 +2,7 @@ package com.zwn.trainserverspringboot.query.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.zwn.trainserverspringboot.query.service.StationQueryService;
+import com.zwn.trainserverspringboot.util.Result;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +16,7 @@ public class StationQueryController {
     private StationQueryService stationQueryService;
 
     @GetMapping("/allStationDetail")
-    String allStationDetail(){
-        return JSON.toJSONString(stationQueryService.getAllStationInfo());
+    Result allStationDetail(){
+        return stationQueryService.getAllStationInfo();
     }
 }

@@ -4,6 +4,8 @@ package com.zwn.trainserverspringboot.command.controller;
 import com.alibaba.fastjson.JSON;
 import com.zwn.trainserverspringboot.command.bean.Pay;
 import com.zwn.trainserverspringboot.command.service.AlipayService;
+import com.zwn.trainserverspringboot.util.Result;
+import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +23,14 @@ public class AlipayController {
      * 拉起支付请求
      */
     @GetMapping("/alipay/pay")
-    public String alipay(Pay pay) throws Exception{
-        return JSON.toJSONString(alipayService.alipay(pay));
+    public Result alipay(Pay pay) throws Exception{
+        try {
+            return alipayService.alipay(pay);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST,e.getClass().toString());
+        }
+
     }
 
     /**

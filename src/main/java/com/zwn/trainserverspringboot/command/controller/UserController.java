@@ -22,62 +22,62 @@ public class UserController {
     private AuthServiceImpl authService;
 
     @PostMapping("/register")
-    String register(long userId,String password){
+    Result register(long userId,String password){
         User user = new User();
         user.setUserId(userId);
         user.setLoginKey(password);
         try{
-            return JSON.toJSONString(authService.register(user));
+            return authService.register(user);
         }catch (Exception e){
             e.printStackTrace();
-            return JSON.toJSONString(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString()));
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
         }
     }
 
     @PostMapping("/login")
-    String login(long userId, String loginKey){
+    Result login(long userId, String loginKey){
         try{
-            return JSON.toJSONString(authService.login(String.valueOf(userId), loginKey));
+            return authService.login(String.valueOf(userId), loginKey);
         }catch (Exception e){
             e.printStackTrace();
             Throwable cause = e.getCause();
             if(cause instanceof InternalAuthenticationServiceException){
-                return JSON.toJSONString(Result.getResult(ResultCodeEnum.LOGIN_ERROR));
+                return Result.getResult(ResultCodeEnum.LOGIN_ERROR);
             }
-            return JSON.toJSONString(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString()));
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
         }
     }
 
     @PostMapping("/logout")
-    String logout(String token){
+    Result logout(String token){
         try{
-            return JSON.toJSONString(authService.logout(token));
+            return authService.logout(token);
         }catch (Exception e){
             e.printStackTrace();
-            return JSON.toJSONString(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString()));
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
         }
     }
 
     @PostMapping("/refresh")
-    String refresh(String token){
+    Result refresh(String token){
         try{
-            return JSON.toJSONString(authService.refresh(token));
+            return authService.refresh(token);
         }catch (Exception e){
             e.printStackTrace();
-            return JSON.toJSONString(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString()));
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
         }
     }
 
     @GetMapping("/getUserInfo")
-    String getUserInfo(){
+    Result getUserInfo(){
         try {
             if (UserUtil.getCurrentUserId() == 0 ){
-                return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
             }else {
-                return JSON.toJSONString(authService.getUserInfo(UserUtil.getCurrentUserId()));
+                return authService.getUserInfo(UserUtil.getCurrentUserId());
             }
         }catch (Exception e){
-            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
     }
 }

@@ -23,53 +23,53 @@ public class PassengerCommandController {
     private PassengerCommandService passengerCommandService;
 
     @PostMapping("/add")
-    String addPassenger(String passengerJSON){
+    Result addPassenger(String passengerJSON){
         try {
             JSONObject jsonObject = JSONObject.parseObject(passengerJSON);
             Passenger passenger = JSONObject.toJavaObject(jsonObject, Passenger.class);
             Result result = UserCheck.checkWithUserId(passenger.getUserId());
             if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-                return JSON.toJSONString(passengerCommandService.addPassenger(passenger));
+                return passengerCommandService.addPassenger(passenger);
             }else {
-                return JSON.toJSONString(result);
+                return result;
             }
         }catch (Exception e){
             e.printStackTrace();
-            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
     }
 
     @PostMapping("/modify")
-    String modifyPassenger(String passengerJSON){
+    Result modifyPassenger(String passengerJSON){
         try {
             JSONObject jsonObject = JSONObject.parseObject(passengerJSON);
             Passenger passenger = JSONObject.toJavaObject(jsonObject, Passenger.class);
             Result result = UserCheck.checkWithUserId(passenger.getUserId());
             if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-                return JSON.toJSONString(passengerCommandService.modifyPassenger(passenger));
+                return passengerCommandService.modifyPassenger(passenger);
             }else {
-                return JSON.toJSONString(result);
+                return result;
             }
         }catch (Exception e){
             e.printStackTrace();
-            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
     }
 
     @PostMapping("/delete")
-    String deletePassenger(String passengerJSON){
+    Result deletePassenger(String passengerJSON){
         try {
             JSONObject jsonObject = JSONObject.parseObject(passengerJSON);
             Passenger passenger = JSONObject.toJavaObject(jsonObject, Passenger.class);
             Result result = UserCheck.checkWithUserId(passenger.getUserId());
             if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-                return JSON.toJSONString(passengerCommandService.deletePassenger(passenger));
+                return passengerCommandService.deletePassenger(passenger);
             }else {
-                return JSON.toJSONString(result);
+                return result;
             }
         }catch (Exception e){
             e.printStackTrace();
-            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
     }
 }

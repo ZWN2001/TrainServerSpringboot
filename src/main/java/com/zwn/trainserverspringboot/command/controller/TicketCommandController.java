@@ -24,7 +24,7 @@ public class TicketCommandController {
 
     //默认是一张票的预定，可以预定多个乘客
     @PostMapping("/booking")
-    String ticketsBooking(Order order , List<String> passengerIds){
+    Result ticketsBooking(Order order , List<String> passengerIds){
         Result result = UserCheck.checkWithUserId(order.getUserId());
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             Result results;
@@ -32,16 +32,16 @@ public class TicketCommandController {
                 results = ticketCommandService.ticketBooking(order, passengerIds);
             }catch (Exception e){
                 e.printStackTrace();
-                return JSON.toJSONString(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR));
+                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
             }
-            return JSON.toJSONString(results);
+            return results;
         }else {
-            return JSON.toJSONString(result);
+            return result;
         }
     }
 
     @PostMapping("/bookingCancel")
-    String ticketBookingCancel(OrderPrimaryKey key){
+    Result ticketBookingCancel(OrderPrimaryKey key){
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             Result results;
@@ -49,40 +49,42 @@ public class TicketCommandController {
                 results = ticketCommandService.ticketBookingCancel(key);
             }catch (Exception e){
                 e.printStackTrace();
-                return JSON.toJSONString(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR));
+                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
             }
-            return JSON.toJSONString(results);
+            return results;
         }else {
-            return JSON.toJSONString(result);
+            return result;
         }
     }
 
     @PostMapping("/refund")
-    String ticketRefund(String orderId, String passengerId){
+    Result ticketRefund(String orderId, String passengerId){
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return JSON.toJSONString(ticketCommandService.ticketRefund(orderId,passengerId));
+            return ticketCommandService.ticketRefund(orderId,passengerId);
         }else {
-            return JSON.toJSONString(result);
+            return result;
         }
     }
 
     @PostMapping("/rebook")
-    String ticketRebook(String orderId, String passengerId, String departureDate, String trainRouteId, String carriage, String seat){
-        if (UserCheck.check().getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return JSON.toJSONString(ticketCommandService.ticketRebook(orderId, passengerId, UserUtil.getCurrentUserId(), departureDate,
-                    trainRouteId, carriage, seat));
+    Result ticketRebook(String orderId, String passengerId, String departureDate, String trainRouteId, String carriage, String seat){
+        Result result = UserCheck.check();
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            return ticketCommandService.ticketRebook(orderId, passengerId, UserUtil.getCurrentUserId(), departureDate,
+                    trainRouteId, carriage, seat);
         }else {
-            return JSON.toJSONString(UserCheck.check());
+            return result;
         }
     }
 
     @PostMapping("/get")
-    String ticketGet(Order order, String passengerId, int carriage_id, int seat){
-        if (UserCheck.checkWithUserId(order.getUserId()).getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return JSON.toJSONString(ticketCommandService.ticketGet(order.getOrderId(), passengerId, carriage_id, seat));
+    Result ticketGet(Order order, String passengerId, int carriage_id, int seat){
+        Result result = UserCheck.checkWithUserId(order.getUserId());
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            return ticketCommandService.ticketGet(order.getOrderId(), passengerId, carriage_id, seat);
         }else {
-            return JSON.toJSONString(UserCheck.check());
+            return result;
         }
     }
 }

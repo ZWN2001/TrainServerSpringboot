@@ -20,22 +20,22 @@ public class PassengerQueryController {
     private PassengerQueryService passengerQueryService;
 
     @GetMapping("/all")
-    String queryAllPassengers(){
+    Result queryAllPassengers(){
         try{
-            return JSON.toJSONString(passengerQueryService.queryAllPassengers(UserUtil.getCurrentUserId()));
+            return passengerQueryService.queryAllPassengers(UserUtil.getCurrentUserId());
         }catch (Exception e){
             e.printStackTrace();
-            return JSON.toJSONString(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
     }
 
     @GetMapping("/single")
-    String querySinglePassenger(long userId, String passengerId){
+    Result querySinglePassenger(long userId, String passengerId){
         Result result = UserCheck.checkWithUserId(userId);
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return JSON.toJSONString(passengerQueryService.querySinglePassenger(userId, passengerId));
+            return passengerQueryService.querySinglePassenger(userId, passengerId);
         }else {
-            return JSON.toJSONString(result);
+            return result;
         }
     }
 
