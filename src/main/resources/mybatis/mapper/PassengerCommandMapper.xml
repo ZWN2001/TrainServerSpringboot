@@ -5,7 +5,7 @@
 <mapper namespace="com.zwn.trainserverspringboot.command.mapper.PassengerCommandMapper">
 
     <insert id="addPassenger">
-      INSERT INTO passenger VALUES (#{userId}, #{passengerId}, #{passengerName}, #{phoneNum})
+      INSERT INTO passenger VALUES (#{userId}, #{passengerId}, #{passengerName}, #{phoneNum}, #{role})
     </insert>
 
     <update id="modifyPassenger">
@@ -16,6 +16,9 @@
                 </if> 
                 <if test="phoneNum != null">
                     phone_num = #{phoneNum}
+                </if>
+                <if test="role != null">
+                    `role` = #{role}
                 </if>
             </set>
         WHERE user_id = #{userId} AND passenger_id = #{passengerId};
