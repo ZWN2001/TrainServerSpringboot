@@ -28,7 +28,7 @@ public class Passenger implements Serializable {
         }else if ( passengerName.length()<2 ||
                 passengerName.length()> 8 || !StringUtil.isChineseStr(passengerName)){
             return ResultCodeEnum.PASSENGER_NAME_ILLEGAL;
-        }else if ( StringUtil.isMobileNum(phoneNum)){
+        }else if ( !StringUtil.isMobileNum(phoneNum)){
             return ResultCodeEnum.PASSENGER_PHONE_NUMBER_ILLEGAL;
         }else {
             return ResultCodeEnum.SUCCESS;

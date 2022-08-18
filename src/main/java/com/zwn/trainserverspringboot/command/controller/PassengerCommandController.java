@@ -8,10 +8,7 @@ import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import com.zwn.trainserverspringboot.util.UserCheck;
 import com.zwn.trainserverspringboot.util.UserUtil;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -71,5 +68,10 @@ public class PassengerCommandController {
             e.printStackTrace();
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/random")
+    Result randomPassenger(){
+        return passengerCommandService.randomPassenger();
     }
 }

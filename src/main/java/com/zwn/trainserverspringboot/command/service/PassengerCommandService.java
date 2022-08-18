@@ -3,6 +3,9 @@ package com.zwn.trainserverspringboot.command.service;
 import com.zwn.trainserverspringboot.command.bean.Passenger;
 import com.zwn.trainserverspringboot.command.mapper.PassengerCommandMapper;
 import com.zwn.trainserverspringboot.query.mapper.PassengerQueryMapper;
+import com.zwn.trainserverspringboot.util.Generate.PassengerIdGenerateUtil;
+import com.zwn.trainserverspringboot.util.Generate.PassengerNameGenerateUtil;
+import com.zwn.trainserverspringboot.util.Generate.PassengerPhoneNumGenerateUtil;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import org.springframework.dao.DuplicateKeyException;
@@ -24,6 +27,7 @@ public class PassengerCommandService {
             try {
                     passengerCommandMapper.addPassenger(passenger);
                 } catch (Exception e) {
+                e.printStackTrace();
                 Throwable cause = e.getCause();
                 if (cause instanceof SQLIntegrityConstraintViolationException) {
                     return Result.getResult(ResultCodeEnum.PASSENGER_USER_NOT_EXIST);
@@ -75,4 +79,17 @@ public class PassengerCommandService {
         }
     }
 
+    public Result randomPassenger(){
+        Passenger passenger = new Passenger();
+        passenger.setPassengerId(PassengerIdGenerateUtil.generate());
+        passenger.setPassengerName(PassengerNameGenerateUtil.generate());
+        passenger.setPhoneNum(PassengerPhoneNumGenerateUtil.generate());
+        String s = passenger.getPhoneNum();
+        if (Integer.parseInt(s.substring(s.length()-3,s.length()-1)) % 4 == 1){
+            passenger.setRole("student");
+        }else {
+            passenger.setRole("common");
+        }
+        return Result.getResult(ResultCodeEnum.SUCCESS,passenger);
+    }
 }
