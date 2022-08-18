@@ -15,7 +15,7 @@
                     passenger_name = #{passengerName},
                 </if> 
                 <if test="phoneNum != null">
-                    phone_num = #{phoneNum}
+                    phone_num = #{phoneNum},
                 </if>
                 <if test="role != null">
                     `role` = #{role}
@@ -25,7 +25,8 @@
     </update>
 
     <delete id="deletePassenger">
-        DELETE FROM passenger WHERE user_id = #{userId} AND passenger_id = #{passenger};
+        DELETE FROM ticket_order WHERE user_id = #{userId} AND passenger_id = #{passengerId};
+        DELETE FROM passenger WHERE user_id = #{userId} AND passenger_id = #{passengerId};
     </delete>
 
 
