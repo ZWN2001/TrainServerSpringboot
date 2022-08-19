@@ -3,7 +3,6 @@ package com.zwn.trainserverspringboot.query.service;
 import com.zwn.trainserverspringboot.query.bean.TrainRoute;
 import com.zwn.trainserverspringboot.query.bean.TrainRouteAtom;
 import com.zwn.trainserverspringboot.query.mapper.StationQueryMapper;
-import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
 import com.zwn.trainserverspringboot.query.mapper.TrainRouteQueryMapper;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;

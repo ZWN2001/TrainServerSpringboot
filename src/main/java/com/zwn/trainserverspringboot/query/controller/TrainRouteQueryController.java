@@ -24,8 +24,8 @@ public class TrainRouteQueryController {
 
     //查询车次详情（从出发地到最终目的地）
     @GetMapping("/trainRouteDetail")
-    Result queryTrainRouteDetail(String train_route_id){
-        return trainRouteQueryService.queryTrainRouteDetail(train_route_id);
+    Result queryTrainRouteDetail(String trainRouteId){
+        return trainRouteQueryService.queryTrainRouteDetail(trainRouteId);
     }
 }
 
