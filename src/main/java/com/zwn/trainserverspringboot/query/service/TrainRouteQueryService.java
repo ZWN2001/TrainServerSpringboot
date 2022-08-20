@@ -39,4 +39,20 @@ public class TrainRouteQueryService {
         List<TrainRouteAtom> trainRouteAtoms = trainRouteQueryMapper.queryTrainRouteDetail(train_route_id);
         return Result.getResult(ResultCodeEnum.SUCCESS,trainRouteAtoms);
     }
+
+    public Result queryTrainRouteStartTime(String trainRouteId, String stationId){
+        String startTime = trainRouteQueryMapper.queryTrainRouteStartTime(trainRouteId,stationId);
+        if (startTime == null || startTime.length() == 0){
+            return Result.getResult(ResultCodeEnum.TRAIN_ROUTE_NOT_EXIST);
+        }
+        return Result.getResult(ResultCodeEnum.SUCCESS,startTime);
+    }
+
+    public Result queryTrainRouteArriveTime(String trainRouteId, String stationId){
+        String startTime = trainRouteQueryMapper.queryTrainRouteStartTime(trainRouteId,stationId);
+        if (startTime == null || startTime.length() == 0){
+            return Result.getResult(ResultCodeEnum.TRAIN_ROUTE_NOT_EXIST);
+        }
+        return Result.getResult(ResultCodeEnum.SUCCESS,startTime);
+    }
 }

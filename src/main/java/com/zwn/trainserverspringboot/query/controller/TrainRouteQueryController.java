@@ -1,6 +1,5 @@
 package com.zwn.trainserverspringboot.query.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.zwn.trainserverspringboot.query.service.TrainRouteQueryService;
 import com.zwn.trainserverspringboot.util.Result;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +25,16 @@ public class TrainRouteQueryController {
     @GetMapping("/trainRouteDetail")
     Result queryTrainRouteDetail(String trainRouteId){
         return trainRouteQueryService.queryTrainRouteDetail(trainRouteId);
+    }
+
+    @GetMapping("/trainRouteStartTime")
+    Result queryTrainRouteStartTime(String trainRouteId, String stationId){
+        return trainRouteQueryService.queryTrainRouteStartTime(trainRouteId,stationId);
+    }
+
+    @GetMapping("/trainRouteArriveTime")
+    Result queryTrainRouteArriveTime(String trainRouteId, String stationId){
+        return trainRouteQueryService.queryTrainRouteArriveTime(trainRouteId,stationId);
     }
 }
 

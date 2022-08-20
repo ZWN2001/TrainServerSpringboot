@@ -15,4 +15,6 @@ public interface TrainRouteQueryMapper {
     List<TrainRouteAtom> queryTrainRouteDetail(String train_route_id);
     List<AtomStationKey> getAtomStationKeys(Order order);
     List<AtomStationMap> getAllAtomStationKeys();
+    String queryTrainRouteStartTime(String train_route_id, String station_id);
+    String queryTrainRouteArriveTime(String train_route_id, String station_id);
 }
