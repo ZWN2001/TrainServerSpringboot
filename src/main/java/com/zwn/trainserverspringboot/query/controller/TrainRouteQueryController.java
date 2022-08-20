@@ -27,14 +27,10 @@ public class TrainRouteQueryController {
         return trainRouteQueryService.queryTrainRouteDetail(trainRouteId);
     }
 
-    @GetMapping("/trainRouteStartTime")
-    Result queryTrainRouteStartTime(String trainRouteId, String stationId){
-        return trainRouteQueryService.queryTrainRouteStartTime(trainRouteId,stationId);
+    @GetMapping("/ticketRouteTimeInfo")
+    Result queryTicketRouteTimeInfo(String trainRouteId, String fromStationId, String toStationId){
+        return trainRouteQueryService.queryTicketRouteTimeInfo(trainRouteId,fromStationId,toStationId);
     }
 
-    @GetMapping("/trainRouteArriveTime")
-    Result queryTrainRouteArriveTime(String trainRouteId, String stationId){
-        return trainRouteQueryService.queryTrainRouteArriveTime(trainRouteId,stationId);
-    }
 }
 

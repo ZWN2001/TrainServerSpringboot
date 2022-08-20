@@ -83,7 +83,7 @@
                seat_type_id AS seatTypeId,  order_time AS orderTime, price AS price,
                trade_no AS tradeNo
         FROM ticket_order
-        WHERE user_id = #{userId} AND order_status = '待支付';
+        WHERE user_id = #{userId} AND order_status = '未支付';
     </select>
 
     <select id="getTicketToPayNum" resultType="java.lang.Integer">
