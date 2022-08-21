@@ -22,8 +22,6 @@ import java.io.Serializable;
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
 
-//	private static final long serialVersionUID = -8141578635231868421L;
-
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Override
