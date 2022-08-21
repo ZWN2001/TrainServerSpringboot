@@ -88,6 +88,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/login",
                         "/user/register",
                         "/station/query/allStationDetail",
+                        "/seatType/query/allSeatType",
                         "/trainRoute/query/trainRoute",
                         "/trainRoute/query/trainRouteDetail",
                         "/trainRoute/query/trainRouteStartTime",

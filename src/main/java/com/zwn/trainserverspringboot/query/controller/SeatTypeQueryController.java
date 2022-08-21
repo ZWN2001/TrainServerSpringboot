@@ -15,7 +15,7 @@ public class SeatTypeQueryController {
     @Resource
     private SeatTypeQueryService seatTypeQueryService;
 
-    @GetMapping("allSeatType")
+    @GetMapping("/allSeatType")
     Result getAllSeatType(){
         return seatTypeQueryService.getAllSeatType();
     }
