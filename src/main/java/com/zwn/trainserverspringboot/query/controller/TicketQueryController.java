@@ -60,11 +60,11 @@ public class TicketQueryController {
         }
     }
 
-    @GetMapping("/ticketInfo")
-    Result getTicketInfo(long userId, String ticketId){
+    @GetMapping("/orderInfo")
+    Result getOrderInfo(long userId, String orderId){
         Result result = UserCheck.checkWithUserId(userId);
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return ticketQueryService.getTicketInfo(ticketId);
+            return ticketQueryService.getOrderInfo(orderId);
         }else {
             return result;
         }

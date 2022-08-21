@@ -43,7 +43,6 @@ public class TrainRouteQueryService {
 
     public Result queryTicketRouteTimeInfo(String trainRouteId, String fromStationId, String toStationId){
         List<TrainRouteAtom> atomList = trainRouteQueryMapper.queryTrainRouteInfo(trainRouteId,fromStationId,toStationId);
-        System.out.println(atomList);
         if (atomList.size() == 0){
             return Result.getResult(ResultCodeEnum.TRAIN_ROUTE_NOT_EXIST);
         }else {
@@ -64,7 +63,6 @@ public class TrainRouteQueryService {
             }else {
                 hourAndMinute = getHourAndMinute1(atomList.get(0).getStartTime(),atomList.get(atomList.size() - 1).getArriveTime());
             }
-            System.out.println(day+":"+hourAndMinute);
             String duration = day > 0 ? day + ":" + hourAndMinute : hourAndMinute;
             ticketRouteTimeInfo.setDurationInfo(duration);
             return Result.getResult(ResultCodeEnum.SUCCESS,ticketRouteTimeInfo);
