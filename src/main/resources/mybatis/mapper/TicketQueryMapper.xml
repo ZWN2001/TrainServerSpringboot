@@ -10,8 +10,8 @@
         WITH info AS (SELECT station_id,station_no FROM train_route_atom WHERE train_route_id = #{param1}),
              from_s AS (SELECT station_id FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param3}),
              to_s AS (SELECT station_id FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param4})
-        SELECT train_route_id, seat_type_id, min(remaining_ticket_num) AS remaining_ticket_num
-        FROM ticket_management
+        SELECT train_route_id AS trainRouteId, seat_type_id AS seatTypeId, min(remaining_ticket_num) AS remainingTicketNum
+        FROM ticket_management_atom
         WHERE train_route_id = #{param1} AND ticket_date = #{param2}
 --           留下夹在用户给定的起始区间之间的站
             AND station_id IN (

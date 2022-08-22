@@ -2,12 +2,12 @@ package com.zwn.trainserverspringboot.query.bean;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class TrainRoute implements Serializable {
-
     String trainRouteId;
     String fromStationId;
     String toStationId;
@@ -16,4 +16,5 @@ public class TrainRoute implements Serializable {
     String startTime;
     String arriveTime;
     String durationInfo;
+    Map<Integer, Integer> tickets;
 }

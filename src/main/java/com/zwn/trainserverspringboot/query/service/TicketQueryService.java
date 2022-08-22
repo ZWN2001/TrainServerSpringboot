@@ -20,15 +20,14 @@ public class TicketQueryService {
     @Resource
     private TicketQueryMapper ticketQueryMapper;
 
-//    @Resource
-//    private StationQueryMapper stationQueryMapper;
-//
-//    @Resource
-//    TrainRouteQueryMapper trainRouteQueryMapper;
+    public Result getTicketsRemain(String train_route_id, String ticket_date,String from_station_id, String to_station_id){
+        try {
+            List<TicketsRemain> ticketsRemain = ticketQueryMapper.getTicketsRemain(train_route_id, ticket_date, from_station_id, to_station_id);
+            return Result.getResult(ResultCodeEnum.SUCCESS,ticketsRemain);
+        }catch (Exception e){
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
+        }
 
-    public Result getTicketsRemain(String train_route_id, String ticket_date,String from_station_id,String to_station_id){
-        List<TicketsRemain> ticketsRemain = ticketQueryMapper.getTicketsRemain(train_route_id, ticket_date, from_station_id, to_station_id);
-        return Result.getResult(ResultCodeEnum.SUCCESS,ticketsRemain);
     }
 
     public Result getTicketPrices(String train_route_id, String from_station_id, String to_station_id){

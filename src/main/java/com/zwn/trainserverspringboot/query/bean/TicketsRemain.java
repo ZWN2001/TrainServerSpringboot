@@ -7,9 +7,9 @@ import java.io.Serializable;
 
 @Data
 public class TicketsRemain implements Serializable {
-    String train_route_id;
-    String seat_type_id;
-    int remaining_ticket_num;
+    String trainRouteId;
+    int seatTypeId;
+    int remainingTicketNum;
 
     @Builder
     public TicketsRemain(){}

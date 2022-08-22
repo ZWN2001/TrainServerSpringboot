@@ -17,8 +17,8 @@ public class TrainRouteQueryController {
 
     //以出发站与终点站查可用车次
     @GetMapping("/trainRoute")
-    Result querytrainRoute(String from, String to, int day) {
-        return trainRouteQueryService.querytrainRoute(from, to, day);
+    Result querytrainRoute(String from, String to, String date) {
+        return trainRouteQueryService.querytrainRoute(from, to, date);
     }
 
     //查询车次详情（从出发地到最终目的地）

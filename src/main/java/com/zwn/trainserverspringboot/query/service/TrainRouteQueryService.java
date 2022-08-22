@@ -1,10 +1,11 @@
 package com.zwn.trainserverspringboot.query.service;
 
-import com.zwn.trainserverspringboot.query.bean.RunPlan;
 import com.zwn.trainserverspringboot.query.bean.TicketRouteTimeInfo;
+import com.zwn.trainserverspringboot.query.bean.TicketsRemain;
 import com.zwn.trainserverspringboot.query.bean.TrainRoute;
 import com.zwn.trainserverspringboot.query.bean.TrainRouteAtom;
 import com.zwn.trainserverspringboot.query.mapper.StationQueryMapper;
+import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
 import com.zwn.trainserverspringboot.query.mapper.TrainRouteQueryMapper;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
@@ -25,36 +26,52 @@ public class TrainRouteQueryService {
     @Resource
     TrainRouteQueryMapper trainRouteQueryMapper;
 
-    public Result querytrainRoute(String from, String to,  int day){
-        if (day>30 || day < 0){
+    @Resource
+    private TicketQueryMapper ticketQueryMapper;
+
+    public Result querytrainRoute(String from, String to,  String date){
+        int day = Integer.parseInt(date.substring(8,10)) - 1;
+        System.out.println(day);
+        //这里其实应该对日期进行校验的
+        if (day > 30 || day < 0){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
         List<TrainRoute> trainRoutes = new ArrayList<>();
         TicketRouteTimeInfo ticketRouteTimeInfo;
+        List<TicketsRemain> ticketsRemain;
+        Map<Integer,Integer> tickets;
         //两个城市的所有车站
         List<String> allFromStations = stationQueryMapper.getSameCityStationId(from);
         List<String> allToStations = stationQueryMapper.getSameCityStationId(to);
-        for (String fromStation:allFromStations) {
-            for (String toStation:allToStations){
-                List<TrainRoute> trainRoute = trainRouteQueryMapper.getTrainRoutesByFromAndTo(fromStation, toStation);
-                trainRoutes.addAll(trainRoute);
+
+        for (String fromStationId : allFromStations) {
+            for (String toStationId : allToStations){
+                List<TrainRoute> trainRoute = trainRouteQueryMapper.getTrainRoutesByFromAndTo(fromStationId, toStationId);
+                if(trainRoute.size() == 0){
+                    continue;
+                }
+                //查售票计划
+                trainRoute.removeIf(route -> trainRouteQueryMapper.getRunPlan(route.getTrainRouteId()).getRunPlan().charAt(day) == '0');
+
                 for (TrainRoute route : trainRoute){
+                    //加载时间
                     ticketRouteTimeInfo = (TicketRouteTimeInfo) queryTicketRouteTimeInfo(route.getTrainRouteId(),
                             route.getFromStationId(),route.getToStationId()).getData();
                     route.setStartTime(ticketRouteTimeInfo.getStartTime());
                     route.setArriveTime(ticketRouteTimeInfo.getArriveTime());
                     route.setDurationInfo(ticketRouteTimeInfo.getDurationInfo());
+                    //加载票数
+                    tickets = new HashMap<>();
+                    ticketsRemain = ticketQueryMapper.getTicketsRemain(route.getTrainRouteId(), date,
+                            route.getFromStationId(), route.getToStationId());
+                    for (TicketsRemain t : ticketsRemain) {
+                        tickets.put(t.getSeatTypeId(),t.getRemainingTicketNum());
+                    }
+                    route.setTickets(tickets);
                 }
+                trainRoutes.addAll(trainRoute);
             }
         }
-        if (trainRoutes.size() == 0){
-            return Result.getResult(ResultCodeEnum.SUCCESS,trainRoutes);
-        }
-
-        //查售票计划
-//
-        trainRoutes.removeIf(route -> trainRouteQueryMapper.getRunPlan(route.getTrainRouteId()).getRunPlan().charAt(day) == '0');
-
         return Result.getResult(ResultCodeEnum.SUCCESS,trainRoutes);
     }
 
