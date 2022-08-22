@@ -30,7 +30,7 @@ public class TrainRouteQueryService {
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
         List<TrainRoute> trainRoutes = new ArrayList<>();
-        List<String> routes = new ArrayList<>();
+        TicketRouteTimeInfo ticketRouteTimeInfo;
         //两个城市的所有车站
         List<String> allFromStations = stationQueryMapper.getSameCityStationId(from);
         List<String> allToStations = stationQueryMapper.getSameCityStationId(to);
@@ -39,7 +39,11 @@ public class TrainRouteQueryService {
                 List<TrainRoute> trainRoute = trainRouteQueryMapper.getTrainRoutesByFromAndTo(fromStation, toStation);
                 trainRoutes.addAll(trainRoute);
                 for (TrainRoute route : trainRoute){
-                    routes.add(route.getTrainRouteId());
+                    ticketRouteTimeInfo = (TicketRouteTimeInfo) queryTicketRouteTimeInfo(route.getTrainRouteId(),
+                            route.getFromStationId(),route.getToStationId()).getData();
+                    route.setStartTime(ticketRouteTimeInfo.getStartTime());
+                    route.setArriveTime(ticketRouteTimeInfo.getArriveTime());
+                    route.setDurationInfo(ticketRouteTimeInfo.getDurationInfo());
                 }
             }
         }

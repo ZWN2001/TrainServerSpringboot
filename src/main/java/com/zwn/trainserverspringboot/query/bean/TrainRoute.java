@@ -11,9 +11,9 @@ public class TrainRoute implements Serializable {
     String trainRouteId;
     String fromStationId;
     String toStationId;
-//    String startTime;
-//    String arriveTime;
     boolean formIsStart;
     boolean toIsEnd;
-
+    String startTime;
+    String arriveTime;
+    String durationInfo;
 }
