@@ -91,7 +91,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/seatType/query/allSeatType",
                         "/trainRoute/query/trainRoute",
                         "/trainRoute/query/trainRouteDetail",
-                        "/trainRoute/query/trainRouteStartTime",
+                        "/trainRoute/query/ticketRouteTimeInfo",
                         "/trainRoute/query/trainRouteArriveTime"
                 ).permitAll()
                 //跨域的post的请求会验证两次，get不会。网上的解释是，post请求第一次是预检请求，Request Method： OPTIONS。

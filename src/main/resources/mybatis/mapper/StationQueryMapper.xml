@@ -5,7 +5,7 @@
 <mapper namespace="com.zwn.trainserverspringboot.query.mapper.StationQueryMapper">
 
     <select id="getSameCityStationId" resultType="java.lang.String">
-        SELECT `station_id` FROM station WHERE city in (SELECT city FROM station WHERE station_name = #{stationName})
+        SELECT `station_id` FROM station WHERE city in (SELECT city FROM station WHERE station_id = #{stationId})
     </select>
 
     <select id="getAllStationInfo" resultType="com.zwn.trainserverspringboot.query.bean.Station">

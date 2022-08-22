@@ -9,6 +9,7 @@ import java.util.List;
 @Mapper
 public interface TrainRouteQueryMapper {
     List<TrainRoute> getTrainRoutesByFromAndTo(String fromStationId, String toStationId);
+    RunPlan getRunPlan(String routeIds);
     List<TrainRouteAtom> queryTrainRouteDetail(String train_route_id);
     List<AtomStationKey> getAtomStationKeys(Order order);
     List<AtomStationMap> getAllAtomStationKeys();

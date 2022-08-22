@@ -1,5 +1,6 @@
 package com.zwn.trainserverspringboot.query.service;
 
+import com.zwn.trainserverspringboot.query.bean.RunPlan;
 import com.zwn.trainserverspringboot.query.bean.TicketRouteTimeInfo;
 import com.zwn.trainserverspringboot.query.bean.TrainRoute;
 import com.zwn.trainserverspringboot.query.bean.TrainRouteAtom;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TrainRouteQueryService {
@@ -22,8 +25,12 @@ public class TrainRouteQueryService {
     @Resource
     TrainRouteQueryMapper trainRouteQueryMapper;
 
-    public Result querytrainRoute(String from, String to){
+    public Result querytrainRoute(String from, String to,  int day){
+        if (day>30 || day < 0){
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
         List<TrainRoute> trainRoutes = new ArrayList<>();
+        List<String> routes = new ArrayList<>();
         //两个城市的所有车站
         List<String> allFromStations = stationQueryMapper.getSameCityStationId(from);
         List<String> allToStations = stationQueryMapper.getSameCityStationId(to);
@@ -31,8 +38,19 @@ public class TrainRouteQueryService {
             for (String toStation:allToStations){
                 List<TrainRoute> trainRoute = trainRouteQueryMapper.getTrainRoutesByFromAndTo(fromStation, toStation);
                 trainRoutes.addAll(trainRoute);
+                for (TrainRoute route : trainRoute){
+                    routes.add(route.getTrainRouteId());
+                }
             }
         }
+        if (trainRoutes.size() == 0){
+            return Result.getResult(ResultCodeEnum.SUCCESS,trainRoutes);
+        }
+
+        //查售票计划
+//
+        trainRoutes.removeIf(route -> trainRouteQueryMapper.getRunPlan(route.getTrainRouteId()).getRunPlan().charAt(day) == '0');
+
         return Result.getResult(ResultCodeEnum.SUCCESS,trainRoutes);
     }
 
@@ -75,8 +93,8 @@ public class TrainRouteQueryService {
 
     //first < next, 即first早于next
     private String getHourAndMinute1(String first, String next){
-        int allMinutes = 60 * (Integer.parseInt(first.substring(0, 2)) - Integer.parseInt(next.substring(0, 2)))
-                + (Integer.parseInt(first.substring(3, 5)) - Integer.parseInt(next.substring(3, 5)));
+        int allMinutes = 60 * (Integer.parseInt(next.substring(0, 2)) - Integer.parseInt(first.substring(0, 2)))
+                + (Integer.parseInt(next.substring(3, 5)) - Integer.parseInt(first.substring(3, 5)));
         return allMinutes/60 + ":" + allMinutes % 60;
     }
 
