@@ -30,7 +30,7 @@ public class TicketQueryController {
     }
 
     //查票价
-    @GetMapping("/ticketPrice")
+    @GetMapping("/ticketPrices")
     Result getTicketPrice(String trainRouteId,String fromStationId,String toStationId){
         try {
             return ticketQueryService.getTicketPrices(trainRouteId, fromStationId, toStationId);

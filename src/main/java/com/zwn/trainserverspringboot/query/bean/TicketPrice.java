@@ -8,8 +8,7 @@ import java.io.Serializable;
 @Data
 @Builder
 public class TicketPrice implements Serializable {
-    String trainRouteId;
-    int deatTypeId;
+//    String trainRouteId;
+    int seatTypeId;
     double price;
-
 }
