@@ -7,17 +7,17 @@
 
     <select id="getTicketsRemain" resultType="com.zwn.trainserverspringboot.query.bean.TicketsRemain">
 --         先找出所有经过的站
-        WITH info AS (SELECT station_id,station_no FROM train_route_atom WHERE train_route_id = #{param1}),
-             from_s AS (SELECT station_id FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param3}),
-             to_s AS (SELECT station_id FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param4})
+        WITH info AS (SELECT train_route_id,seat_type_id,station_id,station_no,remaining_ticket_num FROM ticket_management_atom WHERE train_route_id = #{param1} AND ticket_date = #{param2}),
+             from_s AS (SELECT station_no FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param3}),
+             to_s AS (SELECT station_no FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param4})
         SELECT train_route_id AS trainRouteId, seat_type_id AS seatTypeId, min(remaining_ticket_num) AS remainingTicketNum
-        FROM ticket_management_atom
-        WHERE train_route_id = #{param1} AND ticket_date = #{param2}
+        FROM info
+        WHERE
 --           留下夹在用户给定的起始区间之间的站
-            AND station_id IN (
+            station_id IN (
                 SELECT info.station_id FROM info,from_s,to_s
-                                  WHERE station_no
-                                      BETWEEN from_s.station_id AND to_s.station_id
+                                  WHERE info.station_no
+                                      BETWEEN from_s.station_no AND to_s.station_no
             )
 --         按座位类型分类返回
         GROUP BY seat_type_id;

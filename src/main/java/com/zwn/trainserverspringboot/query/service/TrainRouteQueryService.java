@@ -31,7 +31,6 @@ public class TrainRouteQueryService {
 
     public Result querytrainRoute(String from, String to,  String date){
         int day = Integer.parseInt(date.substring(8,10)) - 1;
-        System.out.println(day);
         //这里其实应该对日期进行校验的
         if (day > 30 || day < 0){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);

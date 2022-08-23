@@ -86,9 +86,9 @@ public class PassengerCommandService {
         passenger.setPhoneNum(PassengerPhoneNumGenerateUtil.generate());
         String s = passenger.getPhoneNum();
         if (Integer.parseInt(s.substring(s.length()-3,s.length()-1)) % 4 == 1){
-            passenger.setRole("student");
+            passenger.setProle("student");
         }else {
-            passenger.setRole("common");
+            passenger.setProle("common");
         }
         return Result.getResult(ResultCodeEnum.SUCCESS,passenger);
     }
