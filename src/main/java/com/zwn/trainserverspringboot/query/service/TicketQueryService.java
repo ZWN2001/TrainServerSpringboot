@@ -61,7 +61,7 @@ public class TicketQueryService {
         return Result.getResult(ResultCodeEnum.SUCCESS,ticketPrices);
     }
 
-    ///获取自己的票（已出票的订单）
+    ///获取自己的票（已支付的订单）
     public Result getSelfTicket(long userId){
         List<OrderGeneral> result;
         try {

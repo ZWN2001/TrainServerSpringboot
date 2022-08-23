@@ -120,7 +120,7 @@ public class TicketCommandService {
         if (userId != order.getUserId()){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST,"user ID error");
         }
-        if (!order.getOrderStatus().equals(OrderStatus.PAIED)  || !order.getOrderStatus().equals(OrderStatus.DRAFTED)){
+        if (!order.getOrderStatus().equals(OrderStatus.PAIED)){
             return Result.getResult(ResultCodeEnum.TICKET_UNABLE_REBOOK);
         }
 
@@ -139,7 +139,7 @@ public class TicketCommandService {
                 }
                 try {
                     ticketCommandMapper.ticketRebook(orderId, passengerId, departureDate, trainRouteId);
-                    if (order.getOrderStatus().equals(OrderStatus.DRAFTED) && carriage != null && seat != null){
+                    if (order.getOrderStatus().equals(OrderStatus.PAIED) && carriage != null && seat != null){
                         ticketCommandMapper.updateTicketSold(orderId, passengerId, carriage, seat);
                     }
                     return Result.getResult(ResultCodeEnum.SUCCESS);

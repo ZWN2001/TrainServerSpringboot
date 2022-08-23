@@ -5,13 +5,14 @@
 <mapper namespace="com.zwn.trainserverspringboot.query.mapper.PassengerQueryMapper">
 
     <select id="queryAllPassengers" resultType="com.zwn.trainserverspringboot.command.bean.Passenger">
-        SELECT user_id,passenger_id,passenger_name,phone_num,prole
+        SELECT user_id AS userId, passenger_id AS passengerId, passenger_name AS passengerName, phone_num AS phoneNum,
+               role AS prole
         FROM passenger
         WHERE user_id = #{param1}
     </select>
 
     <select id="querySinglePassenger" resultType="com.zwn.trainserverspringboot.command.bean.Passenger">
-        SELECT passenger_id,passenger_name,phone_num,prole
+        SELECT passenger_id AS passengerId, passenger_name AS passengerName, phone_num AS phoneNum, role AS prole
         FROM passenger
         WHERE user_id = #{param1} AND passenger_id = #{param2}
     </select>
