@@ -20,23 +20,38 @@ public class TicketQueryController {
 
     //查从出发地到目的地的某车次余票
     @GetMapping("/ticketRemain")
-    String getTicketsRemain(String train_route_id, String ticket_date,String from_station_id,String to_station_id){
-        return JSON.toJSONString(ticketQueryService.getTicketsRemain(train_route_id, ticket_date,from_station_id,to_station_id));
+    Result getTicketsRemain(String trainRouteId, String ticketDate,String fromStationId,String toStationId){
+        try {
+            return ticketQueryService.getTicketsRemain(trainRouteId, ticketDate,fromStationId,toStationId);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
     }
 
     //查票价
     @GetMapping("/ticketPrice")
-    String getTicketPrice(String train_route_id,String from_station_id,String to_station_id){
-        return JSON.toJSONString(ticketQueryService.getTicketPrices(train_route_id, from_station_id, to_station_id));
+    Result getTicketPrice(String trainRouteId,String fromStationId,String toStationId){
+        try {
+            return ticketQueryService.getTicketPrices(trainRouteId, fromStationId, toStationId);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/selfTicket")
-    String getSelfTicket(long userId){
+    Result getSelfTicket(long userId){
         Result result = UserCheck.checkWithUserId(userId);
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return JSON.toJSONString(ticketQueryService.getSelfTicket(userId));
+            try {
+                return ticketQueryService.getSelfTicket(userId);
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
         }else {
-            return JSON.toJSONString(result);
+            return result;
         }
     }
 
@@ -44,7 +59,12 @@ public class TicketQueryController {
     Result getSelfOrder(long userId){
         Result result = UserCheck.checkWithUserId(userId);
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return ticketQueryService.getSelfOrder(userId);
+            try {
+                return ticketQueryService.getSelfOrder(userId);
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
         }else {
             return result;
         }
@@ -54,7 +74,12 @@ public class TicketQueryController {
     Result getSelfPaiedOrder(long userId){
         Result result = UserCheck.checkWithUserId(userId);
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return ticketQueryService.getSelfPaiedOrder(userId);
+            try {
+                return ticketQueryService.getSelfPaiedOrder(userId);
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
         }else {
             return result;
         }
@@ -64,7 +89,12 @@ public class TicketQueryController {
     Result getOrderInfo(long userId, String orderId){
         Result result = UserCheck.checkWithUserId(userId);
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return ticketQueryService.getOrderInfo(orderId);
+            try {
+                return ticketQueryService.getOrderInfo(orderId);
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
         }else {
             return result;
         }
@@ -74,7 +104,12 @@ public class TicketQueryController {
     Result getTicketSeatInfo(String ticketId){
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return ticketQueryService.getTicketSeatInfo(ticketId);
+            try {
+                return ticketQueryService.getTicketSeatInfo(ticketId);
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
         }else {
             return result;
         }
@@ -84,7 +119,12 @@ public class TicketQueryController {
     Result getTicketToPayDetail(long userId){
         Result result = UserCheck.checkWithUserId(userId);
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return ticketQueryService.getTicketToPayDetail(userId);
+            try {
+                return ticketQueryService.getTicketToPayDetail(userId);
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
         }else {
             return result;
         }

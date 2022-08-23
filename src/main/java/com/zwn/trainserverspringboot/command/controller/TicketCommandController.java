@@ -32,7 +32,7 @@ public class TicketCommandController {
                 results = ticketCommandService.ticketBooking(order, passengerIds);
             }catch (Exception e){
                 e.printStackTrace();
-                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
             }
             return results;
         }else {
@@ -49,7 +49,7 @@ public class TicketCommandController {
                 results = ticketCommandService.ticketBookingCancel(key);
             }catch (Exception e){
                 e.printStackTrace();
-                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
             }
             return results;
         }else {
@@ -61,7 +61,13 @@ public class TicketCommandController {
     Result ticketRefund(String orderId, String passengerId){
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return ticketCommandService.ticketRefund(orderId,passengerId);
+            try{
+                return ticketCommandService.ticketRefund(orderId,passengerId);
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
+
         }else {
             return result;
         }
@@ -71,18 +77,29 @@ public class TicketCommandController {
     Result ticketRebook(String orderId, String passengerId, String departureDate, String trainRouteId, String carriage, String seat){
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return ticketCommandService.ticketRebook(orderId, passengerId, UserUtil.getCurrentUserId(), departureDate,
-                    trainRouteId, carriage, seat);
+            try{
+                return ticketCommandService.ticketRebook(orderId, passengerId, UserUtil.getCurrentUserId(), departureDate,
+                        trainRouteId, carriage, seat);
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
+
         }else {
             return result;
         }
     }
 
     @PostMapping("/get")
-    Result ticketGet(Order order, String passengerId, int carriage_id, int seat){
+    Result ticketGet(Order order, String passengerId, int carriageId, int seat){
         Result result = UserCheck.checkWithUserId(order.getUserId());
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return ticketCommandService.ticketGet(order.getOrderId(), passengerId, carriage_id, seat);
+            try{
+                return ticketCommandService.ticketGet(order.getOrderId(), passengerId, carriageId, seat);
+            }catch (Exception e){
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
+
         }else {
             return result;
         }

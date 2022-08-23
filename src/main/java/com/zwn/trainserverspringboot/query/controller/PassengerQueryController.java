@@ -33,7 +33,12 @@ public class PassengerQueryController {
     Result querySinglePassenger(long userId, String passengerId){
         Result result = UserCheck.checkWithUserId(userId);
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-            return passengerQueryService.querySinglePassenger(userId, passengerId);
+            try {
+                return passengerQueryService.querySinglePassenger(userId, passengerId);
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
         }else {
             return result;
         }
