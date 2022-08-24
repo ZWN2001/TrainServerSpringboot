@@ -68,6 +68,8 @@ public class TicketCommandService {
                             OrderMessage message = OrderMessage.builder().order(order).num(passengerIds.size()).build();
                             producer.sendTicketBooking(message);
                             results.add(Result.getResult(ResultCodeEnum.SUCCESS,order));
+                            //扣库存
+                            redisDecr(order,1);
                         }
                     }catch (Exception e){
                         e.printStackTrace();
@@ -179,25 +181,30 @@ public class TicketCommandService {
     private boolean isEnough(Order order, int ticketNum){
         List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
         boolean enough = true;
-        int index = 0;//用于标识从哪个下标以前的余票需要加回
-        for (int i = 0; i< atomStationKeys.size();i++){
-            atomStationKeys.get(i).setDepartureDate(order.getDepartureDate());
-            atomStationKeys.get(i).setSeatTypeId(order.getSeatTypeId());
-            String key = JSON.toJSONString(atomStationKeys.get(i));
-            long surplusNumber = redisUtil.decr(key,ticketNum);
-            if(surplusNumber < 0) {
+        for (AtomStationKey atomStationKey : atomStationKeys) {
+            atomStationKey.setDepartureDate(order.getDepartureDate());
+            atomStationKey.setSeatTypeId(order.getSeatTypeId());
+            String key = JSON.toJSONString(atomStationKey);
+            long surplusNumber = redisUtil.decr(key, ticketNum);
+            redisUtil.incr(key, ticketNum);
+            if (surplusNumber < 0) {
                 enough = false;
-                index = i;
                 break;
             }
         }
-        if (!enough){//不足
-            for (int i = 0; i <= index; i++) {
-                String key = JSON.toJSONString(atomStationKeys.get(i));
-                redisUtil.incr(key, ticketNum);
-            }
-        }
         return enough;
+    }
+
+
+    ///扣库存
+    private void redisDecr(Order order, int ticketNum){
+        List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
+        for (AtomStationKey atomStationKey : atomStationKeys) {
+            atomStationKey.setDepartureDate(order.getDepartureDate());
+            atomStationKey.setSeatTypeId(order.getSeatTypeId());
+            String key = JSON.toJSONString(atomStationKey);
+            redisUtil.decr(key, ticketNum);
+        }
     }
 
 

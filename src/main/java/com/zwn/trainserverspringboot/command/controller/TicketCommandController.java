@@ -1,8 +1,10 @@
 package com.zwn.trainserverspringboot.command.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.OrderPrimaryKey;
+import com.zwn.trainserverspringboot.command.bean.Passenger;
 import com.zwn.trainserverspringboot.command.service.TicketCommandService;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
@@ -24,7 +26,15 @@ public class TicketCommandController {
 
     //默认是一张票的预定，可以预定多个乘客
     @PostMapping("/booking")
-    Result ticketsBooking(Order order , List<String> passengerIds){
+    Result ticketsBooking(String orderString , String passengerIdsString){
+        JSONObject jsonObject = JSONObject.parseObject(orderString);
+        Order order = JSONObject.toJavaObject(jsonObject, Order.class);
+        String src = passengerIdsString.substring(1,passengerIdsString.length() - 1);
+        String[] s = src.split(",");
+        for (int i = 0; i < s.length; i++) {
+            s[i] = s[i].trim();
+        }
+        List<String> passengerIds = List.of(s);
         Result result = UserCheck.checkWithUserId(order.getUserId());
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             Result results;

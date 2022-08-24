@@ -40,9 +40,9 @@ public class Order implements Serializable {
         } catch (ParseException e) {
             return ResultCodeEnum.ORDER_TIME_FORMAT_ERROR;
         }
-        if(!IdCardUtil.isValidCard(passengerId)){
-            return ResultCodeEnum.ORDER_PASSENGER_ID_ILLEGAL;
-        }
+//        if(!IdCardUtil.isValidCard(passengerId)){
+//            return ResultCodeEnum.ORDER_PASSENGER_ID_ILLEGAL;
+//        }
         return ResultCodeEnum.SUCCESS;
     }
 }

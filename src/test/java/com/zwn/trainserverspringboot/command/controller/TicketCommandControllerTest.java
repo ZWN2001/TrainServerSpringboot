@@ -1,5 +1,6 @@
 package com.zwn.trainserverspringboot.command.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.zwn.trainserverspringboot.command.bean.Order;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,7 +38,7 @@ class TicketCommandControllerTest {
     void ticketsBooking() {
         passengers.add("370782200112215512");
         passengers.add("37078220011221551X");
-        System.out.println(ticketCommandController.ticketsBooking(order,passengers));
+//        System.out.println(ticketCommandController.ticketsBooking(JSON.toJSONString(order),passengers));
     }
 
     @Test
