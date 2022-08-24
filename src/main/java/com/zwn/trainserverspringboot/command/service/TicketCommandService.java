@@ -69,7 +69,7 @@ public class TicketCommandService {
                             producer.sendTicketBooking(message);
                             results.add(Result.getResult(ResultCodeEnum.SUCCESS,order));
                             //扣库存
-                            redisDecr(order,1);
+                            redisDecr(order);
                         }
                     }catch (Exception e){
                         e.printStackTrace();
@@ -197,13 +197,13 @@ public class TicketCommandService {
 
 
     ///扣库存
-    private void redisDecr(Order order, int ticketNum){
+    private void redisDecr(Order order){
         List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
         for (AtomStationKey atomStationKey : atomStationKeys) {
             atomStationKey.setDepartureDate(order.getDepartureDate());
             atomStationKey.setSeatTypeId(order.getSeatTypeId());
             String key = JSON.toJSONString(atomStationKey);
-            redisUtil.decr(key, ticketNum);
+            redisUtil.decr(key, 1);
         }
     }
 
