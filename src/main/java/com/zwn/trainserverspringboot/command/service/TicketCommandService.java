@@ -92,6 +92,9 @@ public class TicketCommandService {
     public Result ticketBookingCancel(String departureDate, String trainRouteId, List<String> passengerIds){
         try {
             for (String pid:passengerIds) {
+                System.out.println(departureDate);
+                System.out.println(trainRouteId);
+                System.out.println(pid);
                 ticketCommandMapper.ticketBookingCancel(departureDate,trainRouteId,pid);
             }
             return Result.getResult(ResultCodeEnum.SUCCESS);

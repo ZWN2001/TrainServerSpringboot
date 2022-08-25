@@ -9,7 +9,6 @@ import com.alipay.api.domain.AlipayTradePrecreateModel;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.zwn.trainserverspringboot.command.bean.Order;
-import com.zwn.trainserverspringboot.command.bean.Pay;
 import com.zwn.trainserverspringboot.command.bean.PayResult;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
 import com.zwn.trainserverspringboot.config.AlipayConfig;
@@ -34,6 +33,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -52,25 +52,19 @@ public class AlipayService  {
     private TicketCommandMapper ticketCommandMapper;
 
 
-    public Result alipay(Pay pay) throws Exception {
-        /*
-         * 1. 获取阿里客户端
-         * 2. 获取阿里请求对象
-         * 3. 设置请求参数
-         * 4. 设置同步通知回调路径
-         * 5. 设置异步通知回调路径
-         */
+    public Result alipay(String orderId, List<String> passengerId, int payMethod) throws Exception {
         Order order = new Order();
         double price = 0;
         List<String> errorList = new ArrayList<>();
-        for (String pid : pay.getPassengerId()){
-             order = orderQueryMapper.getOrderById(pay.getOrderId(),pid);
+        for (String pid : passengerId){
+             order = orderQueryMapper.getOrderById(orderId ,pid);
             if (order == null){
                 errorList.add(pid);
             }
             assert order != null;
             price += order.getPrice();
         }
+        order.setPrice(price);
 
 
         //设置支付回调时可以在request中获取的参数
@@ -83,7 +77,7 @@ public class AlipayService  {
         jsonObject.put("toStationId", order.getToStationId());
         jsonObject.put("seatTypeId", order.getSeatTypeId());
         jsonObject.put("price", price);
-        jsonObject.put("payType", pay.getPayMethod());
+        jsonObject.put("payType", payMethod);
         String params = jsonObject.toString();
 
         //设置支付参数
@@ -91,24 +85,30 @@ public class AlipayService  {
         model.setBody(params);
         model.setTotalAmount(String.valueOf(order.getPrice()));
         model.setOutTradeNo(order.getOrderId());
-//        model.setSubject();
-        //获取响应二维码信息
-        QrCodeResponse qrCodeResponse = qrcodePay(model);
-        //制作二维码并且返回给前端
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        String logopath;
-        logopath = ResourceUtils.getFile("classpath:favicon.png").getAbsolutePath();
-        logger.info("二维码的图片路径为===>" + logopath);
-        BufferedImage encode = QRCodeUtil.encode(qrCodeResponse.getQr_code(), logopath, false);
-        ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(byteArrayOutputStream);
-        ImageIO.write(encode, "JPEG", imageOutputStream);
-        imageOutputStream.close();
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-        PayResult result =  PayResult.builder()
-                .results(errorList)
-                .qrcode(FileCopyUtils.copyToByteArray(byteArrayInputStream))
-                .build();
-        return Result.getResult(ResultCodeEnum.SUCCESS,result);
+        model.setSubject("车票");
+        try{
+            //获取响应二维码信息
+            QrCodeResponse qrCodeResponse = qrcodePay(model);
+//            //制作二维码并且返回给前端
+//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//            String logopath;
+//            logopath = ResourceUtils.getFile("classpath:favicon.png").getAbsolutePath();
+//            System.out.println("二维码的图片路径为===>" + logopath);
+//            BufferedImage encode = QRCodeUtil.encode(qrCodeResponse.getQr_code(), logopath, false);
+//            ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(byteArrayOutputStream);
+//            ImageIO.write(encode, "JPEG", imageOutputStream);
+//            imageOutputStream.close();
+//            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+//            PayResult result =  PayResult.builder()
+//                    .results(errorList)
+//                    .qrcode(FileCopyUtils.copyToByteArray(byteArrayInputStream))
+//                    .build();
+            return Result.getResult(ResultCodeEnum.SUCCESS,qrCodeResponse.getQr_code());
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST,e.getClass().toString());
+        }
+
     }
 
     public boolean alipayCallback(HttpServletRequest request) {
@@ -121,9 +121,8 @@ public class AlipayService  {
             JSONObject body = JSONObject.parseObject(body1);
             String ptype = body.getString("payType");
             String orderId = body.getString("orderId");
-            if (ptype != null && ptype.equals("1")) {
-                ticketCommandMapper.ticketPay(orderId, tradeNo);
-            }
+            ticketCommandMapper.ticketPay(orderId, tradeNo);
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("异常====>"+ e);

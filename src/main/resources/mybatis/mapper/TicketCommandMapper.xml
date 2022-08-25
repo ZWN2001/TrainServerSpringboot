@@ -56,14 +56,14 @@
     </update>
 
     <delete id="ticketBookingCancel">
+        DELETE FROM ticket_booking
+        WHERE order_id IN
+              (SELECT order_id FROM ticket_order WHERE departure_date = #{param1}
+                                                   AND train_route_id = #{param2}
+                                                   AND passenger_id = #{param3});
+
         DELETE FROM ticket_order WHERE departure_date = #{param1} AND train_route_id = #{param2} AND
             passenger_id = #{param3};
-
-        DELETE FROM ticket_booking
-               WHERE order_id IN
-                     (SELECT order_id FROM ticket_order WHERE departure_date = #{param1}
-                                                          AND train_route_id = #{param2}
-                                                          AND passenger_id = #{param3});
     </delete>
 
 </mapper>

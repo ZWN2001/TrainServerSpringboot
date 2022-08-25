@@ -21,4 +21,5 @@ public interface TicketQueryMapper {
     SeatInfo getTicketSeatInfo(String ticketId);
     List<Order> getTicketToPayDetail(long userId);
     int getTicketToPayNum(long userId);
+    String getOrderStatus(String orderId);
 }

@@ -1,6 +1,5 @@
 package com.zwn.trainserverspringboot.query.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.zwn.trainserverspringboot.query.service.TicketQueryService;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
@@ -127,6 +126,16 @@ public class TicketQueryController {
             }
         }else {
             return result;
+        }
+    }
+
+    @GetMapping("/orderStatus")
+    Result getOrderStatus(String orderId){
+        try {
+            return ticketQueryService.getOrderStatus(orderId);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST,e.getClass().toString());
         }
     }
 

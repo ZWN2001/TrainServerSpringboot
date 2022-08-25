@@ -127,4 +127,19 @@ public class TicketQueryService {
             return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,e.getClass().toString());
         }
     }
+
+
+    public Result getOrderStatus(String orderId){
+        String status;
+        try {
+            status = ticketQueryMapper.getOrderStatus(orderId);
+        }catch (Exception e){
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
+
+        if(status.equals("已支付")){
+            return Result.getResult(ResultCodeEnum.SUCCESS,true);
+        }
+        return Result.getResult(ResultCodeEnum.SUCCESS,false);
+    }
 }
