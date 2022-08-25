@@ -13,6 +13,7 @@ import com.zwn.trainserverspringboot.command.bean.PayResult;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
 import com.zwn.trainserverspringboot.config.AlipayConfig;
 import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
+import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
 import com.zwn.trainserverspringboot.util.ParamsUtil;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
@@ -50,6 +51,9 @@ public class AlipayService  {
 
     @Resource
     private TicketCommandMapper ticketCommandMapper;
+
+    @Resource
+    private TicketQueryMapper ticketQueryMapper;
 
 
     public Result alipay(String orderId, List<String> passengerId, int payMethod) throws Exception {
@@ -122,6 +126,10 @@ public class AlipayService  {
             String ptype = body.getString("payType");
             String orderId = body.getString("orderId");
             ticketCommandMapper.ticketPay(orderId, tradeNo);
+            List<String> passengerIds = ticketQueryMapper.getOrderPassengers(orderId);
+            for (String pid:passengerIds) {
+                ticketCommandMapper.ticketSoldInit(orderId,pid);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

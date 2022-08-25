@@ -44,7 +44,7 @@
 
     <select id="getSelfTicket" resultType="com.zwn.trainserverspringboot.command.bean.OrderGeneral">
         SELECT order_id AS orderId, train_route_id AS trainRouteId, from_station_id AS fromStationId,
-               to_station_id AS toStationId, departure_date AS departureDate
+               to_station_id AS toStationId, departure_date AS departureDate,  order_status AS orderStatus
         FROM ticket_order
         WHERE user_id = #{userId} AND order_status = '已支付';
     </select>
@@ -95,5 +95,9 @@
 
     <select id="getOrderStatus" resultType="java.lang.String">
         SELECT order_status FROM ticket_order WHERE order_id = #{orderId};
+    </select>
+
+    <select id="getOrderPassengers" resultType="java.lang.String">
+        SELECT passenger_id FROM ticket_order WHERE order_id = #{orderId};
     </select>
 </mapper>

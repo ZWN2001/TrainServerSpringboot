@@ -18,6 +18,10 @@
         DELETE FROM ticket_booking WHERE order_id = #{param1};
     </update>
 
+    <insert id="ticketSoldInit">
+        INSERT INTO ticket_sold(order_id,passenger_id) VALUES (#{param1},#{param2});
+    </insert>
+
     <update id="ticketRefund">
         UPDATE ticket_order SET order_status = '已退票' WHERE order_id = #{param1} AND passenger_id = #{param2};
     </update>

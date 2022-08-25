@@ -22,4 +22,5 @@ public interface TicketQueryMapper {
     List<Order> getTicketToPayDetail(long userId);
     int getTicketToPayNum(long userId);
     String getOrderStatus(String orderId);
+    List<String> getOrderPassengers(String orderId);
 }
