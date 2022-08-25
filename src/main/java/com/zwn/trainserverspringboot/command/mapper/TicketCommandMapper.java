@@ -23,4 +23,6 @@ public interface TicketCommandMapper {
                             String toStationId, int remain);
 
     void ticketBookingCancel(String departureDate, String trainRouteId, String passengerId);
+
+    int getTicketNum(String passengerId, String departureDate, String trainRouteId);
 }

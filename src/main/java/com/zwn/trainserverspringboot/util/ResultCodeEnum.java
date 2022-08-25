@@ -39,6 +39,7 @@ public enum ResultCodeEnum implements Serializable {
     TICKET_SURPLUS_NOT_ENOUGH(41,"ticket: 余票不足"),
     TICKET_PRICE_ERROR(42,"ticket: 票价获取错误"),
     TICKET_UNABLE_REBOOK(43,"rebook: 不能改签"),
+    TICKET_BOUGHT(44,"ticket: 已经买过同车次的票"),
 
     TRAIN_ROUTE_NOT_EXIST(51,"trainRoute:不存在");
 

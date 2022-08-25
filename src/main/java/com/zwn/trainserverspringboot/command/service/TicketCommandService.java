@@ -54,6 +54,10 @@ public class TicketCommandService {
             order.setOrderId(orderNumber);
             for(String passengerId : passengerIds){
                 order.setPassengerId(passengerId);
+                //检查乘员是否买过这班车的票
+                if (ticketCommandMapper.getTicketNum(passengerId,order.getDepartureDate(),order.getTrainRouteId()) != 0){
+                    return Result.getResult(ResultCodeEnum.TICKET_BOUGHT);
+                }
                 if (order.isRequestLegal().getCode() == ResultCodeEnum.SUCCESS.getCode()){
                     try{
                         order.setOrderStatus(OrderStatus.UN_PAY);
