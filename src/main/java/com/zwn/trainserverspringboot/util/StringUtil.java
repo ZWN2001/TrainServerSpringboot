@@ -1,5 +1,6 @@
 package com.zwn.trainserverspringboot.util;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,5 +29,14 @@ public class StringUtil {
         Matcher matcher=p.matcher(content);
 
         return matcher.matches();
+    }
+
+    public static List<String> getListFromString(String src){
+        String subString = src.substring(1,src.length() - 1);
+        String[] s = subString.split(",");
+        for (int i = 0; i < s.length; i++) {
+            s[i] = s[i].trim();
+        }
+        return List.of(s);
     }
 }

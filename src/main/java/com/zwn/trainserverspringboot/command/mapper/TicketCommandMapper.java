@@ -1,8 +1,9 @@
 package com.zwn.trainserverspringboot.command.mapper;
 
 import com.zwn.trainserverspringboot.command.bean.Order;
-import com.zwn.trainserverspringboot.command.bean.OrderPrimaryKey;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 @Mapper
 public interface TicketCommandMapper {
@@ -21,5 +22,5 @@ public interface TicketCommandMapper {
     void updateTicketRemain(String trainRouteId, int seatTypeId, String ticketDate, String fromStationId,
                             String toStationId, int remain);
 
-    void ticketBookingCancel(OrderPrimaryKey key);
+    void ticketBookingCancel(String departureDate, String trainRouteId, String passengerId);
 }

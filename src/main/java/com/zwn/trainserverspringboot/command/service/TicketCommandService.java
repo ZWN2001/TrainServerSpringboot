@@ -2,7 +2,6 @@ package com.zwn.trainserverspringboot.command.service;
 
 import com.alibaba.fastjson2.JSON;
 import com.zwn.trainserverspringboot.command.bean.OrderMessage;
-import com.zwn.trainserverspringboot.command.bean.OrderPrimaryKey;
 import com.zwn.trainserverspringboot.query.bean.AtomStationKey;
 import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.OrderStatus;
@@ -90,9 +89,11 @@ public class TicketCommandService {
         }
     }
 
-    public Result ticketBookingCancel(OrderPrimaryKey key){
+    public Result ticketBookingCancel(String departureDate, String trainRouteId, List<String> passengerIds){
         try {
-            ticketCommandMapper.ticketBookingCancel(key);
+            for (String pid:passengerIds) {
+                ticketCommandMapper.ticketBookingCancel(departureDate,trainRouteId,pid);
+            }
             return Result.getResult(ResultCodeEnum.SUCCESS);
         }catch (Exception e){
             e.printStackTrace();
@@ -160,23 +161,23 @@ public class TicketCommandService {
     }
 
     //取票
-    public Result ticketGet(String orderId, String passengerId, int carriage_id, int seat){
-        try{
-            //todo:判断是否有座
-            ticketCommandMapper.ticketGet(orderId, passengerId, carriage_id, seat);
-            return Result.getResult(ResultCodeEnum.SUCCESS);
-        }catch (Exception e){
-            e.printStackTrace();
-            Throwable cause = e.getCause();
-            if (cause instanceof SQLIntegrityConstraintViolationException) {
-                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
-            }  else if (cause instanceof DuplicateKeyException) {
-                return Result.getResult(ResultCodeEnum.PASSENGER_EXIST);
-            } else {
-                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
-            }
-        }
-    }
+//    public Result ticketGet(String orderId, String passengerId, int carriage_id, int seat){
+//        try{
+//            //todo:判断是否有座
+//            ticketCommandMapper.ticketGet(orderId, passengerId, carriage_id, seat);
+//            return Result.getResult(ResultCodeEnum.SUCCESS);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            Throwable cause = e.getCause();
+//            if (cause instanceof SQLIntegrityConstraintViolationException) {
+//                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+//            }  else if (cause instanceof DuplicateKeyException) {
+//                return Result.getResult(ResultCodeEnum.PASSENGER_EXIST);
+//            } else {
+//                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
+//            }
+//        }
+//    }
 
     private boolean isEnough(Order order, int ticketNum){
         List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
