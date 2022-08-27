@@ -9,31 +9,22 @@ import com.alipay.api.domain.AlipayTradePrecreateModel;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.zwn.trainserverspringboot.command.bean.Order;
-import com.zwn.trainserverspringboot.command.bean.PayResult;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
 import com.zwn.trainserverspringboot.config.AlipayConfig;
+import com.zwn.trainserverspringboot.query.bean.SeatBookingInfo;
 import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
 import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
+import com.zwn.trainserverspringboot.query.service.SeatQueryService;
 import com.zwn.trainserverspringboot.util.ParamsUtil;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
-import com.zwn.trainserverspringboot.util.qrcode.QRCodeUtil;
 import com.zwn.trainserverspringboot.util.qrcode.QrCodeResponse;
 import com.zwn.trainserverspringboot.util.qrcode.QrResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ResourceUtils;
-
 import javax.annotation.Resource;
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -45,31 +36,31 @@ public class AlipayService  {
 
     @Resource
     private AlipayConfig alipayConfig;
-
     @Resource
     private OrderQueryMapper orderQueryMapper;
-
     @Resource
     private TicketCommandMapper ticketCommandMapper;
-
     @Resource
     private TicketQueryMapper ticketQueryMapper;
+    @Resource
+    private SeatQueryService seatQueryService;
 
 
-    public Result alipay(String orderId, List<String> passengerId, int payMethod) throws Exception {
+    public Result alipay(String orderId, List<String> passengerId, int payMethod) {
         Order order = new Order();
         double price = 0;
-        List<String> errorList = new ArrayList<>();
         for (String pid : passengerId){
              order = orderQueryMapper.getOrderById(orderId ,pid);
             if (order == null){
-                errorList.add(pid);
+                continue;
             }
-            assert order != null;
             price += order.getPrice();
         }
+        assert order != null;
+        if (order.getOrderId() == null || order.getOrderId().length() == 0){
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
         order.setPrice(price);
-
 
         //设置支付回调时可以在request中获取的参数
         JSONObject jsonObject = new JSONObject();
@@ -93,20 +84,6 @@ public class AlipayService  {
         try{
             //获取响应二维码信息
             QrCodeResponse qrCodeResponse = qrcodePay(model);
-//            //制作二维码并且返回给前端
-//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//            String logopath;
-//            logopath = ResourceUtils.getFile("classpath:favicon.png").getAbsolutePath();
-//            System.out.println("二维码的图片路径为===>" + logopath);
-//            BufferedImage encode = QRCodeUtil.encode(qrCodeResponse.getQr_code(), logopath, false);
-//            ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(byteArrayOutputStream);
-//            ImageIO.write(encode, "JPEG", imageOutputStream);
-//            imageOutputStream.close();
-//            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-//            PayResult result =  PayResult.builder()
-//                    .results(errorList)
-//                    .qrcode(FileCopyUtils.copyToByteArray(byteArrayInputStream))
-//                    .build();
             return Result.getResult(ResultCodeEnum.SUCCESS,qrCodeResponse.getQr_code());
         }catch (Exception e){
             e.printStackTrace();
@@ -123,14 +100,18 @@ public class AlipayService  {
             String body1 = params.get("body");
             logger.info("交易的流水号和交易信息===========>"+tradeNo+"\n"+ body1);
             JSONObject body = JSONObject.parseObject(body1);
-            String ptype = body.getString("payType");
+//            String ptype = body.getString("payType");
             String orderId = body.getString("orderId");
-            ticketCommandMapper.ticketPay(orderId, tradeNo);
-            List<String> passengerIds = ticketQueryMapper.getOrderPassengers(orderId);
-            for (String pid:passengerIds) {
-                ticketCommandMapper.ticketSoldInit(orderId,pid);
-            }
 
+            List<SeatBookingInfo> seatBookingInfo = ticketQueryMapper.getSeatBookingInfo(orderId);
+            for (SeatBookingInfo info : seatBookingInfo) {
+                int[] carriageAndSeat = seatQueryService.getCarriageAndSeat(info);
+                System.out.println(Arrays.toString(carriageAndSeat));
+                if (!(carriageAndSeat[0] == -1) && !(carriageAndSeat[1] == -1)){
+                    ticketCommandMapper.ticketSoldInit(orderId,info.getPassengerId(),carriageAndSeat[0],carriageAndSeat[1]);
+                }
+            }
+            ticketCommandMapper.ticketPay(orderId, tradeNo);
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("异常====>"+ e);

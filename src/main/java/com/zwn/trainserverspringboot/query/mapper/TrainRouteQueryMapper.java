@@ -14,4 +14,5 @@ public interface TrainRouteQueryMapper {
     List<AtomStationKey> getAtomStationKeys(Order order);
     List<AtomStationMap> getAllAtomStationKeys();
     List<TrainRouteAtom> queryTrainRouteInfo(String trainRouteId, String fromStationId, String toStationId);
+    SeatRemainKey getFromToNo(String trainRouteId, String fromStationId, String toStationId);
 }

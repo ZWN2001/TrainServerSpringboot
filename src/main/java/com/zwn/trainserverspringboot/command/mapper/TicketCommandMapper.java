@@ -7,10 +7,11 @@ import java.util.List;
 
 @Mapper
 public interface TicketCommandMapper {
-    void ticketBooking(Order order, String time);
+    void ticketBooking(Order order, String time, int seatBooking);
 
     void ticketPay(String orderId, String tradeNo);
-    void ticketSoldInit(String orderId, String passengerId);
+
+    void ticketSoldInit(String orderId, String passengerId, int carriageId, int seat);
 
     void ticketRefund(String orderId, String passengerId);
 

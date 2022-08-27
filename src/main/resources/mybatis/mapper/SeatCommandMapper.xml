@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zwn.trainserverspringboot.command.mapper.SeatCommandMapper">
+
+    <update id="updateSeatRemain">
+        UPDATE ticket_seat_management SET seat_remain = #{param5} WHERE train_route_id = #{param1} AND depart_date = #{param2}
+            AND carriage_id = #{param3} AND locate = #{param4};
+    </update>
+
+</mapper>

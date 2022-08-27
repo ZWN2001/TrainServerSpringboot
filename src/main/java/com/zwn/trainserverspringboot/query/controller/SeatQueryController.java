@@ -1,7 +1,6 @@
 package com.zwn.trainserverspringboot.query.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.zwn.trainserverspringboot.query.service.SeatTypeQueryService;
+import com.zwn.trainserverspringboot.query.service.SeatQueryService;
 import com.zwn.trainserverspringboot.util.Result;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +10,9 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("/seatType/query")
-public class SeatTypeQueryController {
+public class SeatQueryController {
     @Resource
-    private SeatTypeQueryService seatTypeQueryService;
+    private SeatQueryService seatTypeQueryService;
 
     @GetMapping("/allSeatType")
     Result getAllSeatType(){

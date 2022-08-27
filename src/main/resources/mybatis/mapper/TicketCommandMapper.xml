@@ -10,7 +10,9 @@
         VALUES (#{order.orderId},#{order.userId},#{order.passengerId},#{order.departureDate},#{order.trainRouteId},
                 #{order.fromStationId},#{order.toStationId},#{order.seatTypeId},#{order.orderStatus},#{order.orderTime},
                 #{order.price});
-        INSERT INTO ticket_booking(order_id,user_id,create_time) VALUES (#{order.orderId},#{order.userId},#{param2});
+
+        INSERT INTO ticket_booking(order_id,passenger_id,seat_booking,user_id,create_time)
+        VALUES (#{order.orderId},#{order.passengerId},#{param3},#{order.userId},#{param2});
     </insert>
 
     <update id="ticketPay">
@@ -19,7 +21,7 @@
     </update>
 
     <insert id="ticketSoldInit">
-        INSERT INTO ticket_sold(order_id,passenger_id) VALUES (#{param1},#{param2});
+        INSERT INTO ticket_sold(order_id,passenger_id,carriage_id,seat) VALUES (#{param1},#{param2},#{param3},#{param4});
     </insert>
 
     <update id="ticketRefund">

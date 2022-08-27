@@ -41,7 +41,7 @@ public class TicketCommandService {
     @Resource
     private MQProducer producer;
 
-    public Result ticketBooking(Order order, List<String> passengerIds){
+    public Result ticketBooking(Order order, List<String> passengerIds, List<String> locations){
         if (ticketQueryMapper.getTicketToPayNum(order.getUserId()) != 0){
             ///存在未支付订单，不允许订票
             return Result.getResult(ResultCodeEnum.ORDER_HAVE_UN_PAIED);
@@ -52,10 +52,10 @@ public class TicketCommandService {
             List<Result> results = new ArrayList<>();
             String orderNumber = GenerateNum.generateOrder();
             order.setOrderId(orderNumber);
-            for(String passengerId : passengerIds){
-                order.setPassengerId(passengerId);
+            for(int i = 0; i < passengerIds.size(); i++){
+                order.setPassengerId(passengerIds.get(i));
                 //检查乘员是否买过这班车的票
-                if (ticketCommandMapper.getTicketNum(passengerId,order.getDepartureDate(),order.getTrainRouteId()) != 0){
+                if (ticketCommandMapper.getTicketNum(passengerIds.get(i),order.getDepartureDate(),order.getTrainRouteId()) != 0){
                     return Result.getResult(ResultCodeEnum.TICKET_BOUGHT);
                 }
                 if (order.isRequestLegal().getCode() == ResultCodeEnum.SUCCESS.getCode()){
@@ -68,7 +68,7 @@ public class TicketCommandService {
                             results.add(Result.getResult(ResultCodeEnum.TICKET_PRICE_ERROR));
                         }else {
                             order.setPrice((double) priceResult.getData());
-                            OrderMessage message = OrderMessage.builder().order(order).num(passengerIds.size()).build();
+                            OrderMessage message = OrderMessage.builder().order(order).seatLocation(Integer.parseInt(locations.get(i))).num(1).build();
                             producer.sendTicketBooking(message);
                             results.add(Result.getResult(ResultCodeEnum.SUCCESS,order));
                             //扣库存
@@ -78,15 +78,15 @@ public class TicketCommandService {
                         e.printStackTrace();
                         Throwable cause = e.getCause();
                         if (cause instanceof SQLIntegrityConstraintViolationException) {
-                            results.add(Result.getResult(ResultCodeEnum.ORDER_REQUEST_ILLEGAL,passengerId));
+                            results.add(Result.getResult(ResultCodeEnum.ORDER_REQUEST_ILLEGAL,passengerIds.get(i)));
                         } else if (cause instanceof DuplicateKeyException) {
-                            results.add(Result.getResult(ResultCodeEnum.ORDER_EXIST,passengerId));
+                            results.add(Result.getResult(ResultCodeEnum.ORDER_EXIST,passengerIds.get(i)));
                         } else {
-                            results.add(Result.getResult(ResultCodeEnum.UNKNOWN_ERROR,passengerId)) ;
+                            results.add(Result.getResult(ResultCodeEnum.BAD_REQUEST,passengerIds.get(i))) ;
                         }
                     }
                 }else {
-                    results.add(Result.getResult(order.isRequestLegal(),passengerId));
+                    results.add(Result.getResult(order.isRequestLegal(),passengerIds.get(i)));
                 }
             }
             return Result.getResult(ResultCodeEnum.SUCCESS,results);

@@ -20,15 +20,19 @@ public class TicketCommandController {
 
     //默认是一张票的预定，可以预定多个乘客
     @PostMapping("/booking")
-    Result ticketsBooking(String orderString , String passengerIdsString){
+    Result ticketsBooking(String orderString , String passengerIdsString, String seatLocationListString){
         JSONObject jsonObject = JSONObject.parseObject(orderString);
         Order order = JSONObject.toJavaObject(jsonObject, Order.class);
         List<String> passengerIds = StringUtil.getListFromString(passengerIdsString);
+        List<String> locations = StringUtil.getListFromString(seatLocationListString);
+        if(locations.size() != passengerIds.size()){
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
         Result result = UserCheck.checkWithUserId(order.getUserId());
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             Result results;
             try{
-                results = ticketCommandService.ticketBooking(order, passengerIds);
+                results = ticketCommandService.ticketBooking(order, passengerIds, locations);
             }catch (Exception e){
                 e.printStackTrace();
                 return Result.getResult(ResultCodeEnum.BAD_REQUEST);

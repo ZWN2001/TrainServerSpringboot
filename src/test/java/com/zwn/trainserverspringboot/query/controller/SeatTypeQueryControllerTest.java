@@ -7,14 +7,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class SeatTypeQueryControllerTest {
 
     @Resource
-    private SeatTypeQueryController seatTypeQueryController;
+    private SeatQueryController seatTypeQueryController;
 
     @Test
     void getAllSeatType() {

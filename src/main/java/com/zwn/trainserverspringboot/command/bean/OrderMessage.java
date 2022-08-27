@@ -10,5 +10,6 @@ import java.io.Serializable;
 @Builder
 public class OrderMessage  implements Serializable {
     Order order;
+    int seatLocation;
     int num;
 }

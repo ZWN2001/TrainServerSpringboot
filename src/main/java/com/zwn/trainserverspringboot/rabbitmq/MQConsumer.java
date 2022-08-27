@@ -24,7 +24,8 @@ public class MQConsumer {
         String time = timeFrtmat.format(date.getTime());
         orderMessage.getOrder().setOrderTime(time);
         try{
-            ticketCommandMapper.ticketBooking(orderMessage.getOrder(),timeFrtmat2.format(date.getTime()));
+            ticketCommandMapper.ticketBooking(orderMessage.getOrder(),timeFrtmat2.format(date.getTime()),
+                    orderMessage.getSeatLocation());
             ticketCommandMapper.updateTicketRemain(orderMessage.getOrder().getTrainRouteId(),
                     orderMessage.getOrder().getSeatTypeId(),orderMessage.getOrder().getDepartureDate(),
                     orderMessage.getOrder().getFromStationId(),orderMessage.getOrder().getToStationId(),
