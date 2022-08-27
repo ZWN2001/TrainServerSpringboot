@@ -43,6 +43,41 @@ public class TicketCommandController {
         }
     }
 
+    @PostMapping("/bookingTansfer")
+    Result ticketsBookingTansfer(String orderString1, String seatLocationListString1,
+                                 String orderString2, String seatLocationListString2, String passengerIdsString){
+        JSONObject jsonObject1 = JSONObject.parseObject(orderString1);
+        Order order1 = JSONObject.toJavaObject(jsonObject1, Order.class);
+        List<String> locations1 = StringUtil.getListFromString(seatLocationListString1);
+
+        JSONObject jsonObject2 = JSONObject.parseObject(orderString2);
+        Order order2 = JSONObject.toJavaObject(jsonObject2, Order.class);
+        List<String> locations2 = StringUtil.getListFromString(seatLocationListString2);
+
+        List<String> passengerIds = StringUtil.getListFromString(passengerIdsString);
+        if(locations1.size() != passengerIds.size() || locations2.size() != passengerIds.size()){
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
+
+        Result result1 = UserCheck.checkWithUserId(order1.getUserId());
+        Result result2 = UserCheck.checkWithUserId(order1.getUserId());
+        if (result1.getCode() == ResultCodeEnum.SUCCESS.getCode() && result2.getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            Result results;
+            try{
+                results = ticketCommandService.ticketsBookingTansfer(order1,order2,locations1,locations2,passengerIds);
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
+            return results;
+        }else {
+            if (result1.getCode() != ResultCodeEnum.SUCCESS.getCode()){
+                return result1;
+            }
+            return result2;
+        }
+    }
+
     @PostMapping("/bookingCancel")
     Result ticketBookingCancel(String departureDate, String trainRouteId, String passengetIdString){
         List<String> passengerIds = StringUtil.getListFromString(passengetIdString);

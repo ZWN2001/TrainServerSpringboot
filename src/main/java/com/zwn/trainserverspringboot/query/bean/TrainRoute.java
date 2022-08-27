@@ -8,13 +8,13 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TrainRoute implements Serializable {
-    String trainRouteId;
-    String fromStationId;
-    String toStationId;
-    boolean formIsStart;
-    boolean toIsEnd;
-    String startTime;
-    String arriveTime;
-    String durationInfo;
-    Map<Integer, Integer> tickets;
+    private String trainRouteId;
+    private String fromStationId;
+    private String toStationId;
+    private boolean formIsStart;
+    private boolean toIsEnd;
+    private String startTime;
+    private String arriveTime;
+    private String durationInfo;
+    private Map<Integer, Integer> tickets;
 }

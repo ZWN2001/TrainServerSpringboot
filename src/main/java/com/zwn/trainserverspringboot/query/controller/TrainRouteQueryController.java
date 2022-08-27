@@ -27,6 +27,16 @@ public class TrainRouteQueryController {
         }
     }
 
+    @GetMapping("/trainRouteTransfer")
+    Result querytrainRouteTransfer(String from, String to, String date) {
+        try {
+            return trainRouteQueryService.querytrainRouteTransfer(from, to, date);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
+    }
+
     //查询车次详情（从出发地到最终目的地）
     @GetMapping("/trainRouteDetail")
     Result queryTrainRouteDetail(String trainRouteId){

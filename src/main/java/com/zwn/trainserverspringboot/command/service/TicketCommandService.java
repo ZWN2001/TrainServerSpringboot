@@ -90,6 +90,75 @@ public class TicketCommandService {
         }
     }
 
+    public Result ticketsBookingTansfer(Order order1, Order order2, List<String> locations1,
+                                        List<String> locations2, List<String> passengerIds){
+        if (ticketQueryMapper.getTicketToPayNum(order1.getUserId()) != 0){
+            ///存在未支付订单，不允许订票
+            return Result.getResult(ResultCodeEnum.ORDER_HAVE_UN_PAIED);
+        }
+        if (!isEnough(order1,passengerIds.size()) || !isEnough(order2,passengerIds.size())){//不足
+            return Result.getResult(ResultCodeEnum.TICKET_SURPLUS_NOT_ENOUGH);
+        }else {
+            List<Result> results = new ArrayList<>();
+            String orderNumber = GenerateNum.generateOrder();
+            order1.setOrderId(orderNumber);
+            order2.setOrderId(orderNumber);
+            for(int i = 0; i < passengerIds.size(); i++){
+                order1.setPassengerId(passengerIds.get(i));
+                order2.setPassengerId(passengerIds.get(i));
+                //检查乘员是否买过这班车的票
+                if (ticketCommandMapper.getTicketNum(passengerIds.get(i),order1.getDepartureDate(),order1.getTrainRouteId()) != 0
+                ||ticketCommandMapper.getTicketNum(passengerIds.get(i),order2.getDepartureDate(),order2.getTrainRouteId()) != 0){
+                    return Result.getResult(ResultCodeEnum.TICKET_BOUGHT);
+                }
+                if (order1.isRequestLegal().getCode() == ResultCodeEnum.SUCCESS.getCode()
+                        && order2.isRequestLegal().getCode() == ResultCodeEnum.SUCCESS.getCode()){
+                    try {
+                        order1.setOrderStatus(OrderStatus.UN_PAY);
+                        //获取价格
+                        Result priceResult1 = ticketQueryService.getTicketPrice(order1.getTrainRouteId(),
+                                order1.getFromStationId(), order1.getToStationId(), order1.getSeatTypeId());
+                        if (priceResult1.getCode() != ResultCodeEnum.SUCCESS.getCode()) {
+                            results.add(Result.getResult(ResultCodeEnum.TICKET_PRICE_ERROR));
+                        } else {
+                            order1.setPrice((double) priceResult1.getData());
+                            OrderMessage message1 = OrderMessage.builder().order(order1).seatLocation(Integer.parseInt(locations1.get(i))).num(1).build();
+                            producer.sendTicketBooking(message1);
+                            results.add(Result.getResult(ResultCodeEnum.SUCCESS, order1));
+                            redisDecr(order1);
+                        }
+
+                        order2.setOrderStatus(OrderStatus.UN_PAY);
+                        //获取价格
+                        Result priceResult2 = ticketQueryService.getTicketPrice(order2.getTrainRouteId(),
+                                order2.getFromStationId(), order2.getToStationId(), order2.getSeatTypeId());
+                        if (priceResult2.getCode() != ResultCodeEnum.SUCCESS.getCode()) {
+                            results.add(Result.getResult(ResultCodeEnum.TICKET_PRICE_ERROR));
+                        } else {
+                            order2.setPrice((double) priceResult2.getData());
+                            OrderMessage message2 = OrderMessage.builder().order(order2).seatLocation(Integer.parseInt(locations2.get(i))).num(1).build();
+                            producer.sendTicketBooking(message2);
+                            results.add(Result.getResult(ResultCodeEnum.SUCCESS, order2));
+                            //扣库存
+                            redisDecr(order2);
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                        Throwable cause = e.getCause();
+                         if (cause instanceof DuplicateKeyException) {
+                            results.add(Result.getResult(ResultCodeEnum.ORDER_EXIST,passengerIds.get(i)));
+                        } else {
+                            results.add(Result.getResult(ResultCodeEnum.BAD_REQUEST,passengerIds.get(i))) ;
+                        }
+                    }
+                }else {
+                    results.add(Result.getResult(ResultCodeEnum.BAD_REQUEST));
+                }
+            }
+            return Result.getResult(ResultCodeEnum.SUCCESS,results);
+        }
+    }
+
     public Result ticketBookingCancel(String departureDate, String trainRouteId, List<String> passengerIds){
         try {
             for (String pid:passengerIds) {

@@ -17,8 +17,24 @@
             (SELECT train_route_id,station_no,arrive_time,station_id FROM train_route_atom WHERE station_id = #{toStationId}) AS to_station_routes
         WHERE from_station_routes.train_route_id = to_station_routes.train_route_id
           AND from_station_routes.station_no &lt; to_station_routes.station_no;
+    </select>
+
+    <select id="getTrainRoutesTransfer" resultType="com.zwn.trainserverspringboot.query.bean.TrainRouteTransfer">
+        WITH t1 AS ( SELECT train_route_id, station_id, station_no, arrive_time, start_time, stopover_time
+                     FROM train_route_atom
+                     WHERE train_route_id IN (SELECT train_route_id FROM train_route_atom WHERE station_id = #{param1})
+                        AND train_route_id NOT IN (SELECT train_route_id FROM train_route_atom WHERE station_id = #{param2})),
+             t2 AS ( SELECT train_route_id, station_id, station_no, arrive_time, start_time, stopover_time
+                     FROM train_route_atom
+                     WHERE train_route_id IN (SELECT train_route_id FROM train_route_atom WHERE station_id = #{param2})
+                        AND train_route_id NOT IN (SELECT train_route_id FROM train_route_atom WHERE station_id = #{param1}))
+        SELECT t1.train_route_id
+        FROM t1,t2
+        WHERE EXISTS(SELECT station_id FROM t1)
+        GROUP BY t1.train_route_id, t2.train_route_id;
 
     </select>
+
 
     <select id="getRunPlan" resultType="com.zwn.trainserverspringboot.query.bean.RunPlan">
         SELECT train_route_id AS routeId, run_plan AS runPlan FROM train_route WHERE train_route_id = #{routeIds};
@@ -66,5 +82,13 @@
         WHERE base_info.station_no BETWEEN from_info.station_no AND to_info.station_no;
     </select>
 
+    <select id="getStationContainRoute" resultType="java.lang.String">
+        SELECT train_route_id FROM train_route_atom WHERE station_id = #{stationId};
+    </select>
 
+    <select id="getStationInTrainRouteAfter" resultType="java.lang.String">
+        SELECT station_id FROM train_route_atom
+            WHERE train_route_id = #{param1}
+            AND station_no > ALL(SELECT station_no FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param2});
+    </select>
 </mapper>
