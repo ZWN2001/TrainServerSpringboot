@@ -9,4 +9,5 @@ import java.util.List;
 public interface PassengerQueryMapper {
     List<Passenger> queryAllPassengers(long userId);
     Passenger querySinglePassenger(long userId, String passengerId);
+//    List<String> getOrderPassengerIds(String orderId);
 }

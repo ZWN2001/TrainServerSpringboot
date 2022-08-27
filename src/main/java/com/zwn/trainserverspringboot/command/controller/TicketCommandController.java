@@ -62,11 +62,11 @@ public class TicketCommandController {
     }
 
     @PostMapping("/refund")
-    Result ticketRefund(String orderId, String passengerId){
+    Result ticketRefund(String orderId){
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             try{
-                return ticketCommandService.ticketRefund(orderId,passengerId);
+                return ticketCommandService.ticketRefund(orderId);
             }catch (Exception e){
                 e.printStackTrace();
                 return Result.getResult(ResultCodeEnum.BAD_REQUEST);

@@ -13,7 +13,7 @@ public interface TicketCommandMapper {
 
     void ticketSoldInit(String orderId, String passengerId, int carriageId, int seat);
 
-    void ticketRefund(String orderId, String passengerId);
+    void ticketRefund(String orderId);
 
     void ticketRebook(String orderId, String passengerId, String departureDate, String trainRouteId);
 

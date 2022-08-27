@@ -101,11 +101,21 @@
         SELECT passenger_id FROM ticket_order WHERE order_id = #{orderId};
     </select>
 
-    <select id="getSeatBookingInfo" resultType="com.zwn.trainserverspringboot.query.bean.SeatBookingInfo">
-        WITH booking_info AS ( SELECT passenger_id, seat_booking FROM ticket_booking WHERE order_id = #{orderID}),
+    <select id="getPreferSeatBookingInfo" resultType="com.zwn.trainserverspringboot.query.bean.SeatBookingInfo">
+        WITH booking_info AS ( SELECT passenger_id, seat_booking FROM ticket_booking WHERE order_id = #{orderId}),
              order_info AS ( SELECT passenger_id, departure_date, train_route_id, seat_type_id, from_station_id, to_station_id FROM ticket_order WHERE order_id = #{orderID})
         SELECT order_info.passenger_id AS passengerId, departure_date AS departureDate, train_route_id AS trainRouteId,
                from_station_id AS fromStationId, to_station_id AS toStationId, seat_type_id AS seatType, seat_booking AS seatBooking
+        FROM booking_info, order_info
+        WHERE booking_info.passenger_id = order_info.passenger_id;
+    </select>
+
+
+    <select id="getSoldSeatInfo" resultType="com.zwn.trainserverspringboot.query.bean.SeatSoldInfo">
+        WITH booking_info AS ( SELECT passenger_id, carriage_id, seat FROM ticket_sold WHERE order_id = #{orderId}),
+             order_info AS ( SELECT passenger_id, departure_date, train_route_id, seat_type_id, from_station_id, to_station_id FROM ticket_order WHERE order_id = #{orderID})
+        SELECT order_info.passenger_id AS passengerId, departure_date AS departureDate, train_route_id AS trainRouteId,
+               from_station_id AS fromStationId, to_station_id AS toStationId, seat_type_id AS seatType, carriage_id AS carriageId, seat AS seat
         FROM booking_info, order_info
         WHERE booking_info.passenger_id = order_info.passenger_id;
     </select>

@@ -17,5 +17,9 @@
         WHERE user_id = #{param1} AND passenger_id = #{param2}
     </select>
 
+<!--    <select id="getOrderPassengerIds" resultType="java.lang.String">-->
+<!--        SELECT passsenger_id FROM  ticket_order WHERE  order_id = #{orderId};-->
+<!--    </select>-->
+
 
 </mapper>

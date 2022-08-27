@@ -6,23 +6,18 @@ import com.zwn.trainserverspringboot.query.bean.AtomStationKey;
 import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.OrderStatus;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
-import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
-import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
-import com.zwn.trainserverspringboot.query.mapper.TrainRouteQueryMapper;
+import com.zwn.trainserverspringboot.query.bean.SeatRemainKey;
+import com.zwn.trainserverspringboot.query.bean.SeatSoldInfo;
+import com.zwn.trainserverspringboot.query.mapper.*;
 import com.zwn.trainserverspringboot.query.service.TicketQueryService;
 import com.zwn.trainserverspringboot.rabbitmq.MQProducer;
-import com.zwn.trainserverspringboot.util.GenerateNum;
-import com.zwn.trainserverspringboot.util.RedisUtil;
-import com.zwn.trainserverspringboot.util.Result;
-import com.zwn.trainserverspringboot.util.ResultCodeEnum;
+import com.zwn.trainserverspringboot.util.*;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class TicketCommandService {
@@ -38,6 +33,8 @@ public class TicketCommandService {
     private OrderQueryMapper orderQueryMapper;
     @Resource
     private TrainRouteQueryMapper trainRouteQueryMapper;
+    @Resource
+    private SeatQueryMapper seatQueryMapper;
     @Resource
     private MQProducer producer;
 
@@ -108,25 +105,36 @@ public class TicketCommandService {
         }
     }
 
-    public Result ticketRefund(String orderId, String passengerId){
-        Order order = orderQueryMapper.getOrderById(orderId, passengerId);
-        if (order == null){
+    public Result ticketRefund(String orderId) {
+        List<Order> orders = orderQueryMapper.getOrderById(orderId);
+        if (orders == null) {
             return Result.getResult(ResultCodeEnum.ORDER_NOT_EXIST);
-        }else if ( !Objects.equals(order.getOrderStatus(), OrderStatus.PAIED)){
-            return Result.getResult(ResultCodeEnum.ORDER_STATUS_ERROR);
-        }else {
-            try {
-                ticketCommandMapper.ticketRefund(orderId, passengerId);
-                return Result.getResult(ResultCodeEnum.SUCCESS, order);
-            }catch (Exception e){
-                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR, e);
+        }
+
+        for (Order order: orders) {
+            if(order.getUserId() == UserUtil.getCurrentUserId()){
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
+            if ( !Objects.equals(order.getOrderStatus(), OrderStatus.PAIED)){
+                return Result.getResult(ResultCodeEnum.ORDER_STATUS_ERROR);
             }
         }
+
+        try {
+            List<SeatSoldInfo> seatSoldInfos = ticketQueryMapper.getSoldSeatInfo(orderId);
+            addBack(seatSoldInfos);
+            ticketCommandMapper.ticketRefund(orderId);
+            return Result.getResult(ResultCodeEnum.SUCCESS, orderId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR, e);
+        }
+
     }
 
     public Result ticketRebook(String orderId, String passengerId, long userId, String departureDate, String trainRouteId, String carriage,
                                String seat){
-        Order order = orderQueryMapper.getOrderById(orderId, passengerId);
+        Order order = orderQueryMapper.getOrderByIdAndPid(orderId, passengerId);
         if (userId != order.getUserId()){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST,"user ID error");
         }
@@ -167,25 +175,6 @@ public class TicketCommandService {
         }
     }
 
-    //取票
-//    public Result ticketGet(String orderId, String passengerId, int carriage_id, int seat){
-//        try{
-//            //todo:判断是否有座
-//            ticketCommandMapper.ticketGet(orderId, passengerId, carriage_id, seat);
-//            return Result.getResult(ResultCodeEnum.SUCCESS);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            Throwable cause = e.getCause();
-//            if (cause instanceof SQLIntegrityConstraintViolationException) {
-//                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
-//            }  else if (cause instanceof DuplicateKeyException) {
-//                return Result.getResult(ResultCodeEnum.PASSENGER_EXIST);
-//            } else {
-//                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
-//            }
-//        }
-//    }
-
     private boolean isEnough(Order order, int ticketNum){
         List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
         boolean enough = true;
@@ -203,7 +192,6 @@ public class TicketCommandService {
         return enough;
     }
 
-
     ///扣库存
     private void redisDecr(Order order){
         List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
@@ -215,5 +203,94 @@ public class TicketCommandService {
         }
     }
 
+    private void addBack(List<SeatSoldInfo> seatSoldInfos){
+        SeatSoldInfo info = seatSoldInfos.get(0);
+        //加库存，加座位，加余票
+        Order order = new Order();
+        order.setTrainRouteId(info.getTrainRouteId());
+        order.setFromStationId(info.getFromStationId());
+        order.setToStationId(info.getToStationId());
+        List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
+        for (AtomStationKey atomStationKey : atomStationKeys) {
+            atomStationKey.setDepartureDate(order.getDepartureDate());
+            atomStationKey.setSeatTypeId(order.getSeatTypeId());
+            String key = JSON.toJSONString(atomStationKey);
+            redisUtil.incr(key, seatSoldInfos.size());
+        }
+
+        ticketCommandMapper.updateTicketRemain(info.getTrainRouteId(),info.getSeatType(),info.getDepartureDate(),
+                info.getFromStationId(),info.getToStationId(), seatSoldInfos.size());
+
+        String remainString = seatQueryMapper.getSeatRemain(info.getTrainRouteId(),
+                info.getDepartureDate(), info.getCarriageId(), info.getSeat());
+        SeatRemainKey passengerKey = trainRouteQueryMapper.getFromToNo(info.getTrainRouteId(),
+                info.getFromStationId(), info.getToStationId());
+
+        Map map = com.alibaba.fastjson.JSON.parseObject(remainString, Map.class);
+        Map<String, Integer> remainMap = new HashMap<>();
+
+        int value;
+        for (Object obj : map.keySet()) {
+            value = (int) map.get(obj);
+            remainMap.put(obj.toString(), value);
+        }
+        for (String keyString : remainMap.keySet()) {
+            SeatRemainKey key = SeatRemainKey.fromString(keyString);
+            value = remainMap.get(keyString);
+            assert key != null;
+            if(passengerKey.getFromStationNo() == key.getToStationNo()){
+                SeatRemainKey newKey = new SeatRemainKey();
+                newKey.setFromStationNo(key.getFromStationNo());
+                newKey.setToStationNo(passengerKey.getToStationNo());
+                if(value == seatSoldInfos.size()){
+                    remainMap.put(newKey.toString(),value);
+                    remainMap.remove(keyString);
+                }else if (value < seatSoldInfos.size()){
+                    remainMap.remove(keyString);
+                    remainMap.put(newKey.toString(),value);
+                    int remainToAdd = seatSoldInfos.size() - value;
+                    remainMap.put(passengerKey.toString(),remainToAdd);
+                }else {
+                    remainMap.remove(keyString);
+                    remainMap.put(newKey.toString(),seatSoldInfos.size());
+                    int remainToAdd = value - seatSoldInfos.size();
+                    remainMap.put(keyString, remainToAdd);
+                }
+            }
+        }
+
+        int value1,value2;
+        for (String keyString1 : remainMap.keySet()) {
+            for (String keyString2 : remainMap.keySet()) {//处理可能存在的 1_2,2_4的情况
+                if(!keyString1.equals(keyString2)){
+                    SeatRemainKey key1 = SeatRemainKey.fromString(keyString1);
+                    value1 = remainMap.get(keyString1);
+                    SeatRemainKey key2 = SeatRemainKey.fromString(keyString2);
+                    value2 = remainMap.get(keyString1);
+                    assert key1 != null && key2 != null;
+                    if(key1.getToStationNo() == key2.getFromStationNo()){
+                        SeatRemainKey newKey = new SeatRemainKey();
+                        newKey.setFromStationNo(key1.getFromStationNo());
+                        newKey.setToStationNo(key2.getToStationNo());
+                        if(value1 == value2){
+                            remainMap.put(newKey.toString(),value1);
+                            remainMap.remove(keyString1);
+                            remainMap.remove(keyString2);
+                        }else if (value1 < value2){
+                            remainMap.remove(keyString1);
+                            remainMap.put(newKey.toString(),value1);
+                            int remainToAdd = value2 - value1;
+                            remainMap.put(keyString1, remainToAdd);
+                        }else {
+                            remainMap.remove(keyString2);
+                            remainMap.put(newKey.toString(),value2);
+                            int remainToAdd = value1 - value2;
+                            remainMap.put(keyString2, remainToAdd);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 }

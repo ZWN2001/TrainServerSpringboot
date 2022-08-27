@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ public class AlipayService  {
         Order order = new Order();
         double price = 0;
         for (String pid : passengerId){
-             order = orderQueryMapper.getOrderById(orderId ,pid);
+             order = orderQueryMapper.getOrderByIdAndPid(orderId ,pid);
             if (order == null){
                 continue;
             }
@@ -103,10 +102,9 @@ public class AlipayService  {
 //            String ptype = body.getString("payType");
             String orderId = body.getString("orderId");
 
-            List<SeatBookingInfo> seatBookingInfo = ticketQueryMapper.getSeatBookingInfo(orderId);
+            List<SeatBookingInfo> seatBookingInfo = ticketQueryMapper.getPreferSeatBookingInfo(orderId);
             for (SeatBookingInfo info : seatBookingInfo) {
                 int[] carriageAndSeat = seatQueryService.getCarriageAndSeat(info);
-                System.out.println(Arrays.toString(carriageAndSeat));
                 if (!(carriageAndSeat[0] == -1) && !(carriageAndSeat[1] == -1)){
                     ticketCommandMapper.ticketSoldInit(orderId,info.getPassengerId(),carriageAndSeat[0],carriageAndSeat[1]);
                 }
