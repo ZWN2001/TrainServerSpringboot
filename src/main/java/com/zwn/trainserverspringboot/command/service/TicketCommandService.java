@@ -2,6 +2,7 @@ package com.zwn.trainserverspringboot.command.service;
 
 import com.alibaba.fastjson2.JSON;
 import com.zwn.trainserverspringboot.command.bean.OrderMessage;
+import com.zwn.trainserverspringboot.command.mapper.SeatCommandMapper;
 import com.zwn.trainserverspringboot.query.bean.AtomStationKey;
 import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.OrderStatus;
@@ -35,6 +36,8 @@ public class TicketCommandService {
     private TrainRouteQueryMapper trainRouteQueryMapper;
     @Resource
     private SeatQueryMapper seatQueryMapper;
+    @Resource
+    private SeatCommandMapper seatCommandMapper;
     @Resource
     private MQProducer producer;
 
@@ -181,7 +184,7 @@ public class TicketCommandService {
         }
 
         for (Order order: orders) {
-            if(order.getUserId() == UserUtil.getCurrentUserId()){
+            if(order.getUserId() != UserUtil.getCurrentUserId()){
                 return Result.getResult(ResultCodeEnum.BAD_REQUEST);
             }
             if ( !Objects.equals(order.getOrderStatus(), OrderStatus.PAIED)){
@@ -291,11 +294,11 @@ public class TicketCommandService {
                 info.getFromStationId(),info.getToStationId(), seatSoldInfos.size());
 
         String remainString = seatQueryMapper.getSeatRemain(info.getTrainRouteId(),
-                info.getDepartureDate(), info.getCarriageId(), info.getSeat());
+                info.getDepartureDate(), info.getCarriageId(), info.getSeat() % 4);
         SeatRemainKey passengerKey = trainRouteQueryMapper.getFromToNo(info.getTrainRouteId(),
                 info.getFromStationId(), info.getToStationId());
 
-        Map map = com.alibaba.fastjson.JSON.parseObject(remainString, Map.class);
+        Map map = JSON.parseObject(remainString, Map.class);
         Map<String, Integer> remainMap = new HashMap<>();
 
         int value;
@@ -303,7 +306,8 @@ public class TicketCommandService {
             value = (int) map.get(obj);
             remainMap.put(obj.toString(), value);
         }
-        for (String keyString : remainMap.keySet()) {
+        Set<String> s = new HashSet<>(remainMap.keySet());
+        for (String keyString : s ){
             SeatRemainKey key = SeatRemainKey.fromString(keyString);
             value = remainMap.get(keyString);
             assert key != null;
@@ -325,34 +329,50 @@ public class TicketCommandService {
                     int remainToAdd = value - seatSoldInfos.size();
                     remainMap.put(keyString, remainToAdd);
                 }
+            }else {
+                remainMap.put(passengerKey.toString(),seatSoldInfos.size());
             }
         }
 
         int value1,value2;
-        for (String keyString1 : remainMap.keySet()) {
-            for (String keyString2 : remainMap.keySet()) {//处理可能存在的 1_2,2_4的情况
+        s.clear();
+        s.addAll(remainMap.keySet());
+        for (String keyString1 : s) {
+            for (String keyString2 : s) {//处理可能存在的 1_2,2_4的情况
                 if(!keyString1.equals(keyString2)){
                     SeatRemainKey key1 = SeatRemainKey.fromString(keyString1);
-                    value1 = remainMap.get(keyString1);
+                    try {
+                        value1 = remainMap.get(keyString1);
+                    }catch (Exception e){
+                        continue;
+                    }
                     SeatRemainKey key2 = SeatRemainKey.fromString(keyString2);
-                    value2 = remainMap.get(keyString1);
+                    try {
+                        value2 = remainMap.get(keyString1);
+                    }catch (Exception e){
+                        continue;
+                    }
                     assert key1 != null && key2 != null;
                     if(key1.getToStationNo() == key2.getFromStationNo()){
                         SeatRemainKey newKey = new SeatRemainKey();
                         newKey.setFromStationNo(key1.getFromStationNo());
                         newKey.setToStationNo(key2.getToStationNo());
+                        int v = 0;
+                        if (remainMap.containsKey(newKey.toString())){
+                            v = remainMap.get(newKey.toString());
+                        }
                         if(value1 == value2){
-                            remainMap.put(newKey.toString(),value1);
+                            remainMap.put(newKey.toString(),value1 + v);
                             remainMap.remove(keyString1);
                             remainMap.remove(keyString2);
                         }else if (value1 < value2){
                             remainMap.remove(keyString1);
-                            remainMap.put(newKey.toString(),value1);
+                            remainMap.put(newKey.toString(),value1 + v);
                             int remainToAdd = value2 - value1;
                             remainMap.put(keyString1, remainToAdd);
                         }else {
                             remainMap.remove(keyString2);
-                            remainMap.put(newKey.toString(),value2);
+                            remainMap.put(newKey.toString(),value2 + v);
                             int remainToAdd = value1 - value2;
                             remainMap.put(keyString2, remainToAdd);
                         }
@@ -360,6 +380,12 @@ public class TicketCommandService {
                 }
             }
         }
+
+        String seatRemainString = JSON.toJSONString(remainMap);
+        System.out.println("更新："+seatRemainString);
+        seatCommandMapper.updateSeatRemain(seatSoldInfos.get(0).getTrainRouteId(),
+                seatSoldInfos.get(0).getDepartureDate(),
+                seatSoldInfos.get(0).getCarriageId(), seatSoldInfos.get(0).getSeat() % 4, seatRemainString);
     }
 
 }

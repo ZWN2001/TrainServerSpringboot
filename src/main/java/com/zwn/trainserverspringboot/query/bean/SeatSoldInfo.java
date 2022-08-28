@@ -15,5 +15,5 @@ public class SeatSoldInfo {
     private String toStationId;
     int carriageId;
     int seatType;
-    int seat;
+    int seat;//座号，获取locate就是 % 4
 }

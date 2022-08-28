@@ -101,9 +101,16 @@ public class AlipayService  {
             JSONObject body = JSONObject.parseObject(body1);
 //            String ptype = body.getString("payType");
             String orderId = body.getString("orderId");
-
+            System.out.println(orderId);
             List<SeatBookingInfo> seatBookingInfo = ticketQueryMapper.getPreferSeatBookingInfo(orderId);
+            System.out.println("bookinginfo:--------------");
+            System.out.println(seatBookingInfo);
             for (SeatBookingInfo info : seatBookingInfo) {
+                int num = -1;//加负数，相当于减库存
+                ticketCommandMapper.updateTicketRemain(info.getTrainRouteId(),
+                        info.getSeatType(),info.getDepartureDate(),
+                        info.getFromStationId(),info.getToStationId(), num);
+
                 int[] carriageAndSeat = seatQueryService.getCarriageAndSeat(info);
                 if (!(carriageAndSeat[0] == -1) && !(carriageAndSeat[1] == -1)){
                     ticketCommandMapper.ticketSoldInit(orderId,info.getPassengerId(),carriageAndSeat[0],carriageAndSeat[1]);

@@ -48,6 +48,7 @@ public class SeatQueryService {
                     seatBookingInfo.getFromStationId(),seatBookingInfo.getToStationId());
             List<Integer> carriageIds = carriageQueryMapper.getCarriageIds(seatBookingInfo.getTrainRouteId(),
                     seatBookingInfo.getSeatType());
+            System.out.println("carriageIds:");
             System.out.println(carriageIds);
             for (Integer carriageId : carriageIds) {
                 String remainString = seatTypeQueryMapper.getSeatRemain(seatBookingInfo.getTrainRouteId(),
@@ -75,7 +76,8 @@ public class SeatQueryService {
                         //满足条件，分配此座位
                         got = true;
                         result[0] = carriageId;//车厢号
-                        result[1] = index / 2 + 1;//分配座号
+                        int rowNum = index / 2 + 1;//列的哪一排
+                        result[1] = seatBookingInfo.getSeatBooking() + 4 * rowNum;//分配座号
                         if(key.getFromStationNo() != passengerKey.getFromStationNo()){
                             SeatRemainKey newFromKey = new SeatRemainKey(key.getFromStationNo(), passengerKey.getFromStationNo());
                             String newFromKeyString = newFromKey.toString();
@@ -112,6 +114,7 @@ public class SeatQueryService {
                 if (got) {
                     //做出了更改才去更新数据库
                     String seatRemainString = JSON.toJSONString(remainMap);
+                    System.out.println("更新："+seatRemainString);
                     seatCommandMapper.updateSeatRemain(seatBookingInfo.getTrainRouteId(),
                             seatBookingInfo.getDepartureDate(),
                             carriageId, seatBookingInfo.getSeatBooking(), seatRemainString);

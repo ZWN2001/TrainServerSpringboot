@@ -14,5 +14,5 @@ public class SeatBookingInfo {
     private String fromStationId;
     private String toStationId;
     int seatType;
-    int seatBooking;
+    int seatBooking;//这其实是location
 }

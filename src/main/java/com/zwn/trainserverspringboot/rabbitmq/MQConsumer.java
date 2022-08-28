@@ -26,10 +26,6 @@ public class MQConsumer {
         try{
             ticketCommandMapper.ticketBooking(orderMessage.getOrder(),timeFrtmat2.format(date.getTime()),
                     orderMessage.getSeatLocation());
-            int num = -orderMessage.getNum();//加负数，相当于减库存
-            ticketCommandMapper.updateTicketRemain(orderMessage.getOrder().getTrainRouteId(),
-                    orderMessage.getOrder().getSeatTypeId(),orderMessage.getOrder().getDepartureDate(),
-                    orderMessage.getOrder().getFromStationId(),orderMessage.getOrder().getToStationId(), num);
         }catch (Exception e){
             e.printStackTrace();
         }

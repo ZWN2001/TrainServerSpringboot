@@ -26,7 +26,7 @@
 
     <update id="ticketRefund">
         UPDATE ticket_order SET order_status = '已退票' WHERE order_id = #{orderId};
-        DELETE FROM TICKET WHERE order_id = #{orderId};
+        DELETE FROM ticket_sold WHERE order_id = #{orderId};
     </update>
 
     <update id="ticketRebook">
@@ -53,13 +53,14 @@
     </insert>
 
     <update id="updateTicketRemain">
-        WITH info AS (SELECT station_id,station_no FROM train_route_atom WHERE train_route_id = #{param1}),
-             from_s AS (SELECT station_id FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param3}),
-             to_s AS (SELECT station_id FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param4})
-        UPDATE ticket_management_atom SET remaining_ticket_num = remaining_ticket_num + #{param4}
+        UPDATE ticket_management_atom SET remaining_ticket_num = (remaining_ticket_num + #{param6})
         WHERE train_route_id = #{param1} AND seat_type_id = #{param2} AND ticket_date = #{param3}
-          AND station_id IN (  SELECT info.station_id FROM info,from_s,to_s
-                               WHERE station_no BETWEEN from_s.station_id AND to_s.station_id);
+          AND station_id IN (
+            SELECT info.station_id
+            FROM (SELECT station_id,station_no FROM train_route_atom WHERE train_route_id = #{param1}) AS info,
+                 (SELECT station_no FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param4}) AS from_s,
+                 (SELECT station_no FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param5}) AS to_s
+                               WHERE info.station_no BETWEEN from_s.station_no AND to_s.station_no);
     </update>
 
     <delete id="ticketBookingCancel">
@@ -68,8 +69,7 @@
               (SELECT order_id FROM ticket_order WHERE departure_date = #{param1}
                                                    AND train_route_id = #{param2}
                                                    AND passenger_id = #{param3});
-
-        DELETE FROM ticket_order WHERE departure_date = #{param1} AND train_route_id = #{param2} AND
+        UPDATE ticket_order SET order_status = '已取消' WHERE departure_date = #{param1} AND train_route_id = #{param2} AND
             passenger_id = #{param3};
     </delete>
 
