@@ -91,6 +91,7 @@ public class TrainRouteQueryService {
         List<String> possibleTransStationIds;
         List<TrainRoute> trainRoutes = new ArrayList<>();
         List<TrainRouteTransfer> result = new ArrayList<>();
+        boolean content = false;
         TrainRouteTransfer resultEach;
         try {
             for(String fromStationId : allFromStationIds){//所有同城的出发站
@@ -118,6 +119,19 @@ public class TrainRouteQueryService {
                                         resultEach.setStartTimeFrom(ticketRouteTimeInfo.getStartTime());
                                         resultEach.setArriveTimeTrans(ticketRouteTimeInfo.getArriveTime());
 
+                                        resultEach.caculateDuration();
+                                        //去掉换乘时间太短或太长
+                                        if(resultEach.getDurationTransfer() < 15 || resultEach.getDurationTransfer() > 360){
+                                            continue;
+                                        }
+                                        for(TrainRouteTransfer trainRouteTransfer : result){
+                                            if (resultEach.equals(trainRouteTransfer)){
+                                                content = true;
+                                                break;
+                                            }
+                                        }
+                                        if(content){continue;}
+
                                         //初始化第一阶段的票
                                         tickets.clear();
                                         int ticketsNum = 0;
@@ -127,6 +141,7 @@ public class TrainRouteQueryService {
                                             ticketsNum += t.getRemainingTicketNum();
                                             tickets.put(t.getSeatTypeId(),t.getRemainingTicketNum());
                                         }
+                                        System.out.println(tickets);
                                         if(ticketsNum == 0){
                                             continue;
                                         }else {
@@ -134,7 +149,7 @@ public class TrainRouteQueryService {
                                             //初始化第二阶段的票
                                             ticketsNum = 0;
                                             tickets.clear();
-                                            ticketsRemain = ticketQueryMapper.getTicketsRemain(resultEach.getTrainRouteId1(), date,
+                                            ticketsRemain = ticketQueryMapper.getTicketsRemain(resultEach.getTrainRouteId2(), date,
                                                     resultEach.getTransStationId(), resultEach.getToStationId());
                                             for (TicketsRemain t : ticketsRemain) {
                                                 ticketsNum += t.getRemainingTicketNum();
@@ -144,6 +159,7 @@ public class TrainRouteQueryService {
                                                 continue;
                                             }else {
                                                 resultEach.setTicketsNext(tickets);
+                                                System.out.println(tickets);
                                             }
                                         }
                                         result.add(resultEach);
@@ -159,7 +175,7 @@ public class TrainRouteQueryService {
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
 
-        return Result.getResult(ResultCodeEnum.SUCCESS,trainRoutes);
+        return Result.getResult(ResultCodeEnum.SUCCESS, result);
     }
 
     public Result queryTrainRouteDetail(String train_route_id){

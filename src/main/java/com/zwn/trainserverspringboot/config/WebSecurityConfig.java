@@ -90,6 +90,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/station/query/allStationDetail",
                         "/seatType/query/allSeatType",
                         "/trainRoute/query/trainRoute",
+                        "/trainRoute/query/trainRouteTransfer",
                         "/trainRoute/query/trainRouteDetail",
                         "/trainRoute/query/ticketRouteTimeInfo",
                         "/trainRoute/query/trainRouteArriveTime",
