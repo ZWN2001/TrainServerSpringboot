@@ -11,8 +11,8 @@
                 #{order.fromStationId},#{order.toStationId},#{order.seatTypeId},#{order.orderStatus},#{order.orderTime},
                 #{order.price});
 
-        INSERT INTO ticket_booking(order_id,passenger_id,seat_booking,user_id,create_time)
-        VALUES (#{order.orderId},#{order.passengerId},#{param3},#{order.userId},#{param2});
+        INSERT INTO ticket_booking(order_id,passenger_id,train_route_id,seat_booking,user_id,create_time)
+        VALUES (#{order.orderId},#{order.passengerId},#{order.trainRouteId},#{param3},#{order.userId},#{param2});
     </insert>
 
     <update id="ticketPay">

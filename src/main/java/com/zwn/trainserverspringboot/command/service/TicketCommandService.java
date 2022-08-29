@@ -39,6 +39,8 @@ public class TicketCommandService {
     @Resource
     private SeatCommandMapper seatCommandMapper;
     @Resource
+    private PassengerQueryMapper passengerQueryMapper;
+    @Resource
     private MQProducer producer;
 
     public Result ticketBooking(Order order, List<String> passengerIds, List<String> locations){
@@ -67,7 +69,12 @@ public class TicketCommandService {
                         if (priceResult.getCode() != ResultCodeEnum.SUCCESS.getCode()){
                             results.add(Result.getResult(ResultCodeEnum.TICKET_PRICE_ERROR));
                         }else {
-                            order.setPrice((double) priceResult.getData());
+                            //学生票五折
+                            if(passengerQueryMapper.getPassengerRole(passengerIds.get(i)).equals("student")){
+                                order.setPrice((double) priceResult.getData() / 2);
+                            }else {
+                                order.setPrice((double) priceResult.getData());
+                            }
                             OrderMessage message = OrderMessage.builder().order(order).seatLocation(Integer.parseInt(locations.get(i))).num(1).build();
                             producer.sendTicketBooking(message);
                             results.add(Result.getResult(ResultCodeEnum.SUCCESS,order));

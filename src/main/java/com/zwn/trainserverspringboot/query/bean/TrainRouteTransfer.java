@@ -52,7 +52,7 @@ public class TrainRouteTransfer {
     }
 
     private int caculateTimeMinute(String fromTime, String toTime){
-        return 60 * (Integer.parseInt(toTime.substring(0,2)) - Integer.parseInt(fromTime.substring(0,2)))
-                + (Integer.parseInt(toTime.substring(3,5)) - Integer.parseInt(fromTime.substring(3,5)));
+        return 60 * ((24 - Integer.parseInt(fromTime.substring(0,2)) + Integer.parseInt(toTime.substring(0,2)))%24)
+                + (60 - Integer.parseInt(toTime.substring(3,5)) + Integer.parseInt(fromTime.substring(3,5))) % 60;
     }
 }

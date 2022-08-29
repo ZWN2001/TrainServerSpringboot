@@ -17,9 +17,11 @@
         WHERE user_id = #{param1} AND passenger_id = #{param2}
     </select>
 
-<!--    <select id="getOrderPassengerIds" resultType="java.lang.String">-->
-<!--        SELECT passsenger_id FROM  ticket_order WHERE  order_id = #{orderId};-->
-<!--    </select>-->
+    <select id="getPassengerRole" resultType="java.lang.String">
+        SELECT role FROM  passenger WHERE  passenger_id = #{passengerId};
+    </select>
+
+<!--    TODO:role 都要改-->
 
 
 </mapper>

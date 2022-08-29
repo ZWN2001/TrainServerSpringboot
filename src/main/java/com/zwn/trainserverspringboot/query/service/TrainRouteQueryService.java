@@ -141,7 +141,6 @@ public class TrainRouteQueryService {
                                             ticketsNum += t.getRemainingTicketNum();
                                             tickets.put(t.getSeatTypeId(),t.getRemainingTicketNum());
                                         }
-                                        System.out.println(tickets);
                                         if(ticketsNum == 0){
                                             continue;
                                         }else {
@@ -159,7 +158,6 @@ public class TrainRouteQueryService {
                                                 continue;
                                             }else {
                                                 resultEach.setTicketsNext(tickets);
-                                                System.out.println(tickets);
                                             }
                                         }
                                         result.add(resultEach);
@@ -221,6 +219,10 @@ public class TrainRouteQueryService {
                 + (Integer.parseInt(next.substring(3, 5)) - Integer.parseInt(first.substring(3, 5)));
         return allMinutes/60 + ":" + allMinutes % 60;
     }
+
+    //可以这样，其实
+//           60 * ((24 - int.parse(first.substring(0, 2)) + int.parse(next.substring(0, 2))) % 24)
+//            + ((60 - int.parse(next.substring(3, 5)) + int.parse(first.substring(3, 5))) % 60);
 
     private String getHourAndMinute2(String first, String next){
         int allMinutes = 60 * (Integer.parseInt(first.substring(0, 2)) - Integer.parseInt(next.substring(0, 2)))

@@ -21,10 +21,18 @@ public class TicketCommandController {
     //默认是一张票的预定，可以预定多个乘客
     @PostMapping("/booking")
     Result ticketsBooking(String orderString , String passengerIdsString, String seatLocationListString){
-        JSONObject jsonObject = JSONObject.parseObject(orderString);
-        Order order = JSONObject.toJavaObject(jsonObject, Order.class);
-        List<String> passengerIds = StringUtil.getListFromString(passengerIdsString);
-        List<String> locations = StringUtil.getListFromString(seatLocationListString);
+        Order order;
+        List<String> passengerIds;
+        List<String> locations;
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(orderString);
+            order = JSONObject.toJavaObject(jsonObject, Order.class);
+            passengerIds = StringUtil.getListFromString(passengerIdsString);
+            locations = StringUtil.getListFromString(seatLocationListString);
+        }catch (Exception e){
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
+
         if(locations.size() != passengerIds.size()){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
@@ -46,21 +54,32 @@ public class TicketCommandController {
     @PostMapping("/bookingTansfer")
     Result ticketsBookingTansfer(String orderString1, String seatLocationListString1,
                                  String orderString2, String seatLocationListString2, String passengerIdsString){
-        JSONObject jsonObject1 = JSONObject.parseObject(orderString1);
-        Order order1 = JSONObject.toJavaObject(jsonObject1, Order.class);
-        List<String> locations1 = StringUtil.getListFromString(seatLocationListString1);
+        Order order1;
+        Order order2;
+        List<String> locations1;
+        List<String> locations2;
+        List<String> passengerIds;
+        try {
+            JSONObject jsonObject1 = JSONObject.parseObject(orderString1);
+            order1 = JSONObject.toJavaObject(jsonObject1, Order.class);
+            //第一程的location
+            locations1 = StringUtil.getListFromString(seatLocationListString1);
 
-        JSONObject jsonObject2 = JSONObject.parseObject(orderString2);
-        Order order2 = JSONObject.toJavaObject(jsonObject2, Order.class);
-        List<String> locations2 = StringUtil.getListFromString(seatLocationListString2);
+            JSONObject jsonObject2 = JSONObject.parseObject(orderString2);
+            order2 = JSONObject.toJavaObject(jsonObject2, Order.class);
+            //第二程的location
+            locations2 = StringUtil.getListFromString(seatLocationListString2);
 
-        List<String> passengerIds = StringUtil.getListFromString(passengerIdsString);
+            passengerIds = StringUtil.getListFromString(passengerIdsString);
+        }catch (Exception e){
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
         if(locations1.size() != passengerIds.size() || locations2.size() != passengerIds.size()){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
 
         Result result1 = UserCheck.checkWithUserId(order1.getUserId());
-        Result result2 = UserCheck.checkWithUserId(order1.getUserId());
+        Result result2 = UserCheck.checkWithUserId(order2.getUserId());
         if (result1.getCode() == ResultCodeEnum.SUCCESS.getCode() && result2.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             Result results;
             try{
