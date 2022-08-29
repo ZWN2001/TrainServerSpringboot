@@ -10,5 +10,5 @@ public interface PassengerQueryMapper {
     List<Passenger> queryAllPassengers(long userId);
     Passenger querySinglePassenger(long userId, String passengerId);
 //    List<String> getOrderPassengerIds(String orderId);
-    String getPassengerRole(String passengerId);
+    String getPassengerRole(long user_id, String passengerId);
 }

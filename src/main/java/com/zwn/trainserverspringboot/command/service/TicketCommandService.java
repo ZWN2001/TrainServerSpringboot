@@ -70,7 +70,7 @@ public class TicketCommandService {
                             results.add(Result.getResult(ResultCodeEnum.TICKET_PRICE_ERROR));
                         }else {
                             //学生票五折
-                            if(passengerQueryMapper.getPassengerRole(passengerIds.get(i)).equals("student")){
+                            if(passengerQueryMapper.getPassengerRole(order.getUserId(),passengerIds.get(i)).equals("student")){
                                 order.setPrice((double) priceResult.getData() / 2);
                             }else {
                                 order.setPrice((double) priceResult.getData());
@@ -131,7 +131,11 @@ public class TicketCommandService {
                         if (priceResult1.getCode() != ResultCodeEnum.SUCCESS.getCode()) {
                             results.add(Result.getResult(ResultCodeEnum.TICKET_PRICE_ERROR));
                         } else {
-                            order1.setPrice((double) priceResult1.getData());
+                            if(passengerQueryMapper.getPassengerRole(order1.getUserId(),passengerIds.get(i)).equals("student")){
+                                order1.setPrice((double) priceResult1.getData() / 2);
+                            }else {
+                                order1.setPrice((double) priceResult1.getData());
+                            }
                             OrderMessage message1 = OrderMessage.builder().order(order1).seatLocation(Integer.parseInt(locations1.get(i))).num(1).build();
                             producer.sendTicketBooking(message1);
                             results.add(Result.getResult(ResultCodeEnum.SUCCESS, order1));
@@ -145,7 +149,11 @@ public class TicketCommandService {
                         if (priceResult2.getCode() != ResultCodeEnum.SUCCESS.getCode()) {
                             results.add(Result.getResult(ResultCodeEnum.TICKET_PRICE_ERROR));
                         } else {
-                            order2.setPrice((double) priceResult2.getData());
+                            if(passengerQueryMapper.getPassengerRole(order2.getUserId(),passengerIds.get(i)).equals("student")){
+                                order2.setPrice((double) priceResult2.getData() / 2);
+                            }else {
+                                order2.setPrice((double) priceResult2.getData());
+                            }
                             OrderMessage message2 = OrderMessage.builder().order(order2).seatLocation(Integer.parseInt(locations2.get(i))).num(1).build();
                             producer.sendTicketBooking(message2);
                             results.add(Result.getResult(ResultCodeEnum.SUCCESS, order2));
@@ -213,30 +221,30 @@ public class TicketCommandService {
 
     public Result ticketRebook(String orderId, String passengerId, long userId, String departureDate, String trainRouteId, String carriage,
                                String seat){
-        Order order = orderQueryMapper.getOrderByIdAndPid(orderId, passengerId);
-        if (userId != order.getUserId()){
+        List<Order> order = orderQueryMapper.getOrderByIdAndPid(orderId, passengerId);
+        if (userId != order.get(0).getUserId()){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST,"user ID error");
         }
-        if (!order.getOrderStatus().equals(OrderStatus.PAIED)){
+        if (!order.get(0).getOrderStatus().equals(OrderStatus.PAIED)){
             return Result.getResult(ResultCodeEnum.TICKET_UNABLE_REBOOK);
         }
 
         if (departureDate != null){
-            order.setDepartureDate(departureDate);
+            order.get(0).setDepartureDate(departureDate);
         } else if (trainRouteId != null) {
-            order.setTrainRouteId(trainRouteId);
+            order.get(0).setTrainRouteId(trainRouteId);
         }
 
-        if (order.isRequestLegal().getCode() != ResultCodeEnum.SUCCESS.getCode()) {
+        if (order.get(0).isRequestLegal().getCode() != ResultCodeEnum.SUCCESS.getCode()) {
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         } else {
-            if (isEnough(order, 1)) {
+            if (isEnough(order.get(0), 1)) {
                 if (carriage != null && seat != null){
                     //TODO:检查座位是否可分配
                 }
                 try {
                     ticketCommandMapper.ticketRebook(orderId, passengerId, departureDate, trainRouteId);
-                    if (order.getOrderStatus().equals(OrderStatus.PAIED) && carriage != null && seat != null){
+                    if (order.get(0).getOrderStatus().equals(OrderStatus.PAIED) && carriage != null && seat != null){
                         ticketCommandMapper.updateTicketSold(orderId, passengerId, carriage, seat);
                     }
                     return Result.getResult(ResultCodeEnum.SUCCESS);

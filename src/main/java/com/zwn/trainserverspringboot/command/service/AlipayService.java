@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,30 +47,30 @@ public class AlipayService  {
 
 
     public Result alipay(String orderId, List<String> passengerId, int payMethod) {
-        Order order = new Order();
-        double price = 0;
-        for (String pid : passengerId){
-             order = orderQueryMapper.getOrderByIdAndPid(orderId ,pid);
-            if (order == null){
-                continue;
-            }
-            price += order.getPrice();
-        }
-        assert order != null;
-        if (order.getOrderId() == null || order.getOrderId().length() == 0){
+        if (orderId == null || passengerId == null||passengerId.size() == 0){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
-        order.setPrice(price);
+        List<Order> orders  = new ArrayList<>();
+        double price = 0;
+        for (String pid : passengerId){
+            orders = orderQueryMapper.getOrderByIdAndPid(orderId ,pid);
+            for (Order order : orders){
+                if (order == null){
+                    continue;
+                }
+                price += order.getPrice();
+            }
+        }
 
         //设置支付回调时可以在request中获取的参数
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("orderId", order.getOrderId());
-        jsonObject.put("userId", order.getUserId());
-        jsonObject.put("departureDate", order.getDepartureDate());
-        jsonObject.put("trainRouteId", order.getTrainRouteId());
-        jsonObject.put("fromStationId", order.getFromStationId());
-        jsonObject.put("toStationId", order.getToStationId());
-        jsonObject.put("seatTypeId", order.getSeatTypeId());
+        jsonObject.put("orderId", orders.get(0).getOrderId());
+        jsonObject.put("userId", orders.get(0).getUserId());
+        jsonObject.put("departureDate", orders.get(0).getDepartureDate());
+        jsonObject.put("trainRouteId", orders.get(0).getTrainRouteId());
+        jsonObject.put("fromStationId", orders.get(0).getFromStationId());
+        jsonObject.put("toStationId", orders.get(0).getToStationId());
+        jsonObject.put("seatTypeId", orders.get(0).getSeatTypeId());
         jsonObject.put("price", price);
         jsonObject.put("payType", payMethod);
         String params = jsonObject.toString();
@@ -77,8 +78,8 @@ public class AlipayService  {
         //设置支付参数
         AlipayTradePrecreateModel model = new AlipayTradePrecreateModel();
         model.setBody(params);
-        model.setTotalAmount(String.valueOf(order.getPrice()));
-        model.setOutTradeNo(order.getOrderId());
+        model.setTotalAmount(String.valueOf(price));
+        model.setOutTradeNo(orders.get(0).getOrderId());
         model.setSubject("车票");
         try{
             //获取响应二维码信息

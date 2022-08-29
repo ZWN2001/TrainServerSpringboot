@@ -9,7 +9,7 @@ import java.util.List;
 public interface OrderQueryMapper {
 //    int queryOrderWithInfo(long userId, long passengerId, String departureDate, String trainRouteId,int seatTypeId);
 
-    Order getOrderByIdAndPid(String orderId, String passengerId);
+    List<Order> getOrderByIdAndPid(String orderId, String passengerId);
 
     List<Order> getOrderById(String orderId);
 }

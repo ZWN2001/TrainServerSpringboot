@@ -74,7 +74,9 @@
     </delete>
 
     <select id="getTicketNum" resultType="java.lang.Integer">
-        SELECT count(order_id) FROM ticket_order WHERE passenger_id = #{param1} AND departure_date = #{param2} AND train_route_id = #{param3};
+        SELECT count(order_id) FROM ticket_order WHERE (order_status = '已支付' OR order_status = '已改签') AND
+                                                       passenger_id = #{param1} AND departure_date = #{param2}
+                                                   AND train_route_id = #{param3};
     </select>
 
 </mapper>
