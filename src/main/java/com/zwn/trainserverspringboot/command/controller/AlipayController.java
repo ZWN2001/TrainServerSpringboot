@@ -1,8 +1,5 @@
 package com.zwn.trainserverspringboot.command.controller;
 
-
-import com.alibaba.fastjson.JSONObject;
-import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.service.AlipayService;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;

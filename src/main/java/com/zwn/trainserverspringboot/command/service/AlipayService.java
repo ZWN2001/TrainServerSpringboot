@@ -9,18 +9,15 @@ import com.alipay.api.domain.AlipayTradePrecreateModel;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.zwn.trainserverspringboot.command.bean.Order;
-import com.zwn.trainserverspringboot.command.bean.OrderStatus;
 import com.zwn.trainserverspringboot.command.bean.RebookOrder;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
 import com.zwn.trainserverspringboot.config.AlipayConfig;
 import com.zwn.trainserverspringboot.query.bean.AtomStationKey;
 import com.zwn.trainserverspringboot.query.bean.SeatBookingInfo;
 import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
-import com.zwn.trainserverspringboot.query.mapper.PassengerQueryMapper;
 import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
 import com.zwn.trainserverspringboot.query.mapper.TrainRouteQueryMapper;
 import com.zwn.trainserverspringboot.query.service.SeatQueryService;
-import com.zwn.trainserverspringboot.query.service.TicketQueryService;
 import com.zwn.trainserverspringboot.util.*;
 import com.zwn.trainserverspringboot.util.qrcode.QrCodeResponse;
 import com.zwn.trainserverspringboot.util.qrcode.QrResponse;
@@ -32,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class AlipayService  {
@@ -53,10 +49,6 @@ public class AlipayService  {
     private SeatQueryService seatQueryService;
     @Resource
     private TrainRouteQueryMapper trainRouteQueryMapper;
-//    @Resource
-//    private PassengerQueryMapper passengerQueryMapper;
-//    @Resource
-//    private TicketQueryService ticketQueryService;
 
 
     public Result alipay(String orderId, List<String> passengerId, int payMethod) {
@@ -251,35 +243,6 @@ public class AlipayService  {
                 alipayConfig.getALIPAY_PUBLIC_KEY(),
                 alipayConfig.getSIGNTYPE()
         );
-    }
-
-
-    private boolean isEnough(Order order, int ticketNum){
-        List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
-        boolean enough = true;
-        for (AtomStationKey atomStationKey : atomStationKeys) {
-            atomStationKey.setDepartureDate(order.getDepartureDate());
-            atomStationKey.setSeatTypeId(order.getSeatTypeId());
-            String key = com.alibaba.fastjson2.JSON.toJSONString(atomStationKey);
-            long surplusNumber = redisUtil.decr(key, ticketNum);
-            redisUtil.incr(key, ticketNum);
-            if (surplusNumber < 0) {
-                enough = false;
-                break;
-            }
-        }
-        return enough;
-    }
-
-    ///扣库存
-    private void redisDecr(Order order,int num){
-        List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
-        for (AtomStationKey atomStationKey : atomStationKeys) {
-            atomStationKey.setDepartureDate(order.getDepartureDate());
-            atomStationKey.setSeatTypeId(order.getSeatTypeId());
-            String key = com.alibaba.fastjson2.JSON.toJSONString(atomStationKey);
-            redisUtil.decr(key, num);
-        }
     }
 
     ///加库存

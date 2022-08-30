@@ -178,19 +178,4 @@ public class TicketCommandController {
             return result;
         }
     }
-
-//    @PostMapping("/get")
-//    Result ticketGet(Order order, String passengerId, int carriageId, int seat){
-//        Result result = UserCheck.checkWithUserId(order.getUserId());
-//        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
-//            try{
-//                return ticketCommandService.ticketGet(order.getOrderId(), passengerId, carriageId, seat);
-//            }catch (Exception e){
-//                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
-//            }
-//
-//        }else {
-//            return result;
-//        }
-//    }
 }

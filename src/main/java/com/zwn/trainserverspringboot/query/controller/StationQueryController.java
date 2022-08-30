@@ -1,6 +1,5 @@
 package com.zwn.trainserverspringboot.query.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.zwn.trainserverspringboot.query.service.StationQueryService;
 import com.zwn.trainserverspringboot.util.Result;
 import org.springframework.web.bind.annotation.GetMapping;

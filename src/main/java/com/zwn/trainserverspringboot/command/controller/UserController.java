@@ -1,6 +1,5 @@
 package com.zwn.trainserverspringboot.command.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.zwn.trainserverspringboot.command.bean.User;
 import com.zwn.trainserverspringboot.command.service.AuthServiceImpl;
 import com.zwn.trainserverspringboot.util.Result;

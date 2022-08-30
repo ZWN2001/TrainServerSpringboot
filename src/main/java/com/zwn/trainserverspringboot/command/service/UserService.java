@@ -17,33 +17,10 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        UserDetail userDetail = (UserDetail) userMapper.queryUserById(Long.parseLong(userId)).get(0);
+        UserDetail userDetail = userMapper.queryUserById(Long.parseLong(userId)).get(0);
         if (userDetail == null) {
             throw new UsernameNotFoundException(String.format("No userDetail found with username '%s'.", userId));
         }
         return userDetail;
     }
-
-//    public Result register(User user){
-//        try{
-//            userMapper.register(user.getUserId(), user.getUserName(), user.isGender(), user.getLoginKey(), user.getEmail());
-//        }catch (Exception exception){
-//            if (exception.getClass().getName().equals("org.springframework.dao.DuplicateKeyException")){
-//                return  Result.getResult(ResultCodeEnum.REGISTER_EXIST);
-//            }else {
-//                return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
-//            }
-//        }
-//        return Result.getResult(ResultCodeEnum.SUCCESS);
-//    }
-//
-//    public Result login(long user_id, String login_key){
-//        int result;
-//        try {
-//            result = userMapper.login(user_id, login_key);
-//            return result == 1 ? Result.getResult(ResultCodeEnum.SUCCESS) : Result.getResult(ResultCodeEnum.LOGIN_ERROR);
-//        }catch (Exception e){
-//            return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
-//        }
-//    }
 }

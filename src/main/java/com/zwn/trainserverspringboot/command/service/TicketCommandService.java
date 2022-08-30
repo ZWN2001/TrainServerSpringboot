@@ -310,17 +310,6 @@ public class TicketCommandService {
         }
     }
 
-    ///加库存
-    private void redisIncr(Order order){
-        List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
-        for (AtomStationKey atomStationKey : atomStationKeys) {
-            atomStationKey.setDepartureDate(order.getDepartureDate());
-            atomStationKey.setSeatTypeId(order.getSeatTypeId());
-            String key = JSON.toJSONString(atomStationKey);
-            redisUtil.incr(key, 1);
-        }
-    }
-
     private void addBack(List<SeatSoldInfo> seatSoldInfos){
         SeatSoldInfo info = seatSoldInfos.get(0);
         //加库存，加座位，加余票

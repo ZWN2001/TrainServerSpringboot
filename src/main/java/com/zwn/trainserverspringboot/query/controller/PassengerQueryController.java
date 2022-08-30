@@ -1,6 +1,5 @@
 package com.zwn.trainserverspringboot.query.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.zwn.trainserverspringboot.query.service.PassengerQueryService;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;

@@ -1,13 +1,11 @@
 package com.zwn.trainserverspringboot.command.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson2.JSON;
 import com.zwn.trainserverspringboot.command.bean.Passenger;
 import com.zwn.trainserverspringboot.command.service.PassengerCommandService;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import com.zwn.trainserverspringboot.util.UserCheck;
-import com.zwn.trainserverspringboot.util.UserUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
