@@ -2,6 +2,7 @@ package com.zwn.trainserverspringboot.command.service;
 
 import com.alibaba.fastjson2.JSON;
 import com.zwn.trainserverspringboot.command.bean.OrderMessage;
+import com.zwn.trainserverspringboot.command.bean.RebookOrder;
 import com.zwn.trainserverspringboot.command.mapper.SeatCommandMapper;
 import com.zwn.trainserverspringboot.query.bean.AtomStationKey;
 import com.zwn.trainserverspringboot.command.bean.Order;
@@ -48,7 +49,7 @@ public class TicketCommandService {
             ///存在未支付订单，不允许订票
             return Result.getResult(ResultCodeEnum.ORDER_HAVE_UN_PAIED);
         }
-        if (!isEnough(order,passengerIds.size())){//不足
+        if (isNotEnough(order, passengerIds.size())){//不足
             return Result.getResult(ResultCodeEnum.TICKET_SURPLUS_NOT_ENOUGH);
         }else {
             List<Result> results = new ArrayList<>();
@@ -106,7 +107,7 @@ public class TicketCommandService {
             ///存在未支付订单，不允许订票
             return Result.getResult(ResultCodeEnum.ORDER_HAVE_UN_PAIED);
         }
-        if (!isEnough(order1,passengerIds.size()) || !isEnough(order2,passengerIds.size())){//不足
+        if (isNotEnough(order1, passengerIds.size()) || isNotEnough(order2, passengerIds.size())){//不足
             return Result.getResult(ResultCodeEnum.TICKET_SURPLUS_NOT_ENOUGH);
         }else {
             List<Result> results = new ArrayList<>();
@@ -219,50 +220,69 @@ public class TicketCommandService {
 
     }
 
-    public Result ticketRebook(String orderId, String passengerId, long userId, String departureDate, String trainRouteId, String carriage,
-                               String seat){
-        List<Order> order = orderQueryMapper.getOrderByIdAndPid(orderId, passengerId);
-        if (userId != order.get(0).getUserId()){
-            return Result.getResult(ResultCodeEnum.BAD_REQUEST,"user ID error");
-        }
-        if (!order.get(0).getOrderStatus().equals(OrderStatus.PAIED)){
-            return Result.getResult(ResultCodeEnum.TICKET_UNABLE_REBOOK);
-        }
-
-        if (departureDate != null){
-            order.get(0).setDepartureDate(departureDate);
-        } else if (trainRouteId != null) {
-            order.get(0).setTrainRouteId(trainRouteId);
-        }
-
-        if (order.get(0).isRequestLegal().getCode() != ResultCodeEnum.SUCCESS.getCode()) {
-            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
-        } else {
-            if (isEnough(order.get(0), 1)) {
-                if (carriage != null && seat != null){
-                    //TODO:检查座位是否可分配
+    public Result ticketRebook(RebookOrder rebookOrder, List<String> passengerIds, List<String> locations){
+        Order order = Order.builder().trainRouteId(rebookOrder.getTrainRouteId())
+                .fromStationId(rebookOrder.getFromStationId())
+                .toStationId(rebookOrder.getToStationId())
+                .departureDate(rebookOrder.getDepartureDate())
+                .seatTypeId(rebookOrder.getSeatTypeId()).build();
+        if (isNotEnough(order, passengerIds.size())){//不足
+            return Result.getResult(ResultCodeEnum.TICKET_SURPLUS_NOT_ENOUGH);
+        }else {
+            List<Result> results = new ArrayList<>();
+            for (int i = 0; i< passengerIds.size(); i++) {
+                rebookOrder.setPassengerId(passengerIds.get(i));
+                rebookOrder.setSeatBooking(Integer.parseInt(locations.get(i)));
+                //检查乘员是否买过这班车的票
+                if (ticketCommandMapper.getTicketNum(passengerIds.get(i), rebookOrder.getDepartureDate(), rebookOrder.getTrainRouteId()) != 0) {
+                    return Result.getResult(ResultCodeEnum.TICKET_BOUGHT);
                 }
                 try {
-                    ticketCommandMapper.ticketRebook(orderId, passengerId, departureDate, trainRouteId);
-                    if (order.get(0).getOrderStatus().equals(OrderStatus.PAIED) && carriage != null && seat != null){
-                        ticketCommandMapper.updateTicketSold(orderId, passengerId, carriage, seat);
+                    //获取价格
+                    Result priceResult = ticketQueryService.getTicketPrice(rebookOrder.getTrainRouteId(),
+                            rebookOrder.getFromStationId(), rebookOrder.getToStationId(), rebookOrder.getSeatTypeId());
+                    if (priceResult.getCode() != ResultCodeEnum.SUCCESS.getCode()) {
+                        results.add(Result.getResult(ResultCodeEnum.TICKET_PRICE_ERROR));
+                    } else {
+                        //学生票五折
+                        if (passengerQueryMapper.getPassengerRole(rebookOrder.getUserId(), passengerIds.get(i)).equals("student")) {
+                            rebookOrder.setPrice((double) priceResult.getData() / 2);
+                        } else {
+                            rebookOrder.setPrice((double) priceResult.getData());
+                        }
+                        producer.sendTicketRebook(rebookOrder);
+                        results.add(Result.getResult(ResultCodeEnum.SUCCESS, rebookOrder));
+                        //扣库存
+                        redisDecr(order);
                     }
-                    return Result.getResult(ResultCodeEnum.SUCCESS);
-                }catch (Exception e){
+                } catch (Exception e) {
+                    e.printStackTrace();
                     Throwable cause = e.getCause();
                     if (cause instanceof SQLIntegrityConstraintViolationException) {
-                        return Result.getResult(ResultCodeEnum.BAD_REQUEST);
-                    }  else {
-                        return Result.getResult(ResultCodeEnum.UNKNOWN_ERROR);
+                        results.add(Result.getResult(ResultCodeEnum.ORDER_REQUEST_ILLEGAL, passengerIds.get(i)));
+                    } else if (cause instanceof DuplicateKeyException) {
+                        results.add(Result.getResult(ResultCodeEnum.ORDER_EXIST, passengerIds.get(i)));
+                    } else {
+                        results.add(Result.getResult(ResultCodeEnum.BAD_REQUEST, passengerIds.get(i)));
                     }
                 }
-            } else {
-                return Result.getResult(ResultCodeEnum.TICKET_SURPLUS_NOT_ENOUGH);
             }
+            return Result.getResult(ResultCodeEnum.SUCCESS,results);
         }
     }
 
-    private boolean isEnough(Order order, int ticketNum){
+    public Result ticketRebookCancel(String orderId){
+        List<String> orderStatus = ticketQueryMapper.getOrderStatus(orderId);
+        for(String s : orderStatus){
+            if(!Objects.equals(s, OrderStatus.TO_REBOOK) && !Objects.equals(s, OrderStatus.PAIED) ){
+                return Result.getResult(ResultCodeEnum.ORDER_STATUS_ERROR);
+            }
+        }
+        ticketCommandMapper.ticketRebookCancel(orderId);
+        return Result.getResult(ResultCodeEnum.SUCCESS);
+    }
+
+    private boolean isNotEnough(Order order, int ticketNum){
         List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
         boolean enough = true;
         for (AtomStationKey atomStationKey : atomStationKeys) {
@@ -276,7 +296,7 @@ public class TicketCommandService {
                 break;
             }
         }
-        return enough;
+        return !enough;
     }
 
     ///扣库存
@@ -287,6 +307,17 @@ public class TicketCommandService {
             atomStationKey.setSeatTypeId(order.getSeatTypeId());
             String key = JSON.toJSONString(atomStationKey);
             redisUtil.decr(key, 1);
+        }
+    }
+
+    ///加库存
+    private void redisIncr(Order order){
+        List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
+        for (AtomStationKey atomStationKey : atomStationKeys) {
+            atomStationKey.setDepartureDate(order.getDepartureDate());
+            atomStationKey.setSeatTypeId(order.getSeatTypeId());
+            String key = JSON.toJSONString(atomStationKey);
+            redisUtil.incr(key, 1);
         }
     }
 

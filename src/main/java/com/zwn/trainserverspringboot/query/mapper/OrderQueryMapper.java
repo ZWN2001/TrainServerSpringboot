@@ -1,6 +1,7 @@
 package com.zwn.trainserverspringboot.query.mapper;
 
 import com.zwn.trainserverspringboot.command.bean.Order;
+import com.zwn.trainserverspringboot.command.bean.RebookOrder;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -12,4 +13,6 @@ public interface OrderQueryMapper {
     List<Order> getOrderByIdAndPid(String orderId, String passengerId);
 
     List<Order> getOrderById(String orderId);
+
+    List<RebookOrder> getRebookOrder(long userId);
 }

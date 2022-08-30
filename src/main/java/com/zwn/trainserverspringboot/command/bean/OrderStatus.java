@@ -6,5 +6,5 @@ public class OrderStatus {
     public static final String TIMEOUT = "支付超时";
     public static final String PAIED = "已支付";
     public static final String REFUNDED = "已退票";
-    public static final String DRAFTED = "已出票";
+    public static final String TO_REBOOK = "待改签";
 }

@@ -4,6 +4,7 @@ import com.zwn.trainserverspringboot.query.service.TicketQueryService;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import com.zwn.trainserverspringboot.util.UserCheck;
+import com.zwn.trainserverspringboot.util.UserUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -129,14 +130,45 @@ public class TicketQueryController {
         }
     }
 
-    @GetMapping("/orderStatus")
-    Result getOrderStatus(String orderId){
+    @GetMapping("/orderPayStatus")
+    Result getOrderPayStatus(String orderId){
         try {
-            return ticketQueryService.getOrderStatus(orderId);
+            return ticketQueryService.getOrderPayStatus(orderId);
         }catch (Exception e){
             e.printStackTrace();
             return Result.getResult(ResultCodeEnum.BAD_REQUEST,e.getClass().toString());
         }
     }
+
+    @GetMapping("/orderRebookStatus")
+    Result getOrderRebookStatus(String orderId){
+        try {
+            return ticketQueryService.getOrderRebookStatus(orderId);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST,e.getClass().toString());
+        }
+    }
+
+    @GetMapping("/orderById")
+    Result getOrderById(String orderId){
+        try {
+            return ticketQueryService.getOrderById(orderId);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST,e.getClass().toString());
+        }
+    }
+
+    @GetMapping("/orderToRebook")
+    Result getOrderToRebook(){
+        try {
+            return ticketQueryService.getOrderToRebook(UserUtil.getCurrentUserId());
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST,e.getClass().toString());
+        }
+    }
+
 
 }

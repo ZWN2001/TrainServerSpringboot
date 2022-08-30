@@ -15,11 +15,11 @@ public interface TicketQueryMapper {
     List<OrderGeneral> getSelfTicket(long userId);
     List<OrderGeneral> getSelfOrder(long userId);
     List<OrderGeneral> getSelfPaiedOrder(long userId);
-    List<Order> getOrderInfo(String orderId);
+    List<Order> getSoldOrderInfo(String orderId);
     SeatInfo getTicketSeatInfo(String ticketId);
     List<Order> getTicketToPayDetail(long userId);
     int getTicketToPayNum(long userId);
-    String getOrderStatus(String orderId);
+    List<String> getOrderStatus(String orderId);
     List<String> getOrderPassengers(String orderId);
     List<SeatBookingInfo> getPreferSeatBookingInfo(String orderId);
     List<SeatSoldInfo> getSoldSeatInfo(String orderId);

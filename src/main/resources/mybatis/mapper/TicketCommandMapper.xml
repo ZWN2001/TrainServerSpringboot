@@ -30,16 +30,11 @@
     </update>
 
     <update id="ticketRebook">
-        UPDATE ticket_order SET order_status = '已改签'
-          <choose>
-              <when test="param2 != null">
-                  AND departure_date = #{param3}
-              </when>
-              <when test="param3 != null">
-                  AND train_route_id = #{param4}
-              </when>
-          </choose>
-          WHERE order_id = #{param1} AND passenger_id = #{param2};
+        INSERT INTO ticket_rebook(order_id,user_id,passenger_id,train_route_id,departure_date,from_station_id,
+                                 to_station_id,seat_type_id,seat_booking,original_price,price,create_time)
+        VALUES (#{orderId},#{userId},#{passengerId},#{trainRouteId},#{departureDate},#{fromStationId},#{toStationId},
+                #{seatTypeId},#{seatBooking},#{originalPrice},#{price},#{createTime});
+        UPDATE ticket_order SET  order_status = '待改签' WHERE order_id = #{orderId} AND passenger_id = #{passengerId};
     </update>
 
     <update id="updateTicketSold">
@@ -78,5 +73,19 @@
                                                        passenger_id = #{param1} AND departure_date = #{param2}
                                                    AND train_route_id = #{param3};
     </select>
+
+    <update id="ticketRebookCancel">
+        DELETE FROM ticket_rebook WHERE order_id = #{orderId};
+        UPDATE ticket_order SET order_status = '已支付' WHERE order_id = #{orderId} AND order_status = '待改签'
+    </update>
+
+    <update id="ticketRebookDone">
+        DELETE FROM ticket_rebook WHERE order_id = #{orderId};
+        UPDATE ticket_order SET order_status = '已改签' WHERE order_id = #{orderId} AND order_status = '待改签'
+    </update>
+
+    <update id="ticketRebookPrice">
+        UPDATE ticket_order SET price = #{param3} WHERE order_id = #{param1} AND passenger_id = #{param2};
+    </update>
 
 </mapper>

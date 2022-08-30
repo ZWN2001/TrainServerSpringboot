@@ -2,6 +2,7 @@ package com.zwn.trainserverspringboot.command.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zwn.trainserverspringboot.command.bean.Order;
+import com.zwn.trainserverspringboot.command.bean.RebookOrder;
 import com.zwn.trainserverspringboot.command.service.TicketCommandService;
 import com.zwn.trainserverspringboot.util.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -132,12 +133,42 @@ public class TicketCommandController {
     }
 
     @PostMapping("/rebook")
-    Result ticketRebook(String orderId, String passengerId, String departureDate, String trainRouteId, String carriage, String seat){
+    Result ticketRebook(String orderString , String passengerIdsString, String seatLocationListString){
+        RebookOrder order;
+        List<String> passengerIds;
+        List<String> locations;
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(orderString);
+            order = JSONObject.toJavaObject(jsonObject, RebookOrder.class);
+            passengerIds = StringUtil.getListFromString(passengerIdsString);
+            locations = StringUtil.getListFromString(seatLocationListString);
+        }catch (Exception e){
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
+
+        if(locations.size() != passengerIds.size()){
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             try{
-                return ticketCommandService.ticketRebook(orderId, passengerId, UserUtil.getCurrentUserId(), departureDate,
-                        trainRouteId, carriage, seat);
+                return ticketCommandService.ticketRebook(order, passengerIds, locations);
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
+
+        }else {
+            return result;
+        }
+    }
+
+    @PostMapping("/rebookCancel")
+    Result ticketRebookCancel(String orderId){
+        Result result = UserCheck.check();
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            try{
+                return ticketCommandService.ticketRebookCancel(orderId);
             }catch (Exception e){
                 e.printStackTrace();
                 return Result.getResult(ResultCodeEnum.BAD_REQUEST);

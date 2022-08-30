@@ -1,10 +1,13 @@
 package com.zwn.trainserverspringboot.command.controller;
 
 
+import com.alibaba.fastjson.JSONObject;
+import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.service.AlipayService;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import com.zwn.trainserverspringboot.util.StringUtil;
+import com.zwn.trainserverspringboot.util.UserCheck;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +33,21 @@ public class AlipayController {
         }catch (Exception e){
             e.printStackTrace();
             return Result.getResult(ResultCodeEnum.BAD_REQUEST,e.getClass().toString());
+        }
+    }
+
+    @GetMapping("/alipay/payRebook")
+    public Result alipayRebook(){
+        Result result = UserCheck.check();
+        if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
+            try{
+                return alipayService.alipayRebook();
+            }catch (Exception e){
+                e.printStackTrace();
+                return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+            }
+        }else {
+            return result;
         }
     }
 

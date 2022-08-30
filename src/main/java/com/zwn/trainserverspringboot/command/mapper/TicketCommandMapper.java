@@ -1,6 +1,7 @@
 package com.zwn.trainserverspringboot.command.mapper;
 
 import com.zwn.trainserverspringboot.command.bean.Order;
+import com.zwn.trainserverspringboot.command.bean.RebookOrder;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface TicketCommandMapper {
 
     void ticketRefund(String orderId);
 
-    void ticketRebook(String orderId, String passengerId, String departureDate, String trainRouteId);
+    void ticketRebook(RebookOrder rebookOrder);
 
     void updateTicketSold(String orderId, String passengerId, String carriage, String seat);
 
@@ -27,4 +28,10 @@ public interface TicketCommandMapper {
     void ticketBookingCancel(String departureDate, String trainRouteId, String passengerId);
 
     int getTicketNum(String passengerId, String departureDate, String trainRouteId);
+
+    void ticketRebookCancel(String orderId);
+
+    void ticketRebookDone(String orderId);
+
+    void ticketRebookPrice(String orderId, String passengerId, double price);
 }

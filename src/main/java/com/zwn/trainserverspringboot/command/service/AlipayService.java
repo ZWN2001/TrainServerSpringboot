@@ -9,15 +9,19 @@ import com.alipay.api.domain.AlipayTradePrecreateModel;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.zwn.trainserverspringboot.command.bean.Order;
+import com.zwn.trainserverspringboot.command.bean.OrderStatus;
+import com.zwn.trainserverspringboot.command.bean.RebookOrder;
 import com.zwn.trainserverspringboot.command.mapper.TicketCommandMapper;
 import com.zwn.trainserverspringboot.config.AlipayConfig;
+import com.zwn.trainserverspringboot.query.bean.AtomStationKey;
 import com.zwn.trainserverspringboot.query.bean.SeatBookingInfo;
 import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
+import com.zwn.trainserverspringboot.query.mapper.PassengerQueryMapper;
 import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
+import com.zwn.trainserverspringboot.query.mapper.TrainRouteQueryMapper;
 import com.zwn.trainserverspringboot.query.service.SeatQueryService;
-import com.zwn.trainserverspringboot.util.ParamsUtil;
-import com.zwn.trainserverspringboot.util.Result;
-import com.zwn.trainserverspringboot.util.ResultCodeEnum;
+import com.zwn.trainserverspringboot.query.service.TicketQueryService;
+import com.zwn.trainserverspringboot.util.*;
 import com.zwn.trainserverspringboot.util.qrcode.QrCodeResponse;
 import com.zwn.trainserverspringboot.util.qrcode.QrResponse;
 import org.slf4j.Logger;
@@ -28,12 +32,15 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class AlipayService  {
 
     Logger logger = LoggerFactory.getLogger(AlipayService.class);
 
+    @Resource
+    private RedisUtil redisUtil;
     @Resource
     private AlipayConfig alipayConfig;
     @Resource
@@ -44,6 +51,12 @@ public class AlipayService  {
     private TicketQueryMapper ticketQueryMapper;
     @Resource
     private SeatQueryService seatQueryService;
+    @Resource
+    private TrainRouteQueryMapper trainRouteQueryMapper;
+//    @Resource
+//    private PassengerQueryMapper passengerQueryMapper;
+//    @Resource
+//    private TicketQueryService ticketQueryService;
 
 
     public Result alipay(String orderId, List<String> passengerId, int payMethod) {
@@ -89,7 +102,64 @@ public class AlipayService  {
             e.printStackTrace();
             return Result.getResult(ResultCodeEnum.BAD_REQUEST,e.getClass().toString());
         }
+    }
 
+    public Result alipayRebook() {
+        List<RebookOrder> orderList = orderQueryMapper.getRebookOrder(UserUtil.getCurrentUserId());
+        if(orderList.size() == 0){
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST);
+        }
+        double price = 0;
+        for (RebookOrder rebookOrder : orderList){
+            price += rebookOrder.getPrice() - rebookOrder.getOriginalPrice();
+        }
+        if (price <= 0){
+            Order order = Order.builder()
+                    .trainRouteId(orderList.get(0).getTrainRouteId())
+                    .fromStationId(orderList.get(0).getFromStationId())
+                    .toStationId(orderList.get(0).getToStationId())
+                    .departureDate(orderList.get(0).getDepartureDate())
+                    .seatTypeId(orderList.get(0).getSeatTypeId()).build();
+            int num =  orderList.size();
+            ticketCommandMapper.updateTicketRemain(order.getTrainRouteId(),
+                    order.getSeatTypeId(),order.getDepartureDate(),
+                    order.getFromStationId(),order.getToStationId(), num);
+            redisIncr(order, num);
+            //处理状态
+            for(RebookOrder o : orderList){
+                ticketCommandMapper.ticketRebookPrice(o.getOrderId(),o.getPassengerId(),o.getPrice());
+            }
+            ticketCommandMapper.ticketRebookDone(orderList.get(0).getOrderId());
+            return Result.getResult(ResultCodeEnum.SUCCESS,true);
+        }
+        //设置支付回调时可以在request中获取的参数
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("orderId", orderList.get(0).getOrderId());
+        jsonObject.put("userId", orderList.get(0).getUserId());
+        jsonObject.put("departureDate", orderList.get(0).getDepartureDate());
+        jsonObject.put("trainRouteId", orderList.get(0).getTrainRouteId());
+        jsonObject.put("fromStationId", orderList.get(0).getFromStationId());
+        jsonObject.put("toStationId", orderList.get(0).getToStationId());
+        jsonObject.put("seatTypeId", orderList.get(0).getSeatTypeId());
+        jsonObject.put("num", orderList.size());
+        jsonObject.put("price", price);
+        jsonObject.put("payType", 1);
+        String params = jsonObject.toString();
+
+        //设置支付参数
+        AlipayTradePrecreateModel model = new AlipayTradePrecreateModel();
+        model.setBody(params);
+        model.setTotalAmount(String.valueOf(price));
+        model.setOutTradeNo(orderList.get(0).getOrderId()+1);
+        model.setSubject("车票改签");
+        try{
+            //获取响应二维码信息
+            QrCodeResponse qrCodeResponse = qrcodePay(model);
+            return Result.getResult(ResultCodeEnum.SUCCESS,qrCodeResponse.getQr_code());
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.getResult(ResultCodeEnum.BAD_REQUEST,e.getClass().toString());
+        }
     }
 
     public boolean alipayCallback(HttpServletRequest request) {
@@ -100,24 +170,44 @@ public class AlipayService  {
             String body1 = params.get("body");
             logger.info("交易的流水号和交易信息===========>"+tradeNo+"\n"+ body1);
             JSONObject body = JSONObject.parseObject(body1);
-//            String ptype = body.getString("payType");
-            String orderId = body.getString("orderId");
-            System.out.println(orderId);
-            List<SeatBookingInfo> seatBookingInfo = ticketQueryMapper.getPreferSeatBookingInfo(orderId);
-            System.out.println("bookinginfo:--------------");
-            System.out.println(seatBookingInfo);
-            for (SeatBookingInfo info : seatBookingInfo) {
-                int num = -1;//加负数，相当于减库存
-                ticketCommandMapper.updateTicketRemain(info.getTrainRouteId(),
-                        info.getSeatType(),info.getDepartureDate(),
-                        info.getFromStationId(),info.getToStationId(), num);
+            int ptype = body.getInteger("payType");
+            if(ptype == 0){
+                String orderId = body.getString("orderId");
+                List<SeatBookingInfo> seatBookingInfo = ticketQueryMapper.getPreferSeatBookingInfo(orderId);
+                for (SeatBookingInfo info : seatBookingInfo) {
+                    int num = -1;//加负数，相当于减库存
+                    ticketCommandMapper.updateTicketRemain(info.getTrainRouteId(),
+                            info.getSeatType(),info.getDepartureDate(),
+                            info.getFromStationId(),info.getToStationId(), num);
 
-                int[] carriageAndSeat = seatQueryService.getCarriageAndSeat(info);
-                if (!(carriageAndSeat[0] == -1) && !(carriageAndSeat[1] == -1)){
-                    ticketCommandMapper.ticketSoldInit(orderId,info.getPassengerId(),carriageAndSeat[0],carriageAndSeat[1]);
+                    int[] carriageAndSeat = seatQueryService.getCarriageAndSeat(info);
+                    if (!(carriageAndSeat[0] == -1) && !(carriageAndSeat[1] == -1)){
+                        ticketCommandMapper.ticketSoldInit(orderId,info.getPassengerId(),carriageAndSeat[0],carriageAndSeat[1]);
+                    }
                 }
+                ticketCommandMapper.ticketPay(orderId, tradeNo);
+            }else if (ptype == 1){
+                String orderId = body.getString("orderId");
+                //处理库存
+                Order order = Order.builder()
+                                .trainRouteId(body.getString("trainRouteId"))
+                                .fromStationId(body.getString("fromStationId"))
+                                .toStationId(body.getString("toStationId"))
+                                .departureDate(body.getString("departureDate"))
+                                .seatTypeId(body.getInteger("seatTypeId")).build();
+                int num =  body.getInteger("num");
+                ticketCommandMapper.updateTicketRemain(order.getTrainRouteId(),
+                        order.getSeatTypeId(),order.getDepartureDate(),
+                        order.getFromStationId(),order.getToStationId(), num);
+                redisIncr(order, num);
+                //处理状态
+                List<RebookOrder> orderList = orderQueryMapper.getRebookOrder(UserUtil.getCurrentUserId());
+                for(RebookOrder o : orderList){
+                    ticketCommandMapper.ticketRebookPrice(o.getOrderId(),o.getPassengerId(),o.getPrice());
+                }
+                ticketCommandMapper.ticketRebookDone(orderId);
             }
-            ticketCommandMapper.ticketPay(orderId, tradeNo);
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("异常====>"+ e);
@@ -161,5 +251,45 @@ public class AlipayService  {
                 alipayConfig.getALIPAY_PUBLIC_KEY(),
                 alipayConfig.getSIGNTYPE()
         );
+    }
+
+
+    private boolean isEnough(Order order, int ticketNum){
+        List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
+        boolean enough = true;
+        for (AtomStationKey atomStationKey : atomStationKeys) {
+            atomStationKey.setDepartureDate(order.getDepartureDate());
+            atomStationKey.setSeatTypeId(order.getSeatTypeId());
+            String key = com.alibaba.fastjson2.JSON.toJSONString(atomStationKey);
+            long surplusNumber = redisUtil.decr(key, ticketNum);
+            redisUtil.incr(key, ticketNum);
+            if (surplusNumber < 0) {
+                enough = false;
+                break;
+            }
+        }
+        return enough;
+    }
+
+    ///扣库存
+    private void redisDecr(Order order,int num){
+        List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
+        for (AtomStationKey atomStationKey : atomStationKeys) {
+            atomStationKey.setDepartureDate(order.getDepartureDate());
+            atomStationKey.setSeatTypeId(order.getSeatTypeId());
+            String key = com.alibaba.fastjson2.JSON.toJSONString(atomStationKey);
+            redisUtil.decr(key, num);
+        }
+    }
+
+    ///加库存
+    private void redisIncr(Order order, int num){
+        List<AtomStationKey> atomStationKeys = trainRouteQueryMapper.getAtomStationKeys(order);
+        for (AtomStationKey atomStationKey : atomStationKeys) {
+            atomStationKey.setDepartureDate(order.getDepartureDate());
+            atomStationKey.setSeatTypeId(order.getSeatTypeId());
+            String key = com.alibaba.fastjson2.JSON.toJSONString(atomStationKey);
+            redisUtil.incr(key, num);
+        }
     }
 }

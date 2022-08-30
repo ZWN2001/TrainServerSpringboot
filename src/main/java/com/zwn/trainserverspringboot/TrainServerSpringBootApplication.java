@@ -23,10 +23,10 @@ public class TrainServerSpringBootApplication {
         return new Queue("TICKET_BOOKING_QUEUE", true);
     }
 
-//    @Bean
-//    public Queue orderQueue() {
-//        return new Queue("TICKET_GET_QUEUE", true);
-//    }
+    @Bean
+    public Queue ticketRebookQueue() {
+        return new Queue("TICKET_REBOOK_QUEUE", true);
+    }
 
     @Bean
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
