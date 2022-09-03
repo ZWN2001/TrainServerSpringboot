@@ -43,8 +43,8 @@ public class TrainRouteQueryService {
                 if(trainRoute.size() == 0){
                     continue;
                 }
-                //查售票计划
-                trainRoute.removeIf(route -> trainRouteQueryMapper.getRunPlan(route.getTrainRouteId()).getRunPlan().charAt(day) == '0');
+//                //查售票计划
+//                trainRoute.removeIf(route -> trainRouteQueryMapper.getRunPlan(route.getTrainRouteId()).getRunPlan().charAt(day) == '0');
 
                 for (TrainRoute route : trainRoute){
                     //加载时间
@@ -76,7 +76,7 @@ public class TrainRouteQueryService {
     }
 
     public Result querytrainRouteTransfer(String from, String to, String date){
-        int Max = 12;//获取到 12 班就停止
+        int Max = 8;//获取到 12 班就停止
         int day = Integer.parseInt(date.substring(8,10)) - 1;
         //这里其实应该对日期进行校验的
         if (day > 30 || day < 0){
@@ -85,7 +85,7 @@ public class TrainRouteQueryService {
         TicketRouteTimeInfo ticketRouteTimeInfo;
         List<TicketsRemain> ticketsRemain;
         Map<Integer,Integer> tickets = new HashMap<>();
-        List<String> allFromStationIds = stationQueryMapper.getSameCityStationId(from);
+//        List<String> allFromStationIds = stationQueryMapper.getSameCityStationId(from);
         List<String> allToStationIds = stationQueryMapper.getSameCityStationId(to);
         List<String> possibleStartTrainRouteIds;
         List<String> possibleTransStationIds;
@@ -94,36 +94,28 @@ public class TrainRouteQueryService {
         boolean content = false;
         TrainRouteTransfer resultEach;
         try {
-            for(String fromStationId : allFromStationIds){//所有同城的出发站
-                possibleStartTrainRouteIds = trainRouteQueryMapper.getStationContainRoute(fromStationId);
+//            for(String fromStationId : allFromStationIds){//所有同城的出发站
+                possibleStartTrainRouteIds = trainRouteQueryMapper.getStationContainRoute(from);
                 //去掉实际上不发售的车次
-                possibleStartTrainRouteIds.removeIf(route -> trainRouteQueryMapper.getRunPlan(route).getRunPlan().charAt(day) == '0');
+//                possibleStartTrainRouteIds.removeIf(route -> trainRouteQueryMapper.getRunPlan(route).getRunPlan().charAt(day) == '0');
                 for(String possibleStartTrainRouteId : possibleStartTrainRouteIds){//所有可能的第一趟车次
-                    possibleTransStationIds = trainRouteQueryMapper.getStationInTrainRouteAfter(possibleStartTrainRouteId,fromStationId);
+//                    System.out.println(possibleStartTrainRouteId);
+                    possibleTransStationIds = trainRouteQueryMapper.getStationInTrainRouteAfter(possibleStartTrainRouteId,from);
                     for(String possibleTransStationId : possibleTransStationIds){//可能的中转的车站
                         trainRoutes.clear();
                         for(String toStationId : allToStationIds){
                             trainRoutes.addAll(trainRouteQueryMapper.getTrainRoutesByFromAndTo(possibleTransStationId, toStationId));
                         }
+//                        trainRoutes.addAll(trainRouteQueryMapper.getTrainRoutesByFromAndTo(possibleTransStationId, to));
                         if(trainRoutes.size()>0){
-                            trainRoutes.removeIf(route -> trainRouteQueryMapper.getRunPlan(route.getTrainRouteId()).getRunPlan().charAt(day) == '0');
+//                            trainRoutes.removeIf(route -> trainRouteQueryMapper.getRunPlan(route.getTrainRouteId()).getRunPlan().charAt(day) == '0');
                             for (TrainRoute trainRoute : trainRoutes){
                                 if(!Objects.equals(trainRoute.getTrainRouteId(), possibleStartTrainRouteId)){//避免实际上是直达的情况
-                                    if(result.size() < Max){
+                                    if(result.size() <= Max){
                                         resultEach = new TrainRouteTransfer();
                                         resultEach.setNextRouteInfo(trainRoute);
                                         resultEach.setTrainRouteId1(possibleStartTrainRouteId);
-                                        resultEach.setFromStationId(fromStationId);
-                                        ticketRouteTimeInfo = (TicketRouteTimeInfo) queryTicketRouteTimeInfo(
-                                                possibleStartTrainRouteId, fromStationId, possibleTransStationId).getData();
-                                        resultEach.setStartTimeFrom(ticketRouteTimeInfo.getStartTime());
-                                        resultEach.setArriveTimeTrans(ticketRouteTimeInfo.getArriveTime());
 
-                                        resultEach.caculateDuration();
-                                        //去掉换乘时间太短或太长
-                                        if(resultEach.getDurationTransfer() < 15 || resultEach.getDurationTransfer() > 360){
-                                            continue;
-                                        }
                                         for(TrainRouteTransfer trainRouteTransfer : result){
                                             if (resultEach.equals(trainRouteTransfer)){
                                                 content = true;
@@ -131,6 +123,18 @@ public class TrainRouteQueryService {
                                             }
                                         }
                                         if(content){continue;}
+
+                                        resultEach.setFromStationId(from);
+                                        ticketRouteTimeInfo = (TicketRouteTimeInfo) queryTicketRouteTimeInfo(
+                                                possibleStartTrainRouteId, from, possibleTransStationId).getData();
+                                        resultEach.setStartTimeFrom(ticketRouteTimeInfo.getStartTime());
+                                        resultEach.setArriveTimeTrans(ticketRouteTimeInfo.getArriveTime());
+
+                                        resultEach.caculateDuration();
+//                                        //去掉换乘时间太短或太长
+//                                        if(resultEach.getDurationTransfer() < 15 || resultEach.getDurationTransfer() > 360){
+//                                            continue;
+//                                        }
 
                                         //初始化第一阶段的票
                                         tickets.clear();
@@ -167,7 +171,7 @@ public class TrainRouteQueryService {
                         }
                     }
                 }
-            }
+//            }
         }catch (Exception e){
             e.printStackTrace();
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
