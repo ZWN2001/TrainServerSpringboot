@@ -44,23 +44,28 @@
 
     <select id="getSelfTicket" resultType="com.zwn.trainserverspringboot.command.bean.OrderGeneral">
         SELECT order_id AS orderId, train_route_id AS trainRouteId, from_station_id AS fromStationId,
-               to_station_id AS toStationId, departure_date AS departureDate,  order_status AS orderStatus
+               to_station_id AS toStationId, departure_date AS departureDate,  order_status AS orderStatus,
+               passenger_id AS passengerId
         FROM ticket_order
-        WHERE user_id = #{userId} AND (order_status = '已支付' OR order_status = '已改签');
+        WHERE user_id = #{userId} AND (order_status = '已支付' OR order_status = '已改签')
+        ORDER BY order_time;
     </select>
 
     <select id="getSelfOrder" resultType="com.zwn.trainserverspringboot.command.bean.OrderGeneral">
         SELECT order_id AS orderId, train_route_id AS trainRouteId, from_station_id AS fromStationId,
-               to_station_id AS toStationId, departure_date AS departureDate, order_status AS orderStatus
+               to_station_id AS toStationId, departure_date AS departureDate, order_status AS orderStatus,
+               passenger_id AS passengerId
         FROM ticket_order
-        WHERE user_id = #{userId};
+        WHERE user_id = #{userId}
+        ORDER BY order_time;
     </select>
 
     <select id="getSelfPaiedOrder" resultType="com.zwn.trainserverspringboot.command.bean.OrderGeneral">
         SELECT order_id AS orderId, train_route_id AS trainRouteId, from_station_id AS fromStationId,
                to_station_id AS toStationId, departure_date AS departureDate
         FROM ticket_order
-        WHERE user_id = #{userId} AND order_status = '已支付';
+        WHERE user_id = #{userId} AND order_status = '已支付'
+        ORDER BY order_time;
     </select>
 
     <select id="getSoldOrderInfo" resultType="com.zwn.trainserverspringboot.command.bean.Order">
@@ -69,7 +74,11 @@
                seat_type_id AS seatTypeId, order_status AS orderStatus, order_time AS orderTime, price AS price,
                trade_no AS tradeNo
         FROM ticket_order
-        WHERE (order_id,passenger_id) IN (SELECT order_id,passenger_id FROM ticket_sold WHERE order_id = #{orderId});
+        WHERE (order_id,passenger_id) IN (SELECT order_id,passenger_id FROM ticket_sold WHERE order_id = #{param1})
+<!--        <if test="param2 != null">-->
+<!--            AND passenger_id = #{param2}-->
+<!--        </if>-->
+        ORDER BY order_time;
     </select>
 
     <select id="getTicketSeatInfo" resultType="com.zwn.trainserverspringboot.query.bean.SeatInfo">

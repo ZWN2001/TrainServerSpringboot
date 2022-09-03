@@ -25,7 +25,7 @@ public class TrainRouteQueryService {
 
     public Result querytrainRoute(String from, String to,  String date){
         int day = Integer.parseInt(date.substring(8,10)) - 1;
-        //ÕâÀïÆäÊµÓ¦¸Ã¶ÔÈÕÆÚ½øĞĞĞ£ÑéµÄ
+        //è¿™é‡Œå…¶å®åº”è¯¥å¯¹æ—¥æœŸè¿›è¡Œæ ¡éªŒçš„
         if (day > 30 || day < 0){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
@@ -33,7 +33,7 @@ public class TrainRouteQueryService {
         TicketRouteTimeInfo ticketRouteTimeInfo;
         List<TicketsRemain> ticketsRemain;
         Map<Integer,Integer> tickets;
-        //Á½¸ö³ÇÊĞµÄËùÓĞ³µÕ¾
+        //ä¸¤ä¸ªåŸå¸‚çš„æ‰€æœ‰è½¦ç«™
         List<String> allFromStations = stationQueryMapper.getSameCityStationId(from);
         List<String> allToStations = stationQueryMapper.getSameCityStationId(to);
 
@@ -43,17 +43,17 @@ public class TrainRouteQueryService {
                 if(trainRoute.size() == 0){
                     continue;
                 }
-                //²éÊÛÆ±¼Æ»®
+                //æŸ¥å”®ç¥¨è®¡åˆ’
                 trainRoute.removeIf(route -> trainRouteQueryMapper.getRunPlan(route.getTrainRouteId()).getRunPlan().charAt(day) == '0');
 
                 for (TrainRoute route : trainRoute){
-                    //¼ÓÔØÊ±¼ä
+                    //åŠ è½½æ—¶é—´
                     ticketRouteTimeInfo = (TicketRouteTimeInfo) queryTicketRouteTimeInfo(route.getTrainRouteId(),
                             route.getFromStationId(),route.getToStationId()).getData();
                     route.setStartTime(ticketRouteTimeInfo.getStartTime());
                     route.setArriveTime(ticketRouteTimeInfo.getArriveTime());
                     route.setDurationInfo(ticketRouteTimeInfo.getDurationInfo());
-                    //¼ÓÔØÆ±Êı
+                    //åŠ è½½ç¥¨æ•°
                     tickets = new HashMap<>();
                     int ticketsNum = 0;
                     ticketsRemain = ticketQueryMapper.getTicketsRemain(route.getTrainRouteId(), date,
@@ -76,9 +76,9 @@ public class TrainRouteQueryService {
     }
 
     public Result querytrainRouteTransfer(String from, String to, String date){
-        int Max = 12;//»ñÈ¡µ½ 12 °à¾ÍÍ£Ö¹
+        int Max = 12;//è·å–åˆ° 12 ç­å°±åœæ­¢
         int day = Integer.parseInt(date.substring(8,10)) - 1;
-        //ÕâÀïÆäÊµÓ¦¸Ã¶ÔÈÕÆÚ½øĞĞĞ£ÑéµÄ
+        //è¿™é‡Œå…¶å®åº”è¯¥å¯¹æ—¥æœŸè¿›è¡Œæ ¡éªŒçš„
         if (day > 30 || day < 0){
             return Result.getResult(ResultCodeEnum.BAD_REQUEST);
         }
@@ -94,13 +94,13 @@ public class TrainRouteQueryService {
         boolean content = false;
         TrainRouteTransfer resultEach;
         try {
-            for(String fromStationId : allFromStationIds){//ËùÓĞÍ¬³ÇµÄ³ö·¢Õ¾
+            for(String fromStationId : allFromStationIds){//æ‰€æœ‰åŒåŸçš„å‡ºå‘ç«™
                 possibleStartTrainRouteIds = trainRouteQueryMapper.getStationContainRoute(fromStationId);
-                //È¥µôÊµ¼ÊÉÏ²»·¢ÊÛµÄ³µ´Î
+                //å»æ‰å®é™…ä¸Šä¸å‘å”®çš„è½¦æ¬¡
                 possibleStartTrainRouteIds.removeIf(route -> trainRouteQueryMapper.getRunPlan(route).getRunPlan().charAt(day) == '0');
-                for(String possibleStartTrainRouteId : possibleStartTrainRouteIds){//ËùÓĞ¿ÉÄÜµÄµÚÒ»ÌË³µ´Î
+                for(String possibleStartTrainRouteId : possibleStartTrainRouteIds){//æ‰€æœ‰å¯èƒ½çš„ç¬¬ä¸€è¶Ÿè½¦æ¬¡
                     possibleTransStationIds = trainRouteQueryMapper.getStationInTrainRouteAfter(possibleStartTrainRouteId,fromStationId);
-                    for(String possibleTransStationId : possibleTransStationIds){//¿ÉÄÜµÄÖĞ×ªµÄ³µÕ¾
+                    for(String possibleTransStationId : possibleTransStationIds){//å¯èƒ½çš„ä¸­è½¬çš„è½¦ç«™
                         trainRoutes.clear();
                         for(String toStationId : allToStationIds){
                             trainRoutes.addAll(trainRouteQueryMapper.getTrainRoutesByFromAndTo(possibleTransStationId, toStationId));
@@ -108,7 +108,7 @@ public class TrainRouteQueryService {
                         if(trainRoutes.size()>0){
                             trainRoutes.removeIf(route -> trainRouteQueryMapper.getRunPlan(route.getTrainRouteId()).getRunPlan().charAt(day) == '0');
                             for (TrainRoute trainRoute : trainRoutes){
-                                if(!Objects.equals(trainRoute.getTrainRouteId(), possibleStartTrainRouteId)){//±ÜÃâÊµ¼ÊÉÏÊÇÖ±´ïµÄÇé¿ö
+                                if(!Objects.equals(trainRoute.getTrainRouteId(), possibleStartTrainRouteId)){//é¿å…å®é™…ä¸Šæ˜¯ç›´è¾¾çš„æƒ…å†µ
                                     if(result.size() < Max){
                                         resultEach = new TrainRouteTransfer();
                                         resultEach.setNextRouteInfo(trainRoute);
@@ -120,7 +120,7 @@ public class TrainRouteQueryService {
                                         resultEach.setArriveTimeTrans(ticketRouteTimeInfo.getArriveTime());
 
                                         resultEach.caculateDuration();
-                                        //È¥µô»»³ËÊ±¼äÌ«¶Ì»òÌ«³¤
+                                        //å»æ‰æ¢ä¹˜æ—¶é—´å¤ªçŸ­æˆ–å¤ªé•¿
                                         if(resultEach.getDurationTransfer() < 15 || resultEach.getDurationTransfer() > 360){
                                             continue;
                                         }
@@ -132,7 +132,7 @@ public class TrainRouteQueryService {
                                         }
                                         if(content){continue;}
 
-                                        //³õÊ¼»¯µÚÒ»½×¶ÎµÄÆ±
+                                        //åˆå§‹åŒ–ç¬¬ä¸€é˜¶æ®µçš„ç¥¨
                                         tickets.clear();
                                         int ticketsNum = 0;
                                         ticketsRemain = ticketQueryMapper.getTicketsRemain(resultEach.getTrainRouteId1(), date,
@@ -145,7 +145,7 @@ public class TrainRouteQueryService {
                                             continue;
                                         }else {
                                             resultEach.setTicketsFirst(tickets);
-                                            //³õÊ¼»¯µÚ¶ş½×¶ÎµÄÆ±
+                                            //åˆå§‹åŒ–ç¬¬äºŒé˜¶æ®µçš„ç¥¨
                                             ticketsNum = 0;
                                             tickets.clear();
                                             ticketsRemain = ticketQueryMapper.getTicketsRemain(resultEach.getTrainRouteId2(), date,
@@ -196,9 +196,9 @@ public class TrainRouteQueryService {
                     day++;
                 }
             }
-            //³ö·¢Ê±¼äµÄĞ¡Ê±±Èµ½´ïµÄĞ¡Ê±Òª´ó£¨µ½´ï¼õ³ö·¢Îª¸ºÊı£©
+            //å‡ºå‘æ—¶é—´çš„å°æ—¶æ¯”åˆ°è¾¾çš„å°æ—¶è¦å¤§ï¼ˆåˆ°è¾¾å‡å‡ºå‘ä¸ºè´Ÿæ•°ï¼‰
             if (isTimeReduce(atomList.get(0).getStartTime(),atomList.get(atomList.size() - 1).getArriveTime())){
-                day--;//ĞèÒª½èÒ»Ìì½øĞĞ¼ÆËã
+                day--;//éœ€è¦å€Ÿä¸€å¤©è¿›è¡Œè®¡ç®—
                 hourAndMinute = getHourAndMinute2(atomList.get(0).getStartTime(),atomList.get(atomList.size() - 1).getArriveTime());
             }else {
                 hourAndMinute = getHourAndMinute1(atomList.get(0).getStartTime(),atomList.get(atomList.size() - 1).getArriveTime());
@@ -213,14 +213,14 @@ public class TrainRouteQueryService {
         return Integer.parseInt(first.substring(0, 2)) > Integer.parseInt(next.substring(0, 2));
     }
 
-    //first < next, ¼´firstÔçÓÚnext
+    //first < next, å³firstæ—©äºnext
     private String getHourAndMinute1(String first, String next){
         int allMinutes = 60 * (Integer.parseInt(next.substring(0, 2)) - Integer.parseInt(first.substring(0, 2)))
                 + (Integer.parseInt(next.substring(3, 5)) - Integer.parseInt(first.substring(3, 5)));
         return allMinutes/60 + ":" + allMinutes % 60;
     }
 
-    //¿ÉÒÔÕâÑù£¬ÆäÊµ
+    //å¯ä»¥è¿™æ ·ï¼Œå…¶å®
 //           60 * ((24 - int.parse(first.substring(0, 2)) + int.parse(next.substring(0, 2))) % 24)
 //            + ((60 - int.parse(next.substring(3, 5)) + int.parse(first.substring(3, 5))) % 60);
 

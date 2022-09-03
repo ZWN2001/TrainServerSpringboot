@@ -101,10 +101,11 @@ public class TicketQueryService {
         }
     }
 
-    public Result getOrderInfo(String OrderId){
+    public Result getOrderInfo(String OrderId, String passengerId){
         List<Order> result;
         try {
-            result = ticketQueryMapper.getSoldOrderInfo(OrderId);
+
+            result = ticketQueryMapper.getSoldOrderInfo(OrderId,passengerId);
             return Result.getResult(ResultCodeEnum.SUCCESS, result);
         }catch (Exception e){
             e.printStackTrace();

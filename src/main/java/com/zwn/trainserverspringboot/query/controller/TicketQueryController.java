@@ -86,11 +86,11 @@ public class TicketQueryController {
     }
 
     @GetMapping("/orderInfo")
-    Result getOrderInfo(long userId, String orderId){
+    Result getOrderInfo(long userId, String orderId, String passengerId){
         Result result = UserCheck.checkWithUserId(userId);
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             try {
-                return ticketQueryService.getOrderInfo(orderId);
+                return ticketQueryService.getOrderInfo(orderId,passengerId);
             }catch (Exception e){
                 e.printStackTrace();
                 return Result.getResult(ResultCodeEnum.BAD_REQUEST);

@@ -94,7 +94,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/trainRoute/query/trainRouteDetail",
                         "/trainRoute/query/ticketRouteTimeInfo",
                         "/trainRoute/query/trainRouteArriveTime",
-                        "/alipay/pay/callback"
+                        "/alipay/pay/callback",
+                        "/druid/**",
+                        "/druid"
                 ).permitAll()
                 //跨域的post的请求会验证两次，get不会。网上的解释是，post请求第一次是预检请求，Request Method： OPTIONS。
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()

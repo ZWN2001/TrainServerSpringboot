@@ -12,6 +12,7 @@ import java.util.Objects;
 public class SeatRemainKey {
     int fromStationNo;
     int toStationNo;
+    int seat;
 
     @Override
     public boolean equals(Object o) {
@@ -23,15 +24,15 @@ public class SeatRemainKey {
 
     public static SeatRemainKey fromString(String str){
         String[] s = str.split("_");
-        if(s.length != 2){
+        if(s.length != 3){
             return null;
         }else {
-            return new SeatRemainKey(Integer.parseInt(s[0]),Integer.parseInt(s[1]));
+            return new SeatRemainKey(Integer.parseInt(s[0]),Integer.parseInt(s[1]),Integer.parseInt(s[2]));
         }
     }
 
     @Override
     public String toString() {
-        return fromStationNo + "_" + toStationNo;
+        return  fromStationNo + "_" + toStationNo + "_" + seat ;
     }
 }

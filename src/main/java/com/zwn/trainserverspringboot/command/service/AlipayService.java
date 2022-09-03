@@ -251,7 +251,7 @@ public class AlipayService  {
         for (AtomStationKey atomStationKey : atomStationKeys) {
             atomStationKey.setDepartureDate(order.getDepartureDate());
             atomStationKey.setSeatTypeId(order.getSeatTypeId());
-            String key = com.alibaba.fastjson2.JSON.toJSONString(atomStationKey);
+            String key = JSON.toJSONString(atomStationKey);
             redisUtil.incr(key, num);
         }
     }

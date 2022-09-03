@@ -27,6 +27,7 @@ public class MQConsumer {
     SimpleDateFormat timeFrtmat2 = new SimpleDateFormat("HH:mm:ss");
     @RabbitListener(queues= "TICKET_BOOKING_QUEUE")//指明监听的是哪一个queue
     public void receive(OrderMessage orderMessage ){
+        date = new Date();
         String time = timeFrtmat.format(date.getTime());
         orderMessage.getOrder().setOrderTime(time);
         try{
@@ -45,10 +46,10 @@ public class MQConsumer {
                 rebookOrder.setOriginalPrice(o.getPrice());
             }
         }
+        date = new Date();
         String time = timeFrtmat2.format(date.getTime());
         rebookOrder.setCreateTime(time);
         try{
-            System.out.println(rebookOrder.toString());
             ticketCommandMapper.ticketRebook(rebookOrder);
         }catch (Exception e){
             e.printStackTrace();

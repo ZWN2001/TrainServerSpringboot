@@ -47,6 +47,12 @@
             <version>0.11.5</version>
         </dependency>
 
+<!--        &lt;!&ndash;使用 log4j2 记录日志&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-log4j2</artifactId>-->
+<!--        </dependency>-->
+
         <!--引入JWT-->
         <dependency>
             <groupId>com.auth0</groupId>
@@ -95,6 +101,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- rabbitmq依赖 -->

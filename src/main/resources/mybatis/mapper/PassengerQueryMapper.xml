@@ -6,19 +6,19 @@
 
     <select id="queryAllPassengers" resultType="com.zwn.trainserverspringboot.command.bean.Passenger">
         SELECT user_id AS userId, passenger_id AS passengerId, passenger_name AS passengerName, phone_num AS phoneNum,
-               role AS prole
+               prole AS prole
         FROM passenger
         WHERE user_id = #{param1}
     </select>
 
     <select id="querySinglePassenger" resultType="com.zwn.trainserverspringboot.command.bean.Passenger">
-        SELECT passenger_id AS passengerId, passenger_name AS passengerName, phone_num AS phoneNum, role AS prole
+        SELECT passenger_id AS passengerId, passenger_name AS passengerName, phone_num AS phoneNum, prole AS prole
         FROM passenger
         WHERE user_id = #{param1} AND passenger_id = #{param2}
     </select>
 
     <select id="getPassengerRole" resultType="java.lang.String">
-        SELECT `role` FROM  passenger WHERE  passenger_id = #{param2} and user_id = #{param1};
+        SELECT `prole` FROM  passenger WHERE  passenger_id = #{param2} and user_id = #{param1};
     </select>
 
 <!--    TODO:role 都要改-->

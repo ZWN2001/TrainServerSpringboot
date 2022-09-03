@@ -65,21 +65,26 @@ public class SeatQueryService {
                     value = (int) map.get(obj);
                     remainMap.put(obj.toString(), value);
                 }
-                System.out.println(remainMap);
+//                System.out.println(remainMap);
                 for (String keyString : remainMap.keySet()) {
                     SeatRemainKey key = SeatRemainKey.fromString(keyString);
                     value = remainMap.get(keyString);
                     assert key != null;
-                    System.out.println(key);
                     if (key.getFromStationNo() <= passengerKey.getFromStationNo() &&
                               passengerKey.getToStationNo() <= key.getToStationNo()) {
                         //满足条件，分配此座位
                         got = true;
                         result[0] = carriageId;//车厢号
-                        int rowNum = index / 2 + 1;//列的哪一排
-                        result[1] = seatBookingInfo.getSeatBooking() + 4 * rowNum;//分配座号
+                        int seat;
+                        if(key.getSeat() != 0){
+                            seat = key.getSeat();
+                        }else {
+                            int rowNum = index / 2 ;//列的哪一排
+                            seat = seatBookingInfo.getSeatBooking() + 4 * rowNum;
+                        }
+                        result[1] = seat;//分配座号
                         if(key.getFromStationNo() != passengerKey.getFromStationNo()){
-                            SeatRemainKey newFromKey = new SeatRemainKey(key.getFromStationNo(), passengerKey.getFromStationNo());
+                            SeatRemainKey newFromKey = new SeatRemainKey(key.getFromStationNo(), passengerKey.getFromStationNo(),seat);
                             String newFromKeyString = newFromKey.toString();
                             if (remainMap.containsKey(newFromKeyString)) {
                                 int num = remainMap.get(newFromKeyString) + 1;
@@ -90,7 +95,7 @@ public class SeatQueryService {
                             }
                         }
                         if(passengerKey.getToStationNo() != key.getToStationNo()){
-                            SeatRemainKey newToKey = new SeatRemainKey(passengerKey.getToStationNo(), key.getToStationNo());
+                            SeatRemainKey newToKey = new SeatRemainKey(passengerKey.getToStationNo(), key.getToStationNo(), seat);
                             String newToKeyString = newToKey.toString();
                             if (remainMap.containsKey(newToKeyString)) {
                                 int num = remainMap.get(newToKeyString) + 1;
