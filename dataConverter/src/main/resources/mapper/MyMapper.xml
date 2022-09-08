@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dataconverter.Mapper.MyMapper">
+    <insert id="initSeat">
+        INSERT INTO seat_type VALUES (1,'一等座');
+        INSERT INTO seat_type VALUES (2,'二等座');
+        INSERT INTO seat_type VALUES (3,'商务');
+        INSERT INTO seat_type VALUES (4,'软卧');
+        INSERT INTO seat_type VALUES (5,'硬卧');
+        INSERT INTO seat_type VALUES (6,'硬座');
+    </insert>
+
+    <select id="getAllStationInfo" resultType="com.example.dataconverter.bean.Station">
+        SELECT station_id AS stationId, station_name AS stationName, city AS city FROM station;
+    </select>
+
+    <select id="getAllTrainRoutes" resultType="com.example.dataconverter.bean.Route">
+        SELECT distinct train_route_id AS trainRouteId, from_station_id AS fromStationId, to_station_id AS toStationId FROM train_route;
+    </select>
+
+    <insert id="insertCarriageInfo">
+        INSERT INTO carriage VALUES (#{param1}, 1,#{param2});
+        INSERT INTO carriage VALUES (#{param1}, 2,#{param2});
+        INSERT INTO carriage VALUES (#{param1}, 3,#{param2});
+        INSERT INTO carriage VALUES (#{param1}, 4,#{param2} + 1);
+        INSERT INTO carriage VALUES (#{param1}, 5,#{param2} + 1);
+        INSERT INTO carriage VALUES (#{param1}, 6,#{param2} + 2);
+    </insert>
+
+    <insert id="insertSeatRemain">
+        INSERT INTO ticket_seat_management VALUES (#{param1},#{param2},#{param3},#{param4},#{param5});
+    </insert>
+
+    <select id="getRouteAtomByRouteId" resultType="com.example.dataconverter.bean.RouteAtom">
+        SELECT train_route_id AS trainRouteId, station_id AS stationId, station_no AS stationNo
+        FROM train_route_atom
+        WHERE train_route_id = #{trainRouteId}
+        ORDER BY station_no;
+    </select>
+
+    <insert id="insertTicketPriceAtom">
+        INSERT INTO ticket_price_atom VALUES (#{param1},#{param2},#{param3},#{param4},#{param5});
+    </insert>
+
+    <insert id="insertTicketRemain">
+        INSERT INTO ticket_management_atom VALUES (#{param1},#{param2},#{param3},#{param4},#{param5},#{param6});
+    </insert>
+
+    <select id="getStationNo" resultType="java.lang.Integer">
+        SELECT station_no FROM train_route_atom WHERE train_route_id = #{param1} AND station_id = #{param2};
+    </select>
+
+    <select id="atomNum" resultType="java.lang.Integer">
+        SELECT count(station_no) from train_route_atom WHERE train_route_id = #{trainRouteId};
+    </select>
+</mapper>
