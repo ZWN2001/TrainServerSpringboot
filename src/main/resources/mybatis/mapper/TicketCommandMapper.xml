@@ -24,8 +24,12 @@
         INSERT INTO ticket_sold(order_id,passenger_id,carriage_id,seat) VALUES (#{param1},#{param2},#{param3},#{param4});
     </insert>
 
+    <update id="ticketSoldUpdate">
+        UPDATE ticket_sold SET carriage_id = #{param3} AND seat = #{param4} WHERE order_id = #{param1} AND passenger_id = #{param2}
+    </update>
+
     <update id="ticketRefund">
-        UPDATE ticket_order SET order_status = '已退票' WHERE order_id = #{orderId};
+        DELETE FROM ticket_order WHERE order_id = #{orderId};
         DELETE FROM ticket_sold WHERE order_id = #{orderId};
     </update>
 
@@ -64,7 +68,7 @@
               (SELECT order_id FROM ticket_order WHERE departure_date = #{param1}
                                                    AND train_route_id = #{param2}
                                                    AND passenger_id = #{param3});
-        UPDATE ticket_order SET order_status = '已取消' WHERE departure_date = #{param1} AND train_route_id = #{param2} AND
+        DELETE FROM ticket_order WHERE departure_date = #{param1} AND train_route_id = #{param2} AND
             passenger_id = #{param3};
     </delete>
 
@@ -81,11 +85,11 @@
 
     <update id="ticketRebookDone">
         DELETE FROM ticket_rebook WHERE order_id = #{orderId};
-        UPDATE ticket_order SET order_status = '已改签' WHERE order_id = #{orderId} AND order_status = '待改签'
+        UPDATE ticket_order SET order_status = '已改签' WHERE order_id = #{orderId}
     </update>
 
-    <update id="ticketRebookPrice">
-        UPDATE ticket_order SET price = #{param3} WHERE order_id = #{param1} AND passenger_id = #{param2};
+    <update id="updateRebookInfo">
+        UPDATE ticket_order SET price = #{param3}, seat_type_id = #{param4} WHERE order_id = #{param1} AND passenger_id = #{param2};
     </update>
 
 </mapper>

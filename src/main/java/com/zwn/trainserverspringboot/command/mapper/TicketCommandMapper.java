@@ -4,8 +4,6 @@ import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.RebookOrder;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
 @Mapper
 public interface TicketCommandMapper {
     void ticketBooking(Order order, String time, int seatBooking);
@@ -13,6 +11,8 @@ public interface TicketCommandMapper {
     void ticketPay(String orderId, String tradeNo);
 
     void ticketSoldInit(String orderId, String passengerId, int carriageId, int seat);
+
+    void ticketSoldUpdate(String orderId, String passengerId, int carriageId, int seat);
 
     void ticketRefund(String orderId);
 
@@ -33,5 +33,5 @@ public interface TicketCommandMapper {
 
     void ticketRebookDone(String orderId);
 
-    void ticketRebookPrice(String orderId, String passengerId, double price);
+    void updateRebookInfo(String orderId, String passengerId, double price, int seatTypeId);
 }

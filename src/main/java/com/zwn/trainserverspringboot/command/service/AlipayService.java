@@ -49,6 +49,8 @@ public class AlipayService  {
     private SeatQueryService seatQueryService;
     @Resource
     private TrainRouteQueryMapper trainRouteQueryMapper;
+    @Resource
+    private TicketCommandService ticketCommandService;
 
 
     public Result alipay(String orderId, List<String> passengerId, int payMethod) {
@@ -106,23 +108,18 @@ public class AlipayService  {
             price += rebookOrder.getPrice() - rebookOrder.getOriginalPrice();
         }
         if (price <= 0){
-            Order order = Order.builder()
-                    .trainRouteId(orderList.get(0).getTrainRouteId())
-                    .fromStationId(orderList.get(0).getFromStationId())
-                    .toStationId(orderList.get(0).getToStationId())
-                    .departureDate(orderList.get(0).getDepartureDate())
-                    .seatTypeId(orderList.get(0).getSeatTypeId()).build();
-            int num =  orderList.size();
-            ticketCommandMapper.updateTicketRemain(order.getTrainRouteId(),
-                    order.getSeatTypeId(),order.getDepartureDate(),
-                    order.getFromStationId(),order.getToStationId(), num);
-            redisIncr(order, num);
+            ticketCommandService.ticketRefund(orderList.get(0).getOrderId());
             //处理状态
             for(RebookOrder o : orderList){
-                ticketCommandMapper.ticketRebookPrice(o.getOrderId(),o.getPassengerId(),o.getPrice());
+                SeatBookingInfo info = SeatBookingInfo.getFromRebookOrder(o);
+                int[] carriageAndSeat = seatQueryService.getCarriageAndSeat(info);
+                if (!(carriageAndSeat[0] == -1) && !(carriageAndSeat[1] == -1)){
+                    ticketCommandMapper.ticketSoldUpdate(o.getOrderId(),o.getPassengerId(),carriageAndSeat[0],carriageAndSeat[1]);
+                }
+                ticketCommandMapper.updateRebookInfo(o.getOrderId(),o.getPassengerId(),o.getPrice(),o.getSeatTypeId());
             }
             ticketCommandMapper.ticketRebookDone(orderList.get(0).getOrderId());
-            return Result.getResult(ResultCodeEnum.SUCCESS,true);
+            return Result.getResult(ResultCodeEnum.SUCCESS,"true");
         }
         //设置支付回调时可以在request中获取的参数
         JSONObject jsonObject = new JSONObject();
@@ -181,21 +178,16 @@ public class AlipayService  {
             }else if (ptype == 1){
                 String orderId = body.getString("orderId");
                 //处理库存
-                Order order = Order.builder()
-                                .trainRouteId(body.getString("trainRouteId"))
-                                .fromStationId(body.getString("fromStationId"))
-                                .toStationId(body.getString("toStationId"))
-                                .departureDate(body.getString("departureDate"))
-                                .seatTypeId(body.getInteger("seatTypeId")).build();
-                int num =  body.getInteger("num");
-                ticketCommandMapper.updateTicketRemain(order.getTrainRouteId(),
-                        order.getSeatTypeId(),order.getDepartureDate(),
-                        order.getFromStationId(),order.getToStationId(), num);
-                redisIncr(order, num);
+                ticketCommandService.ticketRefund(orderId);
                 //处理状态
-                List<RebookOrder> orderList = orderQueryMapper.getRebookOrder(UserUtil.getCurrentUserId());
+                List<RebookOrder> orderList = orderQueryMapper.getRebookOrderByOrderId(orderId);
                 for(RebookOrder o : orderList){
-                    ticketCommandMapper.ticketRebookPrice(o.getOrderId(),o.getPassengerId(),o.getPrice());
+                    ticketCommandMapper.updateRebookInfo(o.getOrderId(),o.getPassengerId(), o.getPrice(),o.getSeatTypeId());
+                    SeatBookingInfo info = SeatBookingInfo.getFromRebookOrder(o);
+                    int[] carriageAndSeat = seatQueryService.getCarriageAndSeat(info);
+                    if (!(carriageAndSeat[0] == -1) && !(carriageAndSeat[1] == -1)){
+                        ticketCommandMapper.ticketSoldUpdate(orderId,o.getPassengerId(),carriageAndSeat[0],carriageAndSeat[1]);
+                    }
                 }
                 ticketCommandMapper.ticketRebookDone(orderId);
             }

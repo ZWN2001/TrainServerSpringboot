@@ -17,6 +17,7 @@ public interface TicketQueryMapper {
     List<OrderGeneral> getSelfPaiedOrder(long userId);
     List<Order> getSoldOrderInfo(String orderId, String passengerId);
     SeatInfo getTicketSeatInfo(String ticketId);
+    List<SeatInfo> getTicketSeatInfoByOrder(String orderId, String passengerId);
     List<Order> getTicketToPayDetail(long userId);
     int getTicketToPayNum(long userId);
     List<String> getOrderStatus(String orderId);

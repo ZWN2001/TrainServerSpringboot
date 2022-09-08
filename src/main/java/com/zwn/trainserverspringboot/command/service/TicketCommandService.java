@@ -142,7 +142,7 @@ public class TicketCommandService {
                             results.add(Result.getResult(ResultCodeEnum.SUCCESS, order1));
                             redisDecr(order1);
                         }
-
+                        Thread.sleep(1000);
                         order2.setOrderStatus(OrderStatus.UN_PAY);
                         //获取价格
                         Result priceResult2 = ticketQueryService.getTicketPrice(order2.getTrainRouteId(),
@@ -181,9 +181,6 @@ public class TicketCommandService {
     public Result ticketBookingCancel(String departureDate, String trainRouteId, List<String> passengerIds){
         try {
             for (String pid:passengerIds) {
-                System.out.println(departureDate);
-                System.out.println(trainRouteId);
-                System.out.println(pid);
                 ticketCommandMapper.ticketBookingCancel(departureDate,trainRouteId,pid);
             }
             return Result.getResult(ResultCodeEnum.SUCCESS);
@@ -203,7 +200,7 @@ public class TicketCommandService {
             if(order.getUserId() != UserUtil.getCurrentUserId()){
                 return Result.getResult(ResultCodeEnum.BAD_REQUEST);
             }
-            if ( !Objects.equals(order.getOrderStatus(), OrderStatus.PAIED)){
+            if ( !Objects.equals(order.getOrderStatus(), OrderStatus.PAIED) && !Objects.equals(order.getOrderStatus(), OrderStatus.REBOOK)){
                 return Result.getResult(ResultCodeEnum.ORDER_STATUS_ERROR);
             }
         }
@@ -328,134 +325,134 @@ public class TicketCommandService {
         ticketCommandMapper.updateTicketRemain(info.getTrainRouteId(),info.getSeatType(),info.getDepartureDate(),
                 info.getFromStationId(),info.getToStationId(), seatSoldInfos.size());
 
-        String remainString = seatQueryMapper.getSeatRemain(info.getTrainRouteId(),
-                info.getDepartureDate(), info.getCarriageId(), info.getSeat() % 4);
-        SeatRemainKey passengerKey = trainRouteQueryMapper.getFromToNo(info.getTrainRouteId(),
-                info.getFromStationId(), info.getToStationId());
-        boolean isStartAndEnd = trainRouteQueryMapper.getEndStationNo(info.getTrainRouteId()) == passengerKey.getToStationNo()
-                && passengerKey.getFromStationNo() == 1;
-
-        Map map = JSON.parseObject(remainString, Map.class);
-        Map<String, Integer> remainMap = new HashMap<>();
-
-        int value;
-        for (Object obj : map.keySet()) {
-            value = (int) map.get(obj);
-            remainMap.put(obj.toString(), value);
-        }
-        Set<String> s = new HashSet<>(remainMap.keySet());
-
-        if (isStartAndEnd){
-            boolean got = false;
-            for (String keyString : s ){
-                SeatRemainKey key = SeatRemainKey.fromString(keyString);
-                assert key != null;
-                if(key.getSeat() == 0){
-                    value = remainMap.get(keyString);
-                    remainMap.remove(keyString);
-                    remainMap.put(keyString,value+1);
-                    got = true;
-                }
-
-            }
-            if(!got){
-                remainMap.put(passengerKey.toString(),1);
-            }
-        }else {
-            for(SeatSoldInfo soldInfo : seatSoldInfos){
-                passengerKey.setSeat(soldInfo.getSeat());
-                for (String keyString : s ){
-                    SeatRemainKey key = SeatRemainKey.fromString(keyString);
-                    value = remainMap.get(keyString);
-                    assert key != null;
-                    if(passengerKey.getFromStationNo() == key.getToStationNo() && passengerKey.getSeat() == key.getSeat()){
-                        SeatRemainKey newKey = new SeatRemainKey();
-                        newKey.setFromStationNo(key.getFromStationNo());
-                        newKey.setToStationNo(passengerKey.getToStationNo());
-                        newKey.setSeat(key.getSeat());
-                        int newValue = remainMap.get(newKey.toString());
-                        if(value > 1){
-                            if (newValue == 0){
-                                remainMap.put(newKey.toString(),1);
-                            }else {
-                                remainMap.remove(newKey.toString());
-                                remainMap.put(newKey.toString(),newValue + 1);
-                            }
-                            remainMap.remove(keyString);
-                            remainMap.put(newKey.toString(),value - 1);
-                        }else if (value == 1){
-                            remainMap.remove(keyString);
-                            if (newValue == 0){
-                                remainMap.put(newKey.toString(),1);
-                            }else {
-                                remainMap.remove(newKey.toString());
-                                remainMap.put(newKey.toString(),newValue + 1);
-                            }
-                        }
-                    }else {
-                        Map<String, Integer> temp = new HashMap<>(remainMap);
-                        remainMap.clear();
-                        remainMap.put(passengerKey.toString(),1);
-                        remainMap.putAll(temp);
-                    }
-                }
-            }
-            int value1,value2;
-            s.clear();
-            s.addAll(remainMap.keySet());
-
-            for (String keyString1 : s) {
-                for (String keyString2 : s) {//处理可能存在的 1_2,2_4的情况
-                    if(!keyString1.equals(keyString2)){
-                        SeatRemainKey key1 = SeatRemainKey.fromString(keyString1);
-                        try {
-                            value1 = remainMap.get(keyString1);
-                        }catch (Exception e){
-                            continue;
-                        }
-                        SeatRemainKey key2 = SeatRemainKey.fromString(keyString2);
-                        try {
-                            value2 = remainMap.get(keyString1);
-                        }catch (Exception e){
-                            continue;
-                        }
-                        assert key1 != null && key2 != null;
-                        if(key1.getToStationNo() == key2.getFromStationNo() && key1.getSeat() == key2.getSeat()){
-                            SeatRemainKey newKey = new SeatRemainKey();
-                            newKey.setFromStationNo(key1.getFromStationNo());
-                            newKey.setToStationNo(key2.getToStationNo());
-                            newKey.setSeat(key2.getSeat());
-                            int v = 0;
-                            if (remainMap.containsKey(newKey.toString())){
-                                v = remainMap.get(newKey.toString());
-                            }
-                            if(value1 == value2){
-                                remainMap.put(newKey.toString(),value1 + v);
-                                remainMap.remove(keyString1);
-                                remainMap.remove(keyString2);
-                            }else if (value1 < value2){
-                                remainMap.remove(keyString1);
-                                remainMap.put(newKey.toString(),value1 + v);
-                                int remainToAdd = value2 - value1;
-                                remainMap.put(keyString1, remainToAdd);
-                            }else {
-                                remainMap.remove(keyString2);
-                                remainMap.put(newKey.toString(),value2 + v);
-                                int remainToAdd = value1 - value2;
-                                remainMap.put(keyString2, remainToAdd);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        String seatRemainString = JSON.toJSONString(remainMap);
-        System.out.println("更新："+seatRemainString);
-        seatCommandMapper.updateSeatRemain(seatSoldInfos.get(0).getTrainRouteId(),
-                seatSoldInfos.get(0).getDepartureDate(),
-                seatSoldInfos.get(0).getCarriageId(), seatSoldInfos.get(0).getSeat() % 4, seatRemainString);
+//        String remainString = seatQueryMapper.getSeatRemain(info.getTrainRouteId(),
+//                info.getDepartureDate(), info.getCarriageId(), info.getSeat() % 4);
+//        SeatRemainKey passengerKey = trainRouteQueryMapper.getFromToNo(info.getTrainRouteId(),
+//                info.getFromStationId(), info.getToStationId());
+//        boolean isStartAndEnd = trainRouteQueryMapper.getEndStationNo(info.getTrainRouteId()) == passengerKey.getToStationNo()
+//                && passengerKey.getFromStationNo() == 1;
+//
+//        Map map = JSON.parseObject(remainString, Map.class);
+//        Map<String, Integer> remainMap = new HashMap<>();
+//
+//        int value;
+//        for (Object obj : map.keySet()) {
+//            value = (int) map.get(obj);
+//            remainMap.put(obj.toString(), value);
+//        }
+//        Set<String> s = new HashSet<>(remainMap.keySet());
+//
+//        if (isStartAndEnd){
+//            boolean got = false;
+//            for (String keyString : s ){
+//                SeatRemainKey key = SeatRemainKey.fromString(keyString);
+//                assert key != null;
+//                if(key.getSeat() == 0){
+//                    value = remainMap.get(keyString);
+//                    remainMap.remove(keyString);
+//                    remainMap.put(keyString,value+1);
+//                    got = true;
+//                }
+//
+//            }
+//            if(!got){
+//                remainMap.put(passengerKey.toString(),1);
+//            }
+//        }else {
+//            for(SeatSoldInfo soldInfo : seatSoldInfos){
+//                passengerKey.setSeat(soldInfo.getSeat());
+//                for (String keyString : s ){
+//                    SeatRemainKey key = SeatRemainKey.fromString(keyString);
+//                    value = remainMap.get(keyString);
+//                    assert key != null;
+//                    if(passengerKey.getFromStationNo() == key.getToStationNo() && passengerKey.getSeat() == key.getSeat()){
+//                        SeatRemainKey newKey = new SeatRemainKey();
+//                        newKey.setFromStationNo(key.getFromStationNo());
+//                        newKey.setToStationNo(passengerKey.getToStationNo());
+//                        newKey.setSeat(key.getSeat());
+//                        int newValue = remainMap.get(newKey.toString());
+//                        if(value > 1){
+//                            if (newValue == 0){
+//                                remainMap.put(newKey.toString(),1);
+//                            }else {
+//                                remainMap.remove(newKey.toString());
+//                                remainMap.put(newKey.toString(),newValue + 1);
+//                            }
+//                            remainMap.remove(keyString);
+//                            remainMap.put(newKey.toString(),value - 1);
+//                        }else if (value == 1){
+//                            remainMap.remove(keyString);
+//                            if (newValue == 0){
+//                                remainMap.put(newKey.toString(),1);
+//                            }else {
+//                                remainMap.remove(newKey.toString());
+//                                remainMap.put(newKey.toString(),newValue + 1);
+//                            }
+//                        }
+//                    }else {
+//                        Map<String, Integer> temp = new HashMap<>(remainMap);
+//                        remainMap.clear();
+//                        remainMap.put(passengerKey.toString(),1);
+//                        remainMap.putAll(temp);
+//                    }
+//                }
+//            }
+//            int value1,value2;
+//            s.clear();
+//            s.addAll(remainMap.keySet());
+//
+//            for (String keyString1 : s) {
+//                for (String keyString2 : s) {//处理可能存在的 1_2,2_4的情况
+//                    if(!keyString1.equals(keyString2)){
+//                        SeatRemainKey key1 = SeatRemainKey.fromString(keyString1);
+//                        try {
+//                            value1 = remainMap.get(keyString1);
+//                        }catch (Exception e){
+//                            continue;
+//                        }
+//                        SeatRemainKey key2 = SeatRemainKey.fromString(keyString2);
+//                        try {
+//                            value2 = remainMap.get(keyString1);
+//                        }catch (Exception e){
+//                            continue;
+//                        }
+//                        assert key1 != null && key2 != null;
+//                        if(key1.getToStationNo() == key2.getFromStationNo() && key1.getSeat() == key2.getSeat()){
+//                            SeatRemainKey newKey = new SeatRemainKey();
+//                            newKey.setFromStationNo(key1.getFromStationNo());
+//                            newKey.setToStationNo(key2.getToStationNo());
+//                            newKey.setSeat(key2.getSeat());
+//                            int v = 0;
+//                            if (remainMap.containsKey(newKey.toString())){
+//                                v = remainMap.get(newKey.toString());
+//                            }
+//                            if(value1 == value2){
+//                                remainMap.put(newKey.toString(),value1 + v);
+//                                remainMap.remove(keyString1);
+//                                remainMap.remove(keyString2);
+//                            }else if (value1 < value2){
+//                                remainMap.remove(keyString1);
+//                                remainMap.put(newKey.toString(),value1 + v);
+//                                int remainToAdd = value2 - value1;
+//                                remainMap.put(keyString1, remainToAdd);
+//                            }else {
+//                                remainMap.remove(keyString2);
+//                                remainMap.put(newKey.toString(),value2 + v);
+//                                int remainToAdd = value1 - value2;
+//                                remainMap.put(keyString2, remainToAdd);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//        String seatRemainString = JSON.toJSONString(remainMap);
+//        System.out.println("更新："+seatRemainString);
+//        seatCommandMapper.updateSeatRemain(seatSoldInfos.get(0).getTrainRouteId(),
+//                seatSoldInfos.get(0).getDepartureDate(),
+//                seatSoldInfos.get(0).getCarriageId(), seatSoldInfos.get(0).getSeat() % 4, seatRemainString);
     }
 
 }

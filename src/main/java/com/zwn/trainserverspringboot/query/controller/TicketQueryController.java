@@ -1,15 +1,13 @@
 package com.zwn.trainserverspringboot.query.controller;
 
 import com.zwn.trainserverspringboot.query.service.TicketQueryService;
-import com.zwn.trainserverspringboot.util.Result;
-import com.zwn.trainserverspringboot.util.ResultCodeEnum;
-import com.zwn.trainserverspringboot.util.UserCheck;
-import com.zwn.trainserverspringboot.util.UserUtil;
+import com.zwn.trainserverspringboot.util.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/ticket/query")
@@ -101,11 +99,12 @@ public class TicketQueryController {
     }
 
     @GetMapping("/ticketSeatInfo")
-    Result getTicketSeatInfo(String ticketId){
+    Result getTicketSeatInfo(String orderId, String passengerIds){
+        List<String> passengerId = StringUtil.getListFromString(passengerIds);
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             try {
-                return ticketQueryService.getTicketSeatInfo(ticketId);
+                return ticketQueryService.getTicketSeatInfo(orderId,passengerId);
             }catch (Exception e){
                 e.printStackTrace();
                 return Result.getResult(ResultCodeEnum.BAD_REQUEST);

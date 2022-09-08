@@ -81,6 +81,7 @@ public class SeatQueryService {
                         }else {
                             int rowNum = index / 2 ;//列的哪一排
                             seat = seatBookingInfo.getSeatBooking() + 4 * rowNum;
+                            System.out.println(seatBookingInfo.getSeatBooking());
                         }
                         result[1] = seat;//分配座号
                         if(key.getFromStationNo() != passengerKey.getFromStationNo()){

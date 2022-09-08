@@ -10,10 +10,12 @@ import com.zwn.trainserverspringboot.query.mapper.OrderQueryMapper;
 import com.zwn.trainserverspringboot.query.mapper.TicketQueryMapper;
 import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
+import com.zwn.trainserverspringboot.util.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -113,9 +115,13 @@ public class TicketQueryService {
         }
     }
 
-    public Result getTicketSeatInfo(String ticketId){
+    public Result getTicketSeatInfo(String orderId, List<String> passengerIds){
+        List<SeatInfo> result = new ArrayList<>();
         try {
-            SeatInfo result = ticketQueryMapper.getTicketSeatInfo(ticketId);
+            for(String pid : passengerIds){
+                List<SeatInfo> result1 = ticketQueryMapper.getTicketSeatInfoByOrder(orderId,pid);
+                result.addAll(result1);
+            }
             return Result.getResult(ResultCodeEnum.SUCCESS, result);
         }catch (Exception e){
             e.printStackTrace();

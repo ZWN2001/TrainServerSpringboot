@@ -41,10 +41,10 @@
     </select>
 
     <select id="queryTrainRouteDetail" resultType="com.zwn.trainserverspringboot.query.bean.TrainRouteAtom">
-        SELECT  station_id AS stationId, station_name AS stationName, station_no AS stationNo, arrive_time AS arriveTime,
+        SELECT  train_route_atom.station_id AS stationId, station_name AS stationName, station_no AS stationNo, arrive_time AS arriveTime,
                 start_time AS startTime, stopover_time AS stopoverTime
-        FROM train_route_atom
-        WHERE train_route_id = #{train_route_id}
+        FROM train_route_atom, station
+        WHERE train_route_id = #{train_route_id} AND station.station_id = train_route_atom.station_id
         ORDER BY station_no;
     </select>
 

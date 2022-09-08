@@ -15,4 +15,6 @@ public interface OrderQueryMapper {
     List<Order> getOrderById(String orderId);
 
     List<RebookOrder> getRebookOrder(long userId);
+
+    List<RebookOrder> getRebookOrderByOrderId(String orderId);
 }

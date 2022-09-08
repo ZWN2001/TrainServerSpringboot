@@ -48,7 +48,7 @@
                passenger_id AS passengerId
         FROM ticket_order
         WHERE user_id = #{userId} AND (order_status = '已支付' OR order_status = '已改签')
-        ORDER BY order_time;
+        ORDER BY order_time ASC;
     </select>
 
     <select id="getSelfOrder" resultType="com.zwn.trainserverspringboot.command.bean.OrderGeneral">
@@ -57,7 +57,7 @@
                passenger_id AS passengerId
         FROM ticket_order
         WHERE user_id = #{userId}
-        ORDER BY order_time;
+        ORDER BY order_time ASC;
     </select>
 
     <select id="getSelfPaiedOrder" resultType="com.zwn.trainserverspringboot.command.bean.OrderGeneral">
@@ -65,7 +65,7 @@
                to_station_id AS toStationId, departure_date AS departureDate
         FROM ticket_order
         WHERE user_id = #{userId} AND order_status = '已支付'
-        ORDER BY order_time;
+        ORDER BY order_time ASC;
     </select>
 
     <select id="getSoldOrderInfo" resultType="com.zwn.trainserverspringboot.command.bean.Order">
@@ -78,13 +78,19 @@
 <!--        <if test="param2 != null">-->
 <!--            AND passenger_id = #{param2}-->
 <!--        </if>-->
-        ORDER BY order_time;
+        ORDER BY  order_time ASC;
     </select>
 
     <select id="getTicketSeatInfo" resultType="com.zwn.trainserverspringboot.query.bean.SeatInfo">
         SELECT ticket_id AS ticketId, passenger_id AS passengerId, carriage_id AS carriageId, seat
         FROM ticket_sold
         WHERE ticket_id = #{ticketId};
+    </select>
+
+    <select id="getTicketSeatInfoByOrder" resultType="com.zwn.trainserverspringboot.query.bean.SeatInfo">
+        SELECT ticket_id AS ticketId, passenger_id AS passengerId, carriage_id AS carriageId, seat
+        FROM ticket_sold
+        WHERE order_id = #{param1} AND passenger_id = #{param2};
     </select>
 
     <select id="getTicketToPayDetail" resultType="com.zwn.trainserverspringboot.command.bean.Order">
