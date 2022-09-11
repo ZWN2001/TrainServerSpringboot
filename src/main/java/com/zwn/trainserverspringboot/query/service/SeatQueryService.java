@@ -48,24 +48,22 @@ public class SeatQueryService {
                     seatBookingInfo.getFromStationId(),seatBookingInfo.getToStationId());
             List<Integer> carriageIds = carriageQueryMapper.getCarriageIds(seatBookingInfo.getTrainRouteId(),
                     seatBookingInfo.getSeatType());
-            System.out.println("carriageIds:");
-            System.out.println(carriageIds);
             for (Integer carriageId : carriageIds) {
                 String remainString = seatTypeQueryMapper.getSeatRemain(seatBookingInfo.getTrainRouteId(),
                         seatBookingInfo.getDepartureDate(),
                         carriageId, seatBookingInfo.getSeatBooking());
-                System.out.println(remainString);
 
                 Map map = JSON.parseObject(remainString, Map.class);
                 Map<String, Integer> remainMap = new HashMap<>();
 
                 int value;
                 int index = 0;
+                //获取余座状态
                 for (Object obj : map.keySet()) {
                     value = (int) map.get(obj);
                     remainMap.put(obj.toString(), value);
                 }
-//                System.out.println(remainMap);
+                //遍历寻找可能的分配
                 for (String keyString : remainMap.keySet()) {
                     SeatRemainKey key = SeatRemainKey.fromString(keyString);
                     value = remainMap.get(keyString);
@@ -84,6 +82,7 @@ public class SeatQueryService {
                             System.out.println(seatBookingInfo.getSeatBooking());
                         }
                         result[1] = seat;//分配座号
+                        //更新余座
                         if(key.getFromStationNo() != passengerKey.getFromStationNo()){
                             SeatRemainKey newFromKey = new SeatRemainKey(key.getFromStationNo(), passengerKey.getFromStationNo(),seat);
                             String newFromKeyString = newFromKey.toString();
