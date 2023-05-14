@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/seatType/query")
+@RequestMapping("/query/seatTypes")
 public class SeatQueryController {
     @Resource
     private SeatQueryService seatTypeQueryService;
 
-    @GetMapping("/allSeatType")
+    @GetMapping("/all")
     Result getAllSeatType(){
         return seatTypeQueryService.getAllSeatType();
     }

@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/trainRoute/query")
+@RequestMapping("/query/trainRoutes")
 public class TrainRouteQueryController {
 
     @Resource
     private TrainRouteQueryService trainRouteQueryService;
 
     //以出发站与终点站查可用车次
-    @GetMapping("/trainRoute")
-    Result querytrainRoute(String from, String to, String date) {
+    @GetMapping("/direct")
+    Result queryTrainRoute(String from, String to, String date) {
         try {
             return trainRouteQueryService.querytrainRoute(from, to, date);
         }catch (Exception e){
@@ -27,8 +27,8 @@ public class TrainRouteQueryController {
         }
     }
 
-    @GetMapping("/trainRouteTransfer")
-    Result querytrainRouteTransfer(String from, String to, String date) {
+    @GetMapping("/transfer")
+    Result queryTrainRouteTransfer(String from, String to, String date) {
         try {
             return trainRouteQueryService.querytrainRouteTransfer(from, to, date);
         }catch (Exception e){
@@ -38,7 +38,7 @@ public class TrainRouteQueryController {
     }
 
     //查询车次详情（从出发地到最终目的地）
-    @GetMapping("/trainRouteDetail")
+    @GetMapping("/detail")
     Result queryTrainRouteDetail(String trainRouteId){
         try {
             return trainRouteQueryService.queryTrainRouteDetail(trainRouteId);
@@ -48,7 +48,7 @@ public class TrainRouteQueryController {
         }
     }
 
-    @GetMapping("/ticketRouteTimeInfo")
+    @GetMapping("/timeInfo")
     Result queryTicketRouteTimeInfo(String trainRouteId, String fromStationId, String toStationId){
         try {
             return trainRouteQueryService.queryTicketRouteTimeInfo(trainRouteId,fromStationId,toStationId);

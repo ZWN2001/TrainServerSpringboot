@@ -6,15 +6,12 @@ import com.zwn.trainserverspringboot.util.Result;
 import com.zwn.trainserverspringboot.util.ResultCodeEnum;
 import com.zwn.trainserverspringboot.util.UserUtil;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     @Resource
@@ -33,7 +30,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
+    @PutMapping("/login")
     Result login(long userId, String loginKey){
         try{
             return authService.login(String.valueOf(userId), loginKey);
@@ -47,7 +44,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/logout")
+    @PutMapping("/logout")
     Result logout(String token){
         try{
             return authService.logout(token);
@@ -57,7 +54,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/refresh")
+    @PutMapping("/refresh")
     Result refresh(String token){
         try{
             return authService.refresh(token);
@@ -67,7 +64,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/getUserInfo")
+    @GetMapping("/userInfo")
     Result getUserInfo(){
         try {
             if (UserUtil.getCurrentUserId() == 0 ){

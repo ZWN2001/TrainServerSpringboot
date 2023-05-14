@@ -31,11 +31,11 @@ public class DatabaseInitService {
     public Map<String, Boolean> init(){
         boolean initData = initData();
         if(initData){
-            boolean seatTypeInit = initSeatType();
-            resultMap.put("seatTypeInit",seatTypeInit);
-
-            boolean carriageInit = initcarriage();
-            resultMap.put("carriageInit",carriageInit);
+//            boolean seatTypeInit = initSeatType();
+//            resultMap.put("seatTypeInit",seatTypeInit);
+//
+//            boolean carriageInit = initcarriage();
+//            resultMap.put("carriageInit",carriageInit);
 
                 boolean ticketSeatRemainInit = initTicketSeatRemain();
                 resultMap.put("ticketSeatRemainInit",ticketSeatRemainInit);
@@ -203,7 +203,7 @@ public class DatabaseInitService {
                     for (int i = 1; i <= 3; i++) {
                         date = new Date();
                         //1-10天
-                        for (int j = 0; j < 10; j++) {
+                        for (int j = 0; j < 5; j++) {
                             dateString = df3.format(date);
                             usedTicketNum = 0;
 
@@ -234,7 +234,7 @@ public class DatabaseInitService {
                 }else {
                     for (int i = 4; i <= 6; i++) {
                         date = new Date();
-                        for (int j = 0; j < 10; j++) {
+                        for (int j = 0; j < 5; j++) {
                             dateString = df3.format(date);
                             usedTicketNum = 0;
 

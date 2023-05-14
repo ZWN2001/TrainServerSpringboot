@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
-@RequestMapping("/ticket/query")
+@RequestMapping("/query/tickets")
 public class TicketQueryController {
 
     @Resource
@@ -38,7 +38,7 @@ public class TicketQueryController {
         }
     }
 
-    @GetMapping("/selfTicket")
+    @GetMapping("/selfTickets")
     Result getSelfTicket(long userId){
         Result result = UserCheck.checkWithUserId(userId);
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
@@ -68,8 +68,8 @@ public class TicketQueryController {
         }
     }
 
-    @GetMapping("/selfPaiedOrder")
-    Result getSelfPaiedOrder(long userId){
+    @GetMapping("/selfPaidOrder")
+    Result getSelfPaidOrder(long userId){
         Result result = UserCheck.checkWithUserId(userId);
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             try {

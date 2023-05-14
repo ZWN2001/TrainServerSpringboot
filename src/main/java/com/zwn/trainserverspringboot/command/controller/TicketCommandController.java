@@ -5,15 +5,13 @@ import com.zwn.trainserverspringboot.command.bean.Order;
 import com.zwn.trainserverspringboot.command.bean.RebookOrder;
 import com.zwn.trainserverspringboot.command.service.TicketCommandService;
 import com.zwn.trainserverspringboot.util.*;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
-@RequestMapping("/ticket/command")
+@RequestMapping("/command/tickets")
 public class TicketCommandController {
 
     @Resource
@@ -52,8 +50,8 @@ public class TicketCommandController {
         }
     }
 
-    @PostMapping("/bookingTansfer")
-    Result ticketsBookingTansfer(String orderString1, String seatLocationListString1,
+    @PostMapping("/bookingTransfer")
+    Result ticketsBookingTransfer(String orderString1, String seatLocationListString1,
                                  String orderString2, String seatLocationListString2, String passengerIdsString){
         Order order1;
         Order order2;
@@ -98,7 +96,7 @@ public class TicketCommandController {
         }
     }
 
-    @PostMapping("/bookingCancel")
+    @PutMapping("/bookingCancel")
     Result ticketBookingCancel(String departureDate, String trainRouteId, String passengetIdString){
         List<String> passengerIds = StringUtil.getListFromString(passengetIdString);
         Result result = UserCheck.check();
@@ -116,7 +114,7 @@ public class TicketCommandController {
         }
     }
 
-    @PostMapping("/refund")
+    @PutMapping("/refund")
     Result ticketRefund(String orderId){
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
@@ -132,7 +130,7 @@ public class TicketCommandController {
         }
     }
 
-    @PostMapping("/rebook")
+    @PutMapping("/rebook")
     Result ticketRebook(String orderString , String passengerIdsString, String seatLocationListString){
         RebookOrder order;
         List<String> passengerIds;
@@ -163,7 +161,7 @@ public class TicketCommandController {
         }
     }
 
-    @PostMapping("/rebookCancel")
+    @PutMapping("/rebookCancel")
     Result ticketRebookCancel(String orderId){
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){

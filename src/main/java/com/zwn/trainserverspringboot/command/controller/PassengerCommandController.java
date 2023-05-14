@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/passenger/command")
+@RequestMapping("/command/passengers")
 public class PassengerCommandController {
 
     @Resource
@@ -34,7 +34,7 @@ public class PassengerCommandController {
         }
     }
 
-    @PostMapping("/modify")
+    @PutMapping("/modify")
     Result modifyPassenger(String passengerJSON){
         try {
             JSONObject jsonObject = JSONObject.parseObject(passengerJSON);
@@ -51,7 +51,7 @@ public class PassengerCommandController {
         }
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     Result deletePassenger(String passengerJSON){
         try {
             JSONObject jsonObject = JSONObject.parseObject(passengerJSON);

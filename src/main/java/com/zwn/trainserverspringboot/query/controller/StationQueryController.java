@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/station/query")
+@RequestMapping("/query/stations")
 public class StationQueryController {
     @Resource
     private StationQueryService stationQueryService;
 
-    @GetMapping("/allStationDetail")
+    @GetMapping("/all")
     Result allStationDetail(){
         return stationQueryService.getAllStationInfo();
     }
