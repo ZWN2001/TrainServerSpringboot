@@ -187,7 +187,6 @@ public class DatabaseInitService {
             for (Route route:allTrainRoutes){
                 if (myMapper.atomNum(route.getTrainRouteId()) == 0){
                     System.out.println(route);
-                    System.out.println("不存在原子区间");
                     continue;
                 }
                 routeAtoms.clear();
@@ -198,7 +197,6 @@ public class DatabaseInitService {
                 String dateString;
                 int usedTicketNum;
                 boolean isG = route.getTrainRouteId().charAt(0) == 'G';
-
                 if (isG){//123等
                     for (int i = 1; i <= 3; i++) {
                         date = new Date();
@@ -206,7 +204,6 @@ public class DatabaseInitService {
                         for (int j = 0; j < 5; j++) {
                             dateString = df3.format(date);
                             usedTicketNum = 0;
-
                             for (int k = 0; k< routeAtoms.size() - 1; k++) {
                                 ticketNum = rand.nextInt(average + 1 ) + 2; // 3 ~ ave
                                 try {
@@ -227,7 +224,6 @@ public class DatabaseInitService {
                             }catch (Exception e){
                                 e.printStackTrace();
                             }
-
                             date = getNextDay(date);
                         }
                     }

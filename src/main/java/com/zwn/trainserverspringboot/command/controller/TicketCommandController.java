@@ -97,8 +97,8 @@ public class TicketCommandController {
     }
 
     @PutMapping("/bookingCancel")
-    Result ticketBookingCancel(String departureDate, String trainRouteId, String passengetIdString){
-        List<String> passengerIds = StringUtil.getListFromString(passengetIdString);
+    Result ticketBookingCancel(String departureDate, String trainRouteId, String passengerIdString){
+        List<String> passengerIds = StringUtil.getListFromString(passengerIdString);
         Result result = UserCheck.check();
         if (result.getCode() == ResultCodeEnum.SUCCESS.getCode()){
             Result results;
