@@ -64,7 +64,7 @@ public class TrainRouteQueryService {
                     }
 
                     if(ticketsNum == 0){
-                        trainRoute.remove(route);
+//                        trainRoute.remove(route);
                     }else {
                         route.setTickets(tickets);
                     }

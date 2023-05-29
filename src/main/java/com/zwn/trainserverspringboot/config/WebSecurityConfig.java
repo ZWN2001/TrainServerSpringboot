@@ -85,15 +85,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests()
 //        https://blog.csdn.net/zhoucheng05_13/article/details/60467234
-                .antMatchers("/user/login",
-                        "/user/register",
-                        "/station/query/allStationDetail",
-                        "/seatType/query/allSeatType",
-                        "/trainRoute/query/trainRoute",
-                        "/trainRoute/query/trainRouteTransfer",
-                        "/trainRoute/query/trainRouteDetail",
-                        "/trainRoute/query/ticketRouteTimeInfo",
-                        "/trainRoute/query/trainRouteArriveTime",
+                .antMatchers("/users/login",
+                        "/users/register",
+                        "/query/stations/all",
+                        "/query/seatTypes/all",
+                        "/query/trainRoutes/direct",
+                        "/query/trainRoutes/direct",
+                        "/query/trainRoutes/detail",
+                        "/query/trainRoutes/timeInfo",
+//                        "/query/trainRoutes/trainRouteArriveTime",
                         "/alipay/pay/callback",
                         "/druid/**",
                         "/druid"
